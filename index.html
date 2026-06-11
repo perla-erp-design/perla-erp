@@ -654,7 +654,7 @@ async function testConnection(){
     const r = await fetch(`${SB_URL}/rest/v1/`, {
       headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`}
     });
-    if(!r.ok && r.status !== 200 && r.status !== 404){
+    if(!r.ok && r.status !== 200 && r.status !== 404 && r.status !== 401){
       throw new Error(`HTTP ${r.status} — ${r.statusText}`);
     }
     // Try actual table
