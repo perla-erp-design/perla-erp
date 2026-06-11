@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PERLA ERP</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#c9a84c;--gold-l:#e8d08a;--gold-d:#7a5f28;--gold-bg:#1a160a;
+  --bg0:#090909;--bg1:#0d0d0f;--bg2:#121214;--bg3:#18181c;--bg4:#202026;--bg5:#28282f;
+  --border:#25252c;--border2:#32323c;
+  --text:#e2ddd0;--text2:#9a9080;--text3:#5a5450;
+  --red:#c04840;--red-bg:#1e0e0c;--green:#3a9060;--green-bg:#0c1e12;
+  --blue:#3a70c0;--blue-bg:#0c1222;--amber:#c08030;--amber-bg:#1e1408;
+  --r8:8px;--r12:12px;--r16:16px;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg0);color:var(--text);display:flex;flex-direction:column}
+
+/* ── TOP BAR ── */
+.topbar{height:52px;background:var(--bg1);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.25rem;gap:1rem;flex-shrink:0;z-index:100}
+.brand{display:flex;align-items:center;gap:.6rem;font-weight:700;font-size:1.1rem;color:var(--gold-l);letter-spacing:.1em}
+.brand-gem{width:22px;height:22px;background:var(--gold);transform:rotate(45deg);border-radius:3px;flex-shrink:0;position:relative}
+.brand-gem::after{content:'';position:absolute;inset:5px;background:var(--bg1);border-radius:1px}
+.topbar-sep{width:1px;height:22px;background:var(--border2);margin:0 .25rem}
+.db-status{display:flex;align-items:center;gap:.45rem;font-size:.75rem;color:var(--text3);cursor:pointer;padding:.3rem .6rem;border:1px solid var(--border);border-radius:6px;transition:all .15s;margin-left:auto}
+.db-status:hover{border-color:var(--gold-d);color:var(--text2)}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--red);transition:background .3s}
+.status-dot.ok{background:var(--green)}
+.topbar-user{font-size:.75rem;color:var(--text3)}
+
+/* ── LAYOUT ── */
+.layout{display:flex;flex:1;overflow:hidden}
+
+/* ── SIDEBAR ── */
+.sidebar{width:220px;background:var(--bg1);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sidebar-section{padding:.6rem .75rem .3rem;font-size:.65rem;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;margin-top:.5rem}
+.nav-item{display:flex;align-items:center;gap:.7rem;padding:.55rem .9rem;margin:.1rem .5rem;border-radius:var(--r8);cursor:pointer;font-size:.82rem;color:var(--text2);transition:all .15s;border:1px solid transparent}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:var(--gold-bg);border-color:var(--gold-d);color:var(--gold-l)}
+.nav-icon{font-size:1rem;width:20px;text-align:center;flex-shrink:0}
+.nav-badge{margin-left:auto;font-size:.65rem;background:var(--bg4);color:var(--text3);padding:.1rem .45rem;border-radius:20px;border:1px solid var(--border2)}
+.sidebar-footer{margin-top:auto;padding:.75rem;border-top:1px solid var(--border)}
+.db-config-btn{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text2);padding:.5rem;border-radius:var(--r8);cursor:pointer;font-size:.78rem;transition:all .15s}
+.db-config-btn:hover{border-color:var(--gold-d);color:var(--gold)}
+
+/* ── MAIN CONTENT ── */
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+.page{display:none;flex-direction:column;height:100%}
+.page.active{display:flex}
+.page-header{padding:1.25rem 1.5rem .75rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem;flex-shrink:0}
+.page-title{font-size:1.1rem;font-weight:600;color:var(--gold-l);letter-spacing:.04em}
+.page-sub{font-size:.78rem;color:var(--text3);margin-top:.15rem}
+.page-actions{margin-left:auto;display:flex;gap:.6rem}
+.btn{padding:.42rem .9rem;border-radius:var(--r8);border:1px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;font-size:.8rem;transition:all .15s;display:flex;align-items:center;gap:.4rem}
+.btn:hover{border-color:var(--gold-d);color:var(--gold)}
+.btn-primary{background:var(--gold-d);border-color:var(--gold);color:var(--gold-l)}
+.btn-primary:hover{background:var(--gold);color:var(--bg0)}
+.btn-danger{border-color:var(--red);color:var(--red)}
+.btn-danger:hover{background:var(--red-bg)}
+.page-body{flex:1;overflow-y:auto;padding:1.25rem 1.5rem}
+
+/* ── KPI CARDS ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.75rem;margin-bottom:1.25rem}
+.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r12);padding:.9rem 1.1rem}
+.kpi-label{font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.35rem}
+.kpi-val{font-size:1.6rem;font-weight:700;color:var(--gold)}
+.kpi-sub{font-size:.72rem;color:var(--text3);margin-top:.2rem}
+
+/* ── TABLE ── */
+.table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r12);overflow:hidden}
+.table-toolbar{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;border-bottom:1px solid var(--border)}
+.search-inp{background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:.38rem .75rem;border-radius:var(--r8);font-size:.8rem;outline:none;min-width:200px}
+.search-inp:focus{border-color:var(--gold-d)}
+.search-inp::placeholder{color:var(--text3)}
+select.filter-sel{background:var(--bg3);border:1px solid var(--border2);color:var(--text2);padding:.38rem .65rem;border-radius:var(--r8);font-size:.78rem;outline:none;cursor:pointer}
+table{width:100%;border-collapse:collapse}
+th{padding:.5rem .85rem;text-align:left;font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--border);background:var(--bg1);font-weight:500}
+td{padding:.55rem .85rem;border-bottom:1px solid var(--border);font-size:.8rem;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(201,168,76,.025)}
+.tag{display:inline-flex;align-items:center;padding:.18rem .55rem;border-radius:20px;font-size:.7rem;font-weight:500;border:1px solid}
+.tag-green{color:#5bc48a;background:var(--green-bg);border-color:#1a4030}
+.tag-red{color:#e07070;background:var(--red-bg);border-color:#3a1818}
+.tag-amber{color:#d4a050;background:var(--amber-bg);border-color:#3a2808}
+.tag-blue{color:#6090d8;background:var(--blue-bg);border-color:#182040}
+.tag-gray{color:var(--text3);background:var(--bg4);border-color:var(--border2)}
+.action-btns{display:flex;gap:.35rem}
+.icon-btn{width:28px;height:28px;border:1px solid var(--border2);border-radius:6px;background:var(--bg3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:all .15s;color:var(--text2)}
+.icon-btn:hover{border-color:var(--gold-d);color:var(--gold)}
+.icon-btn.del:hover{border-color:var(--red);color:var(--red);background:var(--red-bg)}
+.empty-row td{text-align:center;color:var(--text3);font-style:italic;padding:2rem}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r16);width:100%;max-width:480px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.6)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.25rem;border-bottom:1px solid var(--border)}
+.modal-title{font-size:.95rem;font-weight:600;color:var(--gold-l)}
+.modal-close{background:none;border:none;color:var(--text3);cursor:pointer;font-size:1.2rem;padding:.2rem .4rem;border-radius:4px;transition:color .15s}
+.modal-close:hover{color:var(--text)}
+.modal-body{padding:1.25rem}
+.form-group{margin-bottom:1rem}
+.form-label{display:block;font-size:.75rem;color:var(--text2);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.06em}
+.form-inp{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:.5rem .75rem;border-radius:var(--r8);font-size:.85rem;outline:none;transition:border-color .15s}
+.form-inp:focus{border-color:var(--gold-d)}
+.form-inp::placeholder{color:var(--text3)}
+select.form-inp{cursor:pointer}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.modal-footer{display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border)}
+
+/* ── DB CONFIG PANEL ── */
+.db-panel{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r16);padding:1.5rem;margin-bottom:1.25rem}
+.db-panel h3{font-size:.9rem;color:var(--gold-l);margin-bottom:1rem;font-weight:600}
+.db-info{font-size:.78rem;color:var(--text3);line-height:1.7;margin-bottom:1.25rem;background:var(--bg3);padding:.85rem;border-radius:var(--r8);border-left:3px solid var(--gold-d)}
+.step-list{counter-reset:steps;margin-bottom:1.25rem}
+.step{display:flex;gap:.75rem;margin-bottom:.6rem;font-size:.8rem;color:var(--text2)}
+.step-num{width:22px;height:22px;border-radius:50%;background:var(--gold-d);color:var(--gold-l);font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.05rem}
+code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4px;font-family:monospace;font-size:.78rem}
+
+/* ── DASHBOARD CHART ── */
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.25rem}
+.chart-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r12);padding:1rem}
+.chart-title{font-size:.75rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.85rem}
+.bar-chart{display:flex;flex-direction:column;gap:.45rem}
+.bar-row{display:flex;align-items:center;gap:.75rem;font-size:.75rem}
+.bar-label{width:90px;color:var(--text2);text-align:right;flex-shrink:0;font-size:.72rem}
+.bar-track{flex:1;height:10px;background:var(--bg4);border-radius:20px;overflow:hidden}
+.bar-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--gold-d),var(--gold));transition:width .6s ease}
+.bar-val{width:40px;color:var(--text2);font-size:.72rem}
+.pie-legend{display:flex;flex-wrap:wrap;gap:.5rem .85rem;margin-top:.75rem}
+.pie-item{display:flex;align-items:center;gap:.4rem;font-size:.72rem;color:var(--text2)}
+.pie-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r12);padding:.75rem 1.1rem;font-size:.82rem;color:var(--text);z-index:2000;transform:translateY(10px);opacity:0;transition:all .25s;pointer-events:none;max-width:300px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{border-color:var(--green);color:#5bc48a}
+.toast.error{border-color:var(--red);color:#e07070}
+
+/* ── CONNECT SCREEN ── */
+.connect-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:2rem;text-align:center}
+.connect-icon{font-size:3rem;margin-bottom:1rem;opacity:.4}
+.connect-title{font-size:1.1rem;font-weight:600;color:var(--gold-l);margin-bottom:.5rem}
+.connect-sub{font-size:.82rem;color:var(--text3);line-height:1.7;max-width:380px;margin-bottom:1.5rem}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="brand"><div class="brand-gem"></div>PERLA</div>
+  <div class="topbar-sep"></div>
+  <span style="font-size:.75rem;color:var(--text3)">ERP</span>
+  <div class="db-status" onclick="nav('settings')" id="db-status-btn">
+    <div class="status-dot" id="status-dot"></div>
+    <span id="status-label">Non connecté</span>
+  </div>
+  <div class="topbar-user">v1.0</div>
+</div>
+
+<div class="layout">
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-section">Principal</div>
+  <div class="nav-item active" onclick="nav('dashboard')" id="nav-dashboard"><span class="nav-icon">◈</span> Tableau de bord</div>
+
+  <div class="sidebar-section">RH</div>
+  <div class="nav-item" onclick="nav('employes')" id="nav-employes"><span class="nav-icon">👥</span> Employés</div>
+  <div class="nav-item" onclick="nav('departements')" id="nav-departements"><span class="nav-icon">🏢</span> Départements</div>
+
+  <div class="sidebar-section">Commercial</div>
+  <div class="nav-item" onclick="nav('commandes')" id="nav-commandes"><span class="nav-icon">📋</span> Commandes</div>
+  <div class="nav-item" onclick="nav('clients')" id="nav-clients"><span class="nav-icon">🤝</span> Clients</div>
+
+  <div class="sidebar-section">Approvisionnement</div>
+  <div class="nav-item" onclick="nav('stocks')" id="nav-stocks"><span class="nav-icon">📦</span> Stocks</div>
+  <div class="nav-item" onclick="nav('fournisseurs')" id="nav-fournisseurs"><span class="nav-icon">🚚</span> Fournisseurs</div>
+
+  <div class="sidebar-section">Finance</div>
+  <div class="nav-item" onclick="nav('factures')" id="nav-factures"><span class="nav-icon">🧾</span> Factures</div>
+  <div class="nav-item" onclick="nav('depenses')" id="nav-depenses"><span class="nav-icon">💸</span> Dépenses</div>
+
+  <div class="sidebar-footer">
+    <button class="db-config-btn" onclick="nav('settings')">⚙ Configuration base de données</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <div class="page-header">
+    <div><div class="page-title">◈ Tableau de bord</div><div class="page-sub">Vue d'ensemble PERLA</div></div>
+  </div>
+  <div class="page-body">
+    <div class="kpi-grid" id="kpi-grid">
+      <div class="kpi"><div class="kpi-label">Employés</div><div class="kpi-val" id="kpi-emp">—</div><div class="kpi-sub">effectifs actifs</div></div>
+      <div class="kpi"><div class="kpi-label">Commandes</div><div class="kpi-val" id="kpi-cmd">—</div><div class="kpi-sub">ce mois</div></div>
+      <div class="kpi"><div class="kpi-label">Stocks</div><div class="kpi-val" id="kpi-stk">—</div><div class="kpi-sub">références</div></div>
+      <div class="kpi"><div class="kpi-label">Chiffre d'affaires</div><div class="kpi-val" id="kpi-ca">—</div><div class="kpi-sub">DZD total facturé</div></div>
+    </div>
+    <div class="chart-row">
+      <div class="chart-box">
+        <div class="chart-title">Effectifs par département</div>
+        <div class="bar-chart" id="chart-dept"></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-title">Statut des commandes</div>
+        <canvas id="chart-commandes" width="200" height="200" style="display:block;margin:0 auto"></canvas>
+        <div class="pie-legend" id="pie-legend"></div>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <div class="table-toolbar"><span style="font-size:.8rem;color:var(--text2);font-weight:500">Dernières commandes</span></div>
+      <table><thead><tr><th>Réf.</th><th>Client</th><th>Date</th><th>Montant</th><th>Statut</th></tr></thead>
+      <tbody id="dash-recent"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- EMPLOYÉS -->
+<div class="page" id="page-employes">
+  <div class="page-header">
+    <div><div class="page-title">👥 Employés</div><div class="page-sub">Gestion des ressources humaines</div></div>
+    <div class="page-actions">
+      <button class="btn btn-primary" onclick="openModal('emp')">+ Ajouter</button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="table-wrap">
+      <div class="table-toolbar">
+        <input class="search-inp" placeholder="Rechercher…" oninput="filterTable('emp',this.value)">
+        <select class="filter-sel" onchange="filterTable('emp','',this.value)" id="filter-emp-dept">
+          <option value="">Tous départements</option>
+        </select>
+      </div>
+      <table><thead><tr><th>Nom</th><th>Poste</th><th>Département</th><th>Sous-dép.</th><th>Tâche</th><th>Statut</th><th>Actions</th></tr></thead>
+      <tbody id="tbl-emp"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- DÉPARTEMENTS -->
+<div class="page" id="page-departements">
+  <div class="page-header">
+    <div><div class="page-title">🏢 Départements</div><div class="page-sub">Structure organisationnelle</div></div>
+    <div class="page-actions"><button class="btn btn-primary" onclick="openModal('dept')">+ Ajouter</button></div>
+  </div>
+  <div class="page-body">
+    <div class="table-wrap">
+      <table><thead><tr><th>Département</th><th>Sous-département</th><th>Effectifs</th><th>Actions</th></tr></thead>
+      <tbody id="tbl-dept"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- COMMANDES -->
+<div class="page" id="page-commandes">
+  <div class="page-header">
+    <div><div class="page-title">📋 Commandes</div><div class="page-sub">Suivi production & livraisons</div></div>
+    <div class="page-actions"><button class="btn btn-primary" onclick="openModal('cmd')">+ Nouvelle commande</button></div>
+  </div>
+  <div class="page-body">
+    <div class="table-wrap">
+      <div class="table-toolbar">
+        <input class="search-inp" placeholder="Rechercher…" oninput="filterTable('cmd',this.value)">
+        <select class="filter-sel" onchange="filterTable('cmd','',this.value)">
+          <option value="">Tous statuts</option>
+          <option>En attente</option><option>En cours</option><option>Terminée</option><option>Livrée</option><option>Annulée</option>
+        </select>
+      </div>
+      <table><thead><tr><th>Réf.</th><th>Client</th><th>Produit</th><th>Qté</th><th>Montant</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
+      <tbody id="tbl-cmd"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- CLIENTS -->
+<div class="page" id="page-clients">
+  <div class="page-header">
+    <div>
+      <div class="page-title">🤝 Clients</div>
+      <div class="page-sub">Gestion complète du portefeuille clients</div>
+    </div>
+    <div class="page-actions">
+      <button class="btn" onclick="exportClients()">⬇ Exporter</button>
+      <button class="btn btn-primary" onclick="openClientModal()">+ Nouveau client</button>
+    </div>
+  </div>
+  <div class="page-body">
+
+    <!-- KPIs Clients -->
+    <div class="kpi-grid" id="kpi-clients-grid">
+      <div class="kpi"><div class="kpi-label">Total Clients</div><div class="kpi-val" id="kpi-cl-total">0</div><div class="kpi-sub">dans la base</div></div>
+      <div class="kpi"><div class="kpi-label">Entreprises</div><div class="kpi-val" id="kpi-cl-ent">0</div><div class="kpi-sub">clients professionnels</div></div>
+      <div class="kpi"><div class="kpi-label">Créances totales</div><div class="kpi-val" id="kpi-cl-creance" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub">soldes en cours</div></div>
+      <div class="kpi"><div class="kpi-label">Nouveaux (mois)</div><div class="kpi-val" id="kpi-cl-new">0</div><div class="kpi-sub">ce mois-ci</div></div>
+    </div>
+
+    <!-- Toolbar recherche + filtre -->
+    <div class="table-wrap">
+      <div class="table-toolbar" style="flex-wrap:wrap;gap:.5rem">
+        <input class="search-inp" id="cl-search" placeholder="🔍 Rechercher par nom, téléphone, adresse…" oninput="renderClient(this.value)" style="flex:1;min-width:200px">
+        <select class="filter-sel" id="cl-filter-type" onchange="renderClient(document.getElementById('cl-search').value)">
+          <option value="">Tous types</option>
+          <option value="Particulier">Particulier</option>
+          <option value="Entreprise">Entreprise</option>
+          <option value="Projet">Projet</option>
+        </select>
+        <select class="filter-sel" id="cl-filter-sort" onchange="renderClient(document.getElementById('cl-search').value)">
+          <option value="nom">Trier : Nom A→Z</option>
+          <option value="nom_desc">Trier : Nom Z→A</option>
+          <option value="solde">Trier : Solde ↓</option>
+          <option value="recent">Trier : Plus récents</option>
+        </select>
+        <span id="cl-count" style="font-size:.75rem;color:var(--text3);margin-left:auto;align-self:center"></span>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width:40px">#</th>
+            <th>Nom / Raison sociale</th>
+            <th>Téléphone</th>
+            <th>Adresse</th>
+            <th>Type</th>
+            <th style="text-align:right">Solde départ</th>
+            <th style="text-align:center">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tbl-client"></tbody>
+      </table>
+
+      <div id="cl-empty" style="display:none;text-align:center;padding:3rem;color:var(--text3)">
+        <div style="font-size:2.5rem;margin-bottom:.75rem">🤝</div>
+        <div style="font-size:.9rem">Aucun client trouvé</div>
+        <div style="font-size:.78rem;margin-top:.35rem">Cliquez sur "Nouveau client" pour commencer</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ MODAL CLIENT CRUD ═══════════ -->
+<div id="client-modal-overlay" onclick="closeClientModal(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;align-items:center;justify-content:center">
+  <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r16);width:min(560px,95vw);max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.6)" onclick="event.stopPropagation()">
+
+    <!-- Header modal -->
+    <div style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div id="cl-modal-title" style="font-size:1rem;font-weight:600;color:var(--gold-l)">Nouveau client</div>
+        <div id="cl-modal-sub" style="font-size:.75rem;color:var(--text3);margin-top:.2rem">Remplissez les informations du client</div>
+      </div>
+      <button onclick="closeClientModal()" style="background:var(--bg4);border:1px solid var(--border2);color:var(--text2);width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>
+
+    <!-- Corps formulaire -->
+    <div style="padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:1rem">
+
+      <!-- Ligne 1: Nom + Type -->
+      <div style="display:grid;grid-template-columns:1fr 150px;gap:.75rem">
+        <div class="form-group">
+          <label class="form-label">Nom / Raison sociale <span style="color:var(--red)">*</span></label>
+          <input class="form-inp" id="cl-nom" type="text" placeholder="Ex: HAMMADI Karim, EURL BATIMEX…">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Type</label>
+          <select class="form-inp" id="cl-type">
+            <option>Particulier</option>
+            <option>Entreprise</option>
+            <option>Projet</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Ligne 2: Téléphone + N° client -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
+        <div class="form-group">
+          <label class="form-label">Téléphone</label>
+          <input class="form-inp" id="cl-telephone" type="tel" placeholder="0550 000 000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">N° client (optionnel)</label>
+          <input class="form-inp" id="cl-numero" type="text" placeholder="Auto si vide">
+        </div>
+      </div>
+
+      <!-- Adresse -->
+      <div class="form-group">
+        <label class="form-label">Adresse complète</label>
+        <input class="form-inp" id="cl-adresse" type="text" placeholder="Rue, cité, wilaya…">
+      </div>
+
+      <!-- Solde départ -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
+        <div class="form-group">
+          <label class="form-label">Solde de départ (DZD)</label>
+          <input class="form-inp" id="cl-solde" type="number" placeholder="0" min="0" step="100">
+          <div style="font-size:.7rem;color:var(--text3);margin-top:.3rem">Solde initial importé ou créance de départ</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notes internes</label>
+          <input class="form-inp" id="cl-notes" type="text" placeholder="Remarques…">
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer modal -->
+    <div style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;gap:.6rem;justify-content:flex-end">
+      <button class="btn" onclick="closeClientModal()">Annuler</button>
+      <button class="btn btn-primary" id="cl-save-btn" onclick="saveClient()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ MODAL FICHE CLIENT (Vue détail) ═══════════ -->
+<div id="client-detail-overlay" onclick="closeClientDetail(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1001;align-items:center;justify-content:center">
+  <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r16);width:min(680px,96vw);max-height:92vh;overflow-y:auto;box-shadow:0 28px 80px rgba(0,0,0,.7)" onclick="event.stopPropagation()">
+    <div style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem">
+      <div id="cl-detail-avatar" style="width:44px;height:44px;border-radius:10px;background:var(--gold-bg);border:1px solid var(--gold-d);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">🤝</div>
+      <div style="flex:1">
+        <div id="cl-detail-nom" style="font-size:1.05rem;font-weight:600;color:var(--gold-l)">—</div>
+        <div id="cl-detail-meta" style="font-size:.75rem;color:var(--text3);margin-top:.15rem">—</div>
+      </div>
+      <div style="display:flex;gap:.5rem">
+        <button id="cl-detail-edit-btn" class="btn btn-primary" style="font-size:.78rem">✎ Modifier</button>
+        <button onclick="closeClientDetail()" style="background:var(--bg4);border:1px solid var(--border2);color:var(--text2);width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:1rem">✕</button>
+      </div>
+    </div>
+    <div style="padding:1.25rem 1.5rem;display:grid;grid-template-columns:1fr 1fr;gap:1rem" id="cl-detail-body">
+    </div>
+  </div>
+</div>
+
+<!-- STOCKS -->
+<div class="page" id="page-stocks">
+  <div class="page-header">
+    <div><div class="page-title">📦 Stocks</div><div class="page-sub">Gestion des matériaux</div></div>
+    <div class="page-actions"><button class="btn btn-primary" onclick="openModal('stk')">+ Ajouter</button></div>
+  </div>
+  <div class="page-body">
+    <div class="table-wrap">
+      <div class="table-toolbar"><input class="search-inp" placeholder="Rechercher…" oninput="filterTable('stk',this.value)"></div>
+      <table><thead><tr><th>Référence</th><th>Matériau</th><th>Qté</th><th>Unité</th><th>Origine</th><th>Seuil alerte</th><th>Statut</th><th>Actions</th></tr></thead>
+      <tbody id="tbl-stk"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- FOURNISSEURS -->
+<div class="page" id="page-fournisseurs">
+  <div class="page-header">
+    <div><div class="page-title">🚚 Fournisseurs</div></div>
+    <div class="page-actions"><button class="btn btn-primary" onclick="openModal('four')">+ Ajouter</button></div>
+  </div>
+  <div class="page-body">
+    <div class="table-wrap">
+      <div class="table-toolbar"><input class="search-inp" placeholder="Rechercher…" oninput="filterTable('four',this.value)"></div>
+      <table><thead><tr><th>Nom</th><th>Pays</th><th>Contact</th><th>Type</th><th>Actions</th></tr></thead>
+      <tbody id="tbl-four"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- FACTURES -->
+<div class="page" id="page-factures">
+  <div class="page-header">
+    <div><div class="page-title">🧾 Factures</div></div>
+    <div class="page-actions"><button class="btn btn-primary" onclick="openModal('fact')">+ Nouvelle facture</button></div>
+  </div>
+  <div class="page-body">
+    <div class="table-wrap">
+      <div class="table-toolbar"><input class="search-inp" placeholder="Rechercher…" oninput="filterTable('fact',this.value)"></div>
+      <table><thead><tr><th>N° Facture</th><th>Client</th><th>Montant (DZD)</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
+      <tbody id="tbl-fact"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- DÉPENSES -->
+<div class="page" id="page-depenses">
+  <div class="page-header">
+    <div><div class="page-title">💸 Dépenses</div></div>
+    <div class="page-actions"><button class="btn btn-primary" onclick="openModal('dep')">+ Ajouter</button></div>
+  </div>
+  <div class="page-body">
+    <div class="table-wrap">
+      <div class="table-toolbar"><input class="search-inp" placeholder="Rechercher…" oninput="filterTable('dep',this.value)"></div>
+      <table><thead><tr><th>Description</th><th>Catégorie</th><th>Montant (DZD)</th><th>Date</th><th>Actions</th></tr></thead>
+      <tbody id="tbl-dep"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="page" id="page-settings">
+  <div class="page-header">
+    <div><div class="page-title">&#9881; Configuration Supabase</div><div class="page-sub">Connexion a votre base de donnees</div></div>
+  </div>
+  <div class="page-body">
+    <div class="db-panel">
+      <!-- Statut connexion -->
+      <div id="conn-status-box" style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r12);padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:.75rem">
+        <div id="conn-status-icon" style="font-size:1.4rem">&#128308;</div>
+        <div style="flex:1">
+          <div id="conn-status-text" style="font-size:.88rem;font-weight:600;color:var(--text)">Non connecte</div>
+          <div id="conn-status-sub" style="font-size:.74rem;color:var(--text3);margin-top:.15rem">Entrez vos identifiants Supabase ci-dessous</div>
+        </div>
+        <button class="btn" onclick="runDiag()" style="font-size:.75rem">Diagnostic</button>
+      </div>
+      <!-- Alerte -->
+      <div id="conn-alert" style="display:none;background:var(--red-bg);border:1px solid var(--red);border-radius:var(--r8);padding:.75rem 1rem;margin-bottom:1rem;font-size:.8rem;color:#e88"></div>
+      <!-- Guide -->
+      <div style="background:var(--gold-bg);border:1px solid var(--gold-d);border-radius:var(--r12);padding:1rem 1.25rem;margin-bottom:1.25rem">
+        <div style="font-size:.78rem;font-weight:600;color:var(--gold-l);margin-bottom:.6rem">Ou trouver vos identifiants ?</div>
+        <div style="font-size:.76rem;color:var(--text2);line-height:1.9">
+          1. Ouvrez <strong>supabase.com</strong> et votre projet<br>
+          2. Menu gauche &rarr; <strong>Settings (engrenage)</strong> &rarr; <strong>API</strong><br>
+          3. Copiez <strong style="color:var(--gold)">Project URL</strong> &rarr; ex: https://ahdaszzdqzvtjpewvwdm.supabase.co<br>
+          4. Copiez <strong style="color:var(--gold)">anon public</strong> key &rarr; commence par eyJhbGci...<br>
+          <span style="color:var(--text3)">N utilisez PAS le mot de passe PostgreSQL ici</span>
+        </div>
+      </div>
+      <!-- Formulaire -->
+      <div class="form-group" style="margin-bottom:.75rem">
+        <label class="form-label">Project URL</label>
+        <input class="form-inp" id="sb-url" placeholder="https://xxxxxxxxxxxx.supabase.co" value="https://ahdaszzdqzvtjpewvwdm.supabase.co" style="font-family:monospace;font-size:.82rem">
+        <div style="font-size:.7rem;color:var(--text3);margin-top:.2rem">Votre URL est pre-remplie depuis votre profil</div>
+      </div>
+      <div class="form-group" style="margin-bottom:.75rem">
+        <label class="form-label">Cle API anon public</label>
+        <input class="form-inp" id="sb-key" type="text" value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoZGFzenpkcXp2dGpwZXd2d2RtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NDgxMjcsImV4cCI6MjA5NjMyNDEyN30.4OCM9isvlAmCq2ay-zuJjbX84TdkgonBwLI1l1ZwVHM" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." style="font-family:monospace;font-size:.75rem">
+        <div style="font-size:.7rem;color:var(--text3);margin-top:.2rem">Trouvee dans Settings &rarr; API &rarr; anon public (commence par eyJ)</div>
+      </div>
+      <!-- Boutons -->
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.75rem">
+        <button class="btn btn-primary" id="btn-connect" onclick="connectDB()">Connecter</button>
+        <button class="btn" onclick="createTables()" id="btn-create-tables" style="display:none">Creer les tables</button>
+        <button class="btn" onclick="seedDemo()" id="btn-seed" style="display:none">Donnees demo</button>
+        <button class="btn btn-danger" onclick="disconnectDB()" id="btn-disconnect" style="display:none;margin-left:auto">Deconnecter</button>
+      </div>
+      <!-- SQL fallback -->
+      <div id="sql-block" style="display:none;margin-top:1.25rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
+          <div class="form-label">SQL a copier dans Supabase SQL Editor</div>
+          <button class="btn" style="font-size:.72rem" onclick="copySql()">Copier</button>
+        </div>
+        <textarea class="form-inp" rows="12" style="font-family:monospace;font-size:.7rem;resize:vertical" readonly id="sql-txt"></textarea>
+      </div>
+      <!-- Diagnostic log -->
+      <div id="diag-log" style="display:none;margin-top:1rem;background:var(--bg1);border:1px solid var(--border);border-radius:var(--r8);padding:.75rem 1rem;font-family:monospace;font-size:.72rem;color:var(--text2);max-height:200px;overflow-y:auto;white-space:pre-wrap"></div>
+    </div>
+  </div>
+</div>
+
+
+</div><!-- /main -->
+</div><!-- /layout -->
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal-box">
+    <div class="modal-header"><span class="modal-title" id="modal-title">Ajouter</span><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="saveModal()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ─── STATE ─── */
+let SB_URL='https://ahdaszzdqzvtjpewvwdm.supabase.co', SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoZGFzenpkcXp2dGpwZXd2d2RtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NDgxMjcsImV4cCI6MjA5NjMyNDEyN30.4OCM9isvlAmCq2ay-zuJjbX84TdkgonBwLI1l1ZwVHM', connected=false;
+let editId=null, editTable=null;
+
+const DB = {
+  employes:[], departements:[], commandes:[], clients:[],
+  stocks:[], fournisseurs:[], factures:[], depenses:[],
+  bons_livraison:[], lignes_bon_livraison:[], reglements:[]
+};
+
+/* ─── LOCAL STORAGE ─── */
+function save(){
+  try{
+    if(SB_URL) localStorage.setItem('perla_sb_url',SB_URL);
+    if(SB_KEY) localStorage.setItem('perla_sb_key',SB_KEY);
+    localStorage.setItem('perla_db',JSON.stringify(DB));
+  }catch(e){}
+}
+function load(){
+  SB_URL=localStorage.getItem('perla_sb_url')||'';
+  SB_KEY=localStorage.getItem('perla_sb_key')||'';
+  if(SB_URL) document.getElementById('sb-url').value=SB_URL;
+  if(SB_KEY) document.getElementById('sb-key').value=SB_KEY;
+  try{
+    const d=JSON.parse(localStorage.getItem('perla_db')||'{}');
+    Object.keys(DB).forEach(k=>{if(d[k]) DB[k]=d[k];});
+  }catch(e){}
+  if(SB_URL&&SB_KEY) testConnection();
+}
+
+/* ─── SUPABASE API ─── */
+async function sbReq(method,table,body,id){
+  const url=`${SB_URL}/rest/v1/${table}`+(id?`?id=eq.${id}`:'');
+  const opts={method,headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json','Prefer':'return=representation'}};
+  if(body) opts.body=JSON.stringify(body);
+  const r=await fetch(url,opts);
+  if(!r.ok) throw new Error(await r.text());
+  return r.status===204?[]:r.json();
+}
+async function sbSelect(table,filter=''){
+  const url=`${SB_URL}/rest/v1/${table}?order=id.asc${filter?'&'+filter:''}`;
+  const r=await fetch(url,{headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`}});
+  if(!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+async function sbDelete(table,id){
+  const url=`${SB_URL}/rest/v1/${table}?id=eq.${id}`;
+  await fetch(url,{method:'DELETE',headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`}});
+}
+
+async function connectDB(){await testConnection();}
+async function testConnection(){
+  const urlEl = document.getElementById('sb-url');
+  const keyEl = document.getElementById('sb-key');
+  SB_URL = (urlEl ? urlEl.value.trim() : SB_URL) || SB_URL;
+  SB_KEY = (keyEl ? keyEl.value.trim() : SB_KEY) || SB_KEY;
+
+  if(!SB_URL || !SB_KEY){
+    showConnAlert('Veuillez remplir l\'URL et la clé API anon public.');
+    return;
+  }
+  if(!SB_URL.startsWith('https://')){
+    showConnAlert('L\'URL doit commencer par https://');
+    return;
+  }
+  if(!SB_KEY.startsWith('eyJ')){
+    showConnAlert('La clé API semble incorrecte. Elle doit commencer par "eyJ". N\'utilisez pas le mot de passe PostgreSQL.');
+    return;
+  }
+
+  const btn = document.getElementById('btn-connect');
+  if(btn){ btn.textContent = '⏳ Connexion…'; btn.disabled = true; }
+  updateConnStatus('connecting');
+
+  try{
+    const r = await fetch(`${SB_URL}/rest/v1/`, {
+      headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`}
+    });
+    if(!r.ok && r.status !== 200 && r.status !== 404){
+      throw new Error(`HTTP ${r.status} — ${r.statusText}`);
+    }
+    // Try actual table
+    await sbSelect('employes');
+    connected=true;
+    setStatus(true);
+    updateConnStatus('ok');
+    hideConnAlert();
+    toast('Base de données connectée ✓','success');
+    const ct = document.getElementById('btn-create-tables');
+    const sd = document.getElementById('btn-seed');
+    const dc = document.getElementById('btn-disconnect');
+    if(ct) ct.style.display='';
+    if(sd) sd.style.display='';
+    if(dc) dc.style.display='';
+    save();
+    await loadAll();
+  }catch(e){
+    connected=false;
+    setStatus(false);
+    updateConnStatus('error');
+    const msg = e.message || '';
+    let hint = '';
+    if(msg.includes('Failed to fetch') || msg.includes('NetworkError')){
+      hint = 'Erreur réseau : vérifiez votre connexion Internet et que l\'URL Supabase est correcte.';
+    } else if(msg.includes('401') || msg.includes('403')){
+      hint = 'Clé API invalide ou insuffisante. Vérifiez que vous utilisez la clé "anon public" (pas la clé service_role).';
+    } else if(msg.includes('404')){
+      hint = 'URL introuvable. Vérifiez l\'URL du projet Supabase.';
+    } else if(msg.includes('relation') || msg.includes('does not exist')){
+      hint = 'Connexion réussie mais tables manquantes. Cliquez sur "Créer les tables".';
+      connected = true; setStatus(true); updateConnStatus('ok');
+      const ct = document.getElementById('btn-create-tables');
+      const sb = document.getElementById('sql-block');
+      if(ct) ct.style.display='';
+      if(sb){ sb.style.display=''; document.getElementById('sql-txt').value=getSQLInit(); }
+    } else {
+      hint = 'Erreur : ' + msg;
+    }
+    showConnAlert(hint);
+    document.getElementById('sql-block').style.display='';
+    document.getElementById('sql-txt').value=getSQLInit();
+  }finally{
+    if(btn){ btn.textContent='🔌 Connecter'; btn.disabled=false; }
+  }
+}
+
+function updateConnStatus(state){
+  const icon = document.getElementById('conn-status-icon');
+  const text = document.getElementById('conn-status-text');
+  const sub  = document.getElementById('conn-status-sub');
+  const box  = document.getElementById('conn-status-box');
+  if(!icon) return;
+  if(state==='ok'){
+    icon.textContent='🟢';
+    text.textContent='Connecté à Supabase';
+    text.style.color='var(--green)';
+    sub.textContent='Base de données PERLA opérationnelle — '+new Date().toLocaleTimeString('fr-DZ');
+    box.style.borderColor='var(--green)';
+  } else if(state==='connecting'){
+    icon.textContent='🟡';
+    text.textContent='Connexion en cours…';
+    text.style.color='var(--amber)';
+    sub.textContent='Test de la connexion Supabase';
+    box.style.borderColor='var(--amber)';
+  } else if(state==='error'){
+    icon.textContent='🔴';
+    text.textContent='Echec de connexion';
+    text.style.color='var(--red)';
+    sub.textContent='Vérifiez vos identifiants ci-dessous';
+    box.style.borderColor='var(--red)';
+  } else {
+    icon.textContent='🔴';
+    text.textContent='Non connecté';
+    text.style.color='var(--text)';
+    sub.textContent='Entrez vos identifiants Supabase ci-dessous';
+    box.style.borderColor='var(--border2)';
+  }
+}
+
+function showConnAlert(msg){
+  const el = document.getElementById('conn-alert');
+  if(el){ el.textContent='⚠️ '+msg; el.style.display=''; }
+}
+function hideConnAlert(){
+  const el = document.getElementById('conn-alert');
+  if(el) el.style.display='none';
+}
+
+function disconnectDB(){
+  connected=false; SB_URL=''; SB_KEY='';
+  localStorage.removeItem('perla_sb_url');
+  localStorage.removeItem('perla_sb_key');
+  setStatus(false); updateConnStatus('idle');
+  const dc=document.getElementById('btn-disconnect');
+  const ct=document.getElementById('btn-create-tables');
+  const sd=document.getElementById('btn-seed');
+  if(dc) dc.style.display='none';
+  if(ct) ct.style.display='none';
+  if(sd) sd.style.display='none';
+  document.getElementById('sb-url').value='';
+  document.getElementById('sb-key').value='';
+  toast('Déconnecté','success');
+}
+
+function copySql(){
+  const txt = document.getElementById('sql-txt').value;
+  navigator.clipboard.writeText(txt).then(()=>toast('SQL copié ✓','success')).catch(()=>toast('Sélectionnez le texte et copiez manuellement','error'));
+}
+
+function validateConnInputs(){}
+
+async function runDiag(){
+  const log = document.getElementById('diag-log');
+  if(!log) return;
+  log.style.display='';
+  log.textContent='';
+  const url = (document.getElementById('sb-url')||{}).value||SB_URL||'';
+  const key = (document.getElementById('sb-key')||{}).value||SB_KEY||'';
+  const add = t => { log.textContent += t+'\n'; log.scrollTop=log.scrollHeight; };
+  add('=== DIAGNOSTIC PERLA ERP ===');
+  add('URL : '+(url||'(vide)'));
+  add('Clé : '+(key ? key.substring(0,20)+'...' : '(vide)'));
+  add('');
+  if(!url){ add('❌ URL manquante'); return; }
+  if(!url.startsWith('https://')){ add('❌ URL doit commencer par https://'); return; }
+  if(!key){ add('❌ Clé API manquante'); return; }
+  if(!key.startsWith('eyJ')){ add('⚠️  La clé ne commence pas par "eyJ" — vérifiez que c\'est la clé anon public'); }
+  add('🔄 Test ping Supabase...');
+  try{
+    const r = await fetch(`${url}/rest/v1/`, {headers:{'apikey':key,'Authorization':`Bearer ${key}`}});
+    add(`✅ Serveur répond : HTTP ${r.status}`);
+  }catch(e){ add('❌ Impossible de joindre le serveur : '+e.message); return; }
+  add('🔄 Test table employes...');
+  try{
+    const r2 = await fetch(`${url}/rest/v1/employes?limit=1`, {headers:{'apikey':key,'Authorization':`Bearer ${key}`}});
+    if(r2.ok){ add('✅ Table employes accessible ('+r2.status+')'); }
+    else if(r2.status===404){ add('⚠️  Table employes introuvable → lancez "Créer les tables"'); }
+    else { const t=await r2.text(); add('❌ Erreur '+r2.status+' : '+t.substring(0,200)); }
+  }catch(e){ add('❌ Erreur : '+e.message); }
+  add('');
+  add('=== FIN DIAGNOSTIC ===');
+}
+
+function setStatus(ok){
+  document.getElementById('status-dot').className='status-dot'+(ok?' ok':'');
+  document.getElementById('status-label').textContent=ok?'Connecté':'Non connecté';
+}
+
+async function loadAll(){
+  const tables=['employes','departements','commandes','clients','stocks','fournisseurs','factures','depenses','bons_livraison','reglements'];
+  await Promise.all(tables.map(async t=>{
+    try{DB[t]=await sbSelect(t);}catch(e){DB[t]=DB[t]||[];}
+  }));
+  save(); refreshAll();
+}
+
+async function createTables(){
+  toast('Création des tables en cours…');
+  const sqls=getSQLInit().split(';').map(s=>s.trim()).filter(s=>s.length>10);
+  let ok=true;
+  for(const sql of sqls){
+    try{
+      const r=await fetch(`${SB_URL}/rest/v1/rpc/exec_sql`,{
+        method:'POST',headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json'},
+        body:JSON.stringify({sql})
+      });
+    }catch(e){ok=false;}
+  }
+  // Try direct table creation via Supabase SQL editor workaround
+  toast('Tables créées. Veuillez vérifier dans Supabase → Table Editor.','success');
+  document.getElementById('sql-block').style.display='';
+  document.getElementById('sql-txt').value=getSQLInit();
+}
+
+async function seedDemo(){
+  if(!connected){toast('Connectez d\'abord la base de données','error');return;}
+  toast('Chargement des données démo…');
+  try{
+    // Departments
+    const depts=[
+      {nom:'Commercial',sous_departement:'Projets'},
+      {nom:'Commercial',sous_departement:'Vente Locale'},
+      {nom:'Approvisionnement',sous_departement:'Achat Local'},
+      {nom:'Approvisionnement',sous_departement:'Importation'},
+      {nom:'Production',sous_departement:'Atelier'},
+      {nom:'Production',sous_departement:'Polissage'},
+      {nom:'Production',sous_departement:'Sciage'},
+      {nom:'Manutention',sous_departement:'Mobile'},
+      {nom:'Manutention',sous_departement:'Statique (Pont)'},
+      {nom:'Comptabilité',sous_departement:'Comptabilité'},
+      {nom:'Sécurité & Gardiennage',sous_departement:'Sécurité'},
+    ];
+    for(const d of depts) try{await sbReq('POST','departements',d);}catch(e){}
+
+    const emps=[
+      {nom:'Chekir Redouane',poste:'Commercial 01',departement:'Commercial',sous_departement:'Projets',tache:'Suivi des projets',statut:'Actif'},
+      {nom:'Moussa',poste:'Métreur',departement:'Commercial',sous_departement:'Vente Locale',tache:'Mesures client & bon de marchandise',statut:'Actif'},
+      {nom:'Azzedine / Ahmed',poste:'Caissier',departement:'Commercial',sous_departement:'Vente Locale',tache:'Caisse',statut:'Actif'},
+      {nom:'Ibrahim',poste:'Opérateur 01',departement:'Production',sous_departement:'Atelier',tache:'Exécution',statut:'Actif'},
+      {nom:'Mohamed',poste:'Opérateur 02',departement:'Production',sous_departement:'Atelier',tache:'Exécution',statut:'Actif'},
+      {nom:'Abdelghani',poste:'Technicien 01',departement:'Production',sous_departement:'Polissage',tache:'Suivi chaîne de polissage',statut:'Actif'},
+      {nom:'Farouk',poste:'Machiniste 01',departement:'Production',sous_departement:'Polissage',tache:'Exécution',statut:'Actif'},
+      {nom:'Soukou',poste:'Machiniste 02',departement:'Production',sous_departement:'Polissage',tache:'Exécution',statut:'Actif'},
+      {nom:'Poste vacant',poste:'Technicien 01',departement:'Production',sous_departement:'Sciage',tache:'Suivi du sciage',statut:'Vacant'},
+      {nom:'Poste vacant',poste:'Opérateur 01',departement:'Production',sous_departement:'Sciage',tache:'Exécution',statut:'Vacant'},
+      {nom:'Redouane',poste:'Conducteur 01',departement:'Manutention',sous_departement:'Mobile',tache:"Conduite d'engin",statut:'Actif'},
+      {nom:'Comptable Redouane',poste:'Sous-traitant 01',departement:'Comptabilité',sous_departement:'Comptabilité',tache:'Comptabilité',statut:'Actif'},
+    ];
+    for(const e of emps) try{await sbReq('POST','employes',e);}catch(e){}
+    toast('Données démo chargées ✓','success');
+    await loadAll();
+  }catch(e){toast('Erreur: '+e.message,'error');}
+}
+
+function getSQLInit(){
+return `CREATE TABLE IF NOT EXISTS employes (
+  id BIGSERIAL PRIMARY KEY,
+  nom TEXT, poste TEXT, departement TEXT,
+  sous_departement TEXT, tache TEXT, statut TEXT DEFAULT 'Actif',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE TABLE IF NOT EXISTS departements (
+  id BIGSERIAL PRIMARY KEY,
+  nom TEXT, sous_departement TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE TABLE IF NOT EXISTS clients (
+  id BIGSERIAL PRIMARY KEY,
+  nom TEXT, telephone TEXT, adresse TEXT, type TEXT DEFAULT 'Particulier',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE TABLE IF NOT EXISTS commandes (
+  id BIGSERIAL PRIMARY KEY,
+  reference TEXT, client TEXT, produit TEXT,
+  quantite NUMERIC, montant NUMERIC, date_commande DATE,
+  statut TEXT DEFAULT 'En attente',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE TABLE IF NOT EXISTS stocks (
+  id BIGSERIAL PRIMARY KEY,
+  reference TEXT, materiau TEXT, quantite NUMERIC,
+  unite TEXT, origine TEXT, seuil_alerte NUMERIC DEFAULT 10,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE TABLE IF NOT EXISTS fournisseurs (
+  id BIGSERIAL PRIMARY KEY,
+  nom TEXT, pays TEXT, contact TEXT, type TEXT DEFAULT 'Local',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE TABLE IF NOT EXISTS factures (
+  id BIGSERIAL PRIMARY KEY,
+  numero TEXT, client TEXT, montant NUMERIC,
+  date_facture DATE, statut TEXT DEFAULT 'En attente',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE TABLE IF NOT EXISTS depenses (
+  id BIGSERIAL PRIMARY KEY,
+  description TEXT, categorie TEXT, montant NUMERIC, date_depense DATE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+)`;
+}
+
+/* ─── NAVIGATION ─── */
+function nav(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  const ni=document.getElementById('nav-'+page);
+  if(ni) ni.classList.add('active');
+  if(connected) loadAll();
+  else refreshAll();
+}
+
+/* ─── RENDER ─── */
+function statusTag(s){
+  const m={
+    'Actif':'tag-green','Vacant':'tag-red','En attente':'tag-amber',
+    'En cours':'tag-blue','Terminée':'tag-green','Livrée':'tag-green',
+    'Annulée':'tag-red','Payée':'tag-green','Impayée':'tag-red','Local':'tag-blue','Import':'tag-amber'
+  };
+  return `<span class="tag ${m[s]||'tag-gray'}">${s}</span>`;
+}
+
+function refreshAll(){
+  renderEmp(); renderDept(); renderCmd(); renderClient();
+  renderStk(); renderFour(); renderFact(); renderDep();
+  renderDashboard(); updateDeptFilter();
+}
+
+function renderTable(tbodyId,rows,emptyMsg='Aucune donnée'){
+  const tb=document.getElementById(tbodyId);
+  if(!tb) return;
+  if(!rows||rows.length===0){
+    tb.innerHTML=`<tr class="empty-row"><td colspan="20">${connected?emptyMsg:'Mode local — connectez Supabase pour synchroniser'}</td></tr>`;
+    return;
+  }
+  tb.innerHTML=rows.join('');
+}
+
+function filterTable(key,q='',filter=''){
+  const map={
+    emp:{fn:renderEmp},dept:{fn:renderDept},cmd:{fn:renderCmd},
+    client:{fn:renderClient},stk:{fn:renderStk},four:{fn:renderFour},
+    fact:{fn:renderFact},dep:{fn:renderDep}
+  };
+  if(map[key]) map[key].fn(q.toLowerCase(),filter);
+}
+
+function renderEmp(q='',dept=''){
+  let data=DB.employes.filter(e=>{
+    const m=!q||(e.nom||'').toLowerCase().includes(q)||(e.poste||'').toLowerCase().includes(q)||(e.tache||'').toLowerCase().includes(q);
+    const d=!dept||e.departement===dept;
+    return m&&d;
+  });
+  renderTable('tbl-emp',data.map(e=>`<tr>
+    <td><strong>${e.nom||'—'}</strong></td>
+    <td>${e.poste||'—'}</td>
+    <td>${e.departement||'—'}</td>
+    <td><span style="font-size:.75rem;color:var(--text3)">${e.sous_departement||'—'}</span></td>
+    <td style="font-size:.75rem;color:var(--text2)">${e.tache||'—'}</td>
+    <td>${statusTag(e.statut||'Actif')}</td>
+    <td><div class="action-btns">
+      <div class="icon-btn" onclick="editRow('employes',${e.id})">✎</div>
+      <div class="icon-btn del" onclick="delRow('employes',${e.id})">✕</div>
+    </div></td></tr>`));
+}
+
+function renderDept(q=''){
+  let data=DB.departements.filter(d=>!q||(d.nom||'').toLowerCase().includes(q)||(d.sous_departement||'').toLowerCase().includes(q));
+  const counts={};
+  DB.employes.forEach(e=>{const k=(e.departement||'')+'__'+(e.sous_departement||'');counts[k]=(counts[k]||0)+1;});
+  renderTable('tbl-dept',data.map(d=>{
+    const c=counts[(d.nom||'')+'__'+(d.sous_departement||'')]||0;
+    return `<tr>
+      <td><strong>${d.nom||'—'}</strong></td>
+      <td>${d.sous_departement||'—'}</td>
+      <td><span class="tag tag-blue">${c} eff.</span></td>
+      <td><div class="action-btns">
+        <div class="icon-btn" onclick="editRow('departements',${d.id})">✎</div>
+        <div class="icon-btn del" onclick="delRow('departements',${d.id})">✕</div>
+      </div></td></tr>`;
+  }));
+}
+
+function renderCmd(q='',filter=''){
+  let data=DB.commandes.filter(c=>{
+    const m=!q||(c.client||'').toLowerCase().includes(q)||(c.reference||'').toLowerCase().includes(q)||(c.produit||'').toLowerCase().includes(q);
+    const f=!filter||c.statut===filter;
+    return m&&f;
+  });
+  renderTable('tbl-cmd',data.map(c=>`<tr>
+    <td><code style="font-size:.72rem">${c.reference||'—'}</code></td>
+    <td>${c.client||'—'}</td><td>${c.produit||'—'}</td>
+    <td>${c.quantite||0}</td>
+    <td style="color:var(--gold)">${(c.montant||0).toLocaleString()} DZD</td>
+    <td style="font-size:.75rem;color:var(--text3)">${c.date_commande||'—'}</td>
+    <td>${statusTag(c.statut||'En attente')}</td>
+    <td><div class="action-btns">
+      <div class="icon-btn" onclick="editRow('commandes',${c.id})">✎</div>
+      <div class="icon-btn del" onclick="delRow('commandes',${c.id})">✕</div>
+    </div></td></tr>`));
+}
+
+/* ═══════════════════════════════════════════════
+   MODULE CLIENTS — CRUD COMPLET
+═══════════════════════════════════════════════ */
+
+let clEditId = null;
+
+function openClientModal(data = null) {
+  clEditId = data ? data.id : null;
+  const isEdit = !!data;
+  document.getElementById('cl-modal-title').textContent = isEdit ? '✎ Modifier le client' : '+ Nouveau client';
+  document.getElementById('cl-modal-sub').textContent = isEdit ? `Modification de ${data.nom}` : 'Remplissez les informations du client';
+  document.getElementById('cl-save-btn').textContent = isEdit ? '💾 Mettre à jour' : '💾 Enregistrer';
+  // Remplir les champs
+  document.getElementById('cl-nom').value       = data ? (data.nom || '') : '';
+  document.getElementById('cl-type').value      = data ? (data.type || 'Particulier') : 'Particulier';
+  document.getElementById('cl-telephone').value = data ? (data.telephone || '') : '';
+  document.getElementById('cl-numero').value    = data ? (data.numero || '') : '';
+  document.getElementById('cl-adresse').value   = data ? (data.adresse || '') : '';
+  document.getElementById('cl-solde').value     = data ? (data.solde_depart || 0) : 0;
+  document.getElementById('cl-notes').value     = data ? (data.notes || '') : '';
+  const overlay = document.getElementById('client-modal-overlay');
+  overlay.style.display = 'flex';
+  setTimeout(() => document.getElementById('cl-nom').focus(), 100);
+}
+
+function closeClientModal(e) {
+  if (e && e.target !== document.getElementById('client-modal-overlay')) return;
+  document.getElementById('client-modal-overlay').style.display = 'none';
+  clEditId = null;
+}
+
+async function saveClient() {
+  const nom = document.getElementById('cl-nom').value.trim();
+  if (!nom) { toast('Le nom est obligatoire', 'error'); document.getElementById('cl-nom').focus(); return; }
+
+  const body = {
+    nom,
+    type:         document.getElementById('cl-type').value,
+    telephone:    document.getElementById('cl-telephone').value.trim(),
+    numero:       document.getElementById('cl-numero').value.trim() || null,
+    adresse:      document.getElementById('cl-adresse').value.trim(),
+    solde_depart: parseFloat(document.getElementById('cl-solde').value) || 0,
+    notes:        document.getElementById('cl-notes').value.trim()
+  };
+
+  const btn = document.getElementById('cl-save-btn');
+  btn.textContent = '⏳ Enregistrement…'; btn.disabled = true;
+
+  try {
+    if (connected) {
+      if (clEditId) await sbReq('PATCH', 'clients', body, clEditId);
+      else          await sbReq('POST',  'clients', body);
+      await loadAll();
+      toast((clEditId ? 'Client mis à jour ✓' : 'Client ajouté ✓'), 'success');
+    } else {
+      if (clEditId) {
+        const idx = DB.clients.findIndex(r => r.id === clEditId);
+        if (idx > -1) DB.clients[idx] = { ...DB.clients[idx], ...body };
+      } else {
+        DB.clients.push({ id: Date.now(), ...body, created_at: new Date().toISOString() });
+      }
+      save(); refreshAll();
+      toast((clEditId ? 'Client mis à jour ✓' : 'Client ajouté ✓'), 'success');
+    }
+    document.getElementById('client-modal-overlay').style.display = 'none';
+    clEditId = null;
+  } catch(e) {
+    toast('Erreur : ' + e.message, 'error');
+  } finally {
+    btn.textContent = '💾 Enregistrer'; btn.disabled = false;
+  }
+}
+
+async function deleteClient(id) {
+  const client = DB.clients.find(c => c.id === id);
+  if (!client) return;
+  if (!confirm(`Supprimer le client "${client.nom}" ?\n\nCette action est irréversible.`)) return;
+  try {
+    if (connected) { await sbDelete('clients', id); await loadAll(); }
+    else           { DB.clients = DB.clients.filter(c => c.id !== id); save(); refreshAll(); }
+    toast('Client supprimé', 'success');
+  } catch(e) { toast('Erreur suppression : ' + e.message, 'error'); }
+}
+
+function viewClientDetail(id) {
+  const c = DB.clients.find(cl => cl.id === id);
+  if (!c) return;
+  document.getElementById('cl-detail-nom').textContent  = c.nom || '—';
+  document.getElementById('cl-detail-meta').textContent = `${c.type || 'Particulier'} · ${c.numero ? 'N°' + c.numero : 'Sans numéro'} · Ajouté le ${c.created_at ? new Date(c.created_at).toLocaleDateString('fr-DZ') : '—'}`;
+  document.getElementById('cl-detail-edit-btn').onclick = () => { closeClientDetail(); openClientModal(c); };
+
+  // Calculer les stats du client
+  const bons  = (DB.bons_livraison || DB.commandes || []).filter(b => (b.client || '').toLowerCase() === (c.nom || '').toLowerCase());
+  const facts  = (DB.factures || []).filter(f => (f.client || '').toLowerCase() === (c.nom || '').toLowerCase());
+  const regs   = (DB.reglements || []).filter(r => (r.client || '').toLowerCase() === (c.nom || '').toLowerCase());
+  const totalAchats = facts.reduce((a, f) => a + (f.montant || 0), 0);
+  const totalPaye   = regs.reduce((a, r) => a + (r.versement || 0), 0);
+  const soldeActuel = (c.solde_depart || 0) + totalAchats - totalPaye;
+
+  document.getElementById('cl-detail-body').innerHTML = `
+    <div style="grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:.5rem">
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r8);padding:.8rem 1rem">
+        <div style="font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.3rem">Total achats</div>
+        <div style="font-size:1.1rem;font-weight:700;color:var(--gold)">${totalAchats.toLocaleString()} DZD</div>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r8);padding:.8rem 1rem">
+        <div style="font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.3rem">Total versé</div>
+        <div style="font-size:1.1rem;font-weight:700;color:var(--green)">${totalPaye.toLocaleString()} DZD</div>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r8);padding:.8rem 1rem">
+        <div style="font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.3rem">Solde actuel</div>
+        <div style="font-size:1.1rem;font-weight:700;color:${soldeActuel>0?'var(--red)':'var(--green)'}">${soldeActuel.toLocaleString()} DZD</div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.6rem">Informations</div>
+      ${infoRow('📞 Téléphone', c.telephone || '—')}
+      ${infoRow('📍 Adresse', c.adresse || '—')}
+      ${infoRow('🏷 Type', c.type || 'Particulier')}
+      ${infoRow('💰 Solde départ', (c.solde_depart||0).toLocaleString() + ' DZD')}
+    </div>
+    <div>
+      <div style="font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.6rem">Activité</div>
+      ${infoRow('🧾 Factures', facts.length + ' facture(s)')}
+      ${infoRow('📋 Bons livraison', bons.length + ' bon(s)')}
+      ${infoRow('💳 Règlements', regs.length + ' règlement(s)')}
+      ${c.notes ? infoRow('📝 Notes', c.notes) : ''}
+    </div>
+  `;
+  const overlay = document.getElementById('client-detail-overlay');
+  overlay.style.display = 'flex';
+}
+
+function infoRow(label, value) {
+  return `<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:.4rem 0;border-bottom:1px solid var(--border);gap:.5rem">
+    <span style="font-size:.75rem;color:var(--text3);white-space:nowrap">${label}</span>
+    <span style="font-size:.78rem;color:var(--text);text-align:right">${value}</span>
+  </div>`;
+}
+
+function closeClientDetail(e) {
+  if (e && e.target !== document.getElementById('client-detail-overlay')) return;
+  document.getElementById('client-detail-overlay').style.display = 'none';
+}
+
+function exportClients() {
+  const data = DB.clients;
+  if (!data.length) { toast('Aucun client à exporter', 'error'); return; }
+  const headers = ['N°', 'Nom', 'Type', 'Téléphone', 'Adresse', 'Solde départ', 'Date ajout'];
+  const rows = data.map((c, i) => [
+    i+1, c.nom||'', c.type||'', c.telephone||'', c.adresse||'',
+    c.solde_depart||0,
+    c.created_at ? new Date(c.created_at).toLocaleDateString('fr-DZ') : ''
+  ]);
+  const csv = [headers, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+csv], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `clients_perla_${new Date().toISOString().slice(0,10)}.csv`; a.click();
+  toast('Export CSV téléchargé ✓', 'success');
+}
+
+function updateClientsKPI() {
+  const cl = DB.clients || [];
+  document.getElementById('kpi-cl-total').textContent = cl.length;
+  document.getElementById('kpi-cl-ent').textContent = cl.filter(c => c.type === 'Entreprise').length;
+  const creances = cl.reduce((a, c) => a + (c.solde_depart || 0), 0);
+  document.getElementById('kpi-cl-creance').textContent = creances.toLocaleString() + ' DZD';
+  const thisMonth = new Date(); thisMonth.setDate(1); thisMonth.setHours(0,0,0,0);
+  const newCl = cl.filter(c => c.created_at && new Date(c.created_at) >= thisMonth).length;
+  document.getElementById('kpi-cl-new').textContent = newCl;
+}
+
+function editClientById(id) {
+  const c = DB.clients.find(cl => cl.id === id);
+  if (c) openClientModal(c);
+}
+
+function renderClient(q = '') {
+  const typeFilter = (document.getElementById('cl-filter-type') || {}).value || '';
+  const sortVal    = (document.getElementById('cl-filter-sort') || {}).value || 'nom';
+  const search     = (q || '').toLowerCase();
+
+  let data = (DB.clients || []).filter(c => {
+    const matchQ    = !search ||
+      (c.nom       || '').toLowerCase().includes(search) ||
+      (c.telephone || '').toLowerCase().includes(search) ||
+      (c.adresse   || '').toLowerCase().includes(search) ||
+      (c.numero    || '').toLowerCase().includes(search);
+    const matchType = !typeFilter || (c.type || '') === typeFilter;
+    return matchQ && matchType;
+  });
+
+  // Tri
+  data = [...data].sort((a, b) => {
+    if (sortVal === 'nom')       return (a.nom||'').localeCompare(b.nom||'');
+    if (sortVal === 'nom_desc')  return (b.nom||'').localeCompare(a.nom||'');
+    if (sortVal === 'solde')     return (b.solde_depart||0) - (a.solde_depart||0);
+    if (sortVal === 'recent')    return new Date(b.created_at||0) - new Date(a.created_at||0);
+    return 0;
+  });
+
+  // Compteur
+  const cnt = document.getElementById('cl-count');
+  if (cnt) cnt.textContent = `${data.length} client${data.length !== 1 ? 's' : ''}`;
+
+  const tbody  = document.getElementById('tbl-client');
+  const empty  = document.getElementById('cl-empty');
+
+  if (!data.length) {
+    tbody.innerHTML = '';
+    if (empty) empty.style.display = '';
+    updateClientsKPI();
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+
+  const typeColors = { Particulier: 'var(--text2)', Entreprise: 'var(--gold)', Projet: 'var(--blue)' };
+
+  tbody.innerHTML = data.map((c, i) => `
+    <tr style="cursor:pointer" onmouseenter="this.style.background='var(--bg3)'" onmouseleave="this.style.background=''">
+      <td style="color:var(--text3);font-size:.72rem">${i + 1}</td>
+      <td onclick="viewClientDetail(${c.id})">
+        <div style="font-weight:600;color:var(--text)">${c.nom || '—'}</div>
+        ${c.numero ? `<div style="font-size:.7rem;color:var(--text3)">N° ${c.numero}</div>` : ''}
+      </td>
+      <td onclick="viewClientDetail(${c.id})" style="color:var(--text2);font-size:.8rem">${c.telephone || '—'}</td>
+      <td onclick="viewClientDetail(${c.id})" style="font-size:.78rem;color:var(--text2);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.adresse || '—'}</td>
+      <td onclick="viewClientDetail(${c.id})">
+        <span style="font-size:.72rem;padding:.2rem .6rem;border-radius:20px;border:1px solid var(--border2);color:${typeColors[c.type] || 'var(--text2)'}">
+          ${c.type || 'Particulier'}
+        </span>
+      </td>
+      <td onclick="viewClientDetail(${c.id})" style="text-align:right;font-weight:600;color:${(c.solde_depart||0)>0?'var(--red)':'var(--text2)'}">
+        ${(c.solde_depart || 0).toLocaleString()} <span style="font-size:.65rem;font-weight:400">DZD</span>
+      </td>
+      <td>
+        <div class="action-btns">
+          <div class="icon-btn" title="Voir fiche" onclick="viewClientDetail(${c.id})">👁</div>
+          <div class="icon-btn" title="Modifier" onclick="editClientById(${c.id})">✎</div>
+          <div class="icon-btn del" title="Supprimer" onclick="deleteClient(${c.id})">✕</div>
+        </div>
+      </td>
+    </tr>`).join('');
+
+  updateClientsKPI();
+}
+
+function renderStk(q=''){
+  let data=DB.stocks.filter(s=>!q||(s.materiau||'').toLowerCase().includes(q)||(s.reference||'').toLowerCase().includes(q));
+  renderTable('tbl-stk',data.map(s=>{
+    const low=(s.quantite||0)<=(s.seuil_alerte||10);
+    return `<tr>
+      <td><code style="font-size:.72rem">${s.reference||'—'}</code></td>
+      <td>${s.materiau||'—'}</td>
+      <td style="color:${low?'var(--red)':'var(--gold)'};font-weight:600">${s.quantite||0}</td>
+      <td>${s.unite||'—'}</td><td>${s.origine||'—'}</td>
+      <td>${s.seuil_alerte||10}</td>
+      <td>${statusTag(low?'En attente':'Actif')}</td>
+      <td><div class="action-btns">
+        <div class="icon-btn" onclick="editRow('stocks',${s.id})">✎</div>
+        <div class="icon-btn del" onclick="delRow('stocks',${s.id})">✕</div>
+      </div></td></tr>`;
+  }));
+}
+
+function renderFour(q=''){
+  let data=DB.fournisseurs.filter(f=>!q||(f.nom||'').toLowerCase().includes(q));
+  renderTable('tbl-four',data.map(f=>`<tr>
+    <td><strong>${f.nom||'—'}</strong></td>
+    <td>${f.pays||'—'}</td><td>${f.contact||'—'}</td>
+    <td>${statusTag(f.type||'Local')}</td>
+    <td><div class="action-btns">
+      <div class="icon-btn" onclick="editRow('fournisseurs',${f.id})">✎</div>
+      <div class="icon-btn del" onclick="delRow('fournisseurs',${f.id})">✕</div>
+    </div></td></tr>`));
+}
+
+function renderFact(q=''){
+  let data=DB.factures.filter(f=>!q||(f.client||'').toLowerCase().includes(q)||(f.numero||'').toLowerCase().includes(q));
+  renderTable('tbl-fact',data.map(f=>`<tr>
+    <td><code style="font-size:.72rem">${f.numero||'—'}</code></td>
+    <td>${f.client||'—'}</td>
+    <td style="color:var(--gold);font-weight:600">${(f.montant||0).toLocaleString()} DZD</td>
+    <td style="font-size:.75rem;color:var(--text3)">${f.date_facture||'—'}</td>
+    <td>${statusTag(f.statut||'En attente')}</td>
+    <td><div class="action-btns">
+      <div class="icon-btn" onclick="editRow('factures',${f.id})">✎</div>
+      <div class="icon-btn del" onclick="delRow('factures',${f.id})">✕</div>
+    </div></td></tr>`));
+}
+
+function renderDep(q=''){
+  let data=DB.depenses.filter(d=>!q||(d.description||'').toLowerCase().includes(q)||(d.categorie||'').toLowerCase().includes(q));
+  renderTable('tbl-dep',data.map(d=>`<tr>
+    <td>${d.description||'—'}</td>
+    <td><span class="tag tag-amber">${d.categorie||'—'}</span></td>
+    <td style="color:var(--red);font-weight:600">${(d.montant||0).toLocaleString()} DZD</td>
+    <td style="font-size:.75rem;color:var(--text3)">${d.date_depense||'—'}</td>
+    <td><div class="action-btns">
+      <div class="icon-btn" onclick="editRow('depenses',${d.id})">✎</div>
+      <div class="icon-btn del" onclick="delRow('depenses',${d.id})">✕</div>
+    </div></td></tr>`));
+}
+
+function updateDeptFilter(){
+  const sel=document.getElementById('filter-emp-dept');
+  if(!sel) return;
+  const depts=[...new Set(DB.employes.map(e=>e.departement).filter(Boolean))];
+  sel.innerHTML='<option value="">Tous départements</option>'+depts.map(d=>`<option>${d}</option>`).join('');
+}
+
+function renderDashboard(){
+  const actifs=DB.employes.filter(e=>e.statut==='Actif').length;
+  const ca=DB.factures.filter(f=>f.statut==='Payée').reduce((a,f)=>a+(f.montant||0),0);
+  document.getElementById('kpi-emp').textContent=actifs||DB.employes.length||'0';
+  document.getElementById('kpi-cmd').textContent=DB.commandes.length||'0';
+  document.getElementById('kpi-stk').textContent=DB.stocks.length||'0';
+  document.getElementById('kpi-ca').textContent=(ca||0).toLocaleString()+' DZD';
+
+  // Bar chart depts
+  const deptCounts={};
+  DB.employes.forEach(e=>{if(e.departement)deptCounts[e.departement]=(deptCounts[e.departement]||0)+1;});
+  const maxC=Math.max(...Object.values(deptCounts),1);
+  document.getElementById('chart-dept').innerHTML=Object.entries(deptCounts).slice(0,6).map(([d,c])=>`
+    <div class="bar-row">
+      <div class="bar-label">${d.length>12?d.slice(0,12)+'…':d}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(c/maxC*100)}%"></div></div>
+      <div class="bar-val">${c}</div>
+    </div>`).join('')||'<div style="font-size:.78rem;color:var(--text3);padding:.5rem">Aucune donnée</div>';
+
+  // Pie chart commandes
+  const statuts={};
+  DB.commandes.forEach(c=>{statuts[c.statut||'En attente']=(statuts[c.statut||'En attente']||0)+1;});
+  const colors=['#c9a84c','#3a9060','#3a70c0','#c08030','#c04840'];
+  const total=DB.commandes.length||1;
+  const canvas=document.getElementById('chart-commandes');
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,200,200);
+  let angle=-Math.PI/2;
+  const entries=Object.entries(statuts);
+  entries.forEach(([s,n],i)=>{
+    const slice=(n/total)*2*Math.PI;
+    ctx.beginPath();ctx.moveTo(100,100);
+    ctx.arc(100,100,80,angle,angle+slice);
+    ctx.closePath();ctx.fillStyle=colors[i%colors.length];ctx.fill();
+    angle+=slice;
+  });
+  if(entries.length===0){ctx.beginPath();ctx.arc(100,100,80,0,2*Math.PI);ctx.fillStyle='#25252c';ctx.fill();}
+  ctx.beginPath();ctx.arc(100,100,45,0,2*Math.PI);ctx.fillStyle='#121214';ctx.fill();
+  ctx.fillStyle='#e2ddd0';ctx.font='500 13px Segoe UI';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(DB.commandes.length,100,97);ctx.font='400 10px Segoe UI';ctx.fillStyle='#5a5450';ctx.fillText('total',100,112);
+  document.getElementById('pie-legend').innerHTML=entries.map(([s,n],i)=>`
+    <div class="pie-item"><div class="pie-dot" style="background:${colors[i%colors.length]}"></div>${s}: ${n}</div>`).join('');
+
+  // Recent orders
+  const recent=DB.commandes.slice(-5).reverse();
+  document.getElementById('dash-recent').innerHTML=recent.length?recent.map(c=>`<tr>
+    <td><code style="font-size:.72rem">${c.reference||'—'}</code></td>
+    <td>${c.client||'—'}</td>
+    <td style="font-size:.75rem;color:var(--text3)">${c.date_commande||'—'}</td>
+    <td style="color:var(--gold)">${(c.montant||0).toLocaleString()} DZD</td>
+    <td>${statusTag(c.statut||'En attente')}</td></tr>`).join(''):
+    `<tr class="empty-row"><td colspan="5">Aucune commande</td></tr>`;
+}
+
+/* ─── MODAL FORMS ─── */
+const FORMS={
+  emp:{title:'Employé',table:'employes',fields:[
+    {k:'nom',l:'Nom complet',t:'text'},{k:'poste',l:'Poste',t:'text'},
+    {k:'departement',l:'Département',t:'text'},{k:'sous_departement',l:'Sous-département',t:'text'},
+    {k:'tache',l:'Tâche',t:'text'},{k:'statut',l:'Statut',t:'select',opts:['Actif','Vacant','Congé']}
+  ]},
+  dept:{title:'Département',table:'departements',fields:[
+    {k:'nom',l:'Département',t:'text'},{k:'sous_departement',l:'Sous-département',t:'text'}
+  ]},
+  cmd:{title:'Commande',table:'commandes',fields:[
+    {k:'reference',l:'Référence',t:'text'},{k:'client',l:'Client',t:'text'},
+    {k:'produit',l:'Produit / Description',t:'text'},
+    {k:'quantite',l:'Quantité',t:'number'},{k:'montant',l:'Montant (DZD)',t:'number'},
+    {k:'date_commande',l:'Date',t:'date'},
+    {k:'statut',l:'Statut',t:'select',opts:['En attente','En cours','Terminée','Livrée','Annulée']}
+  ]},
+  client:{title:'Client',table:'clients',fields:[
+    {k:'nom',l:'Nom',t:'text'},{k:'telephone',l:'Téléphone',t:'text'},
+    {k:'adresse',l:'Adresse',t:'text'},
+    {k:'solde_depart',l:'Solde départ',t:'number'},
+    {k:'type',l:'Type',t:'select',opts:['Particulier','Entreprise','Projet']}
+  ]},
+  stk:{title:'Stock',table:'stocks',fields:[
+    {k:'reference',l:'Référence',t:'text'},{k:'materiau',l:'Matériau',t:'text'},
+    {k:'quantite',l:'Quantité',t:'number'},{k:'unite',l:'Unité',t:'text'},
+    {k:'origine',l:'Origine',t:'text'},{k:'seuil_alerte',l:'Seuil alerte',t:'number'}
+  ]},
+  four:{title:'Fournisseur',table:'fournisseurs',fields:[
+    {k:'nom',l:'Nom',t:'text'},{k:'pays',l:'Pays',t:'text'},
+    {k:'contact',l:'Contact',t:'text'},
+    {k:'type',l:'Type',t:'select',opts:['Local','Import','Les deux']}
+  ]},
+  fact:{title:'Facture',table:'factures',fields:[
+    {k:'numero',l:'N° Facture',t:'text'},{k:'client',l:'Client',t:'text'},
+    {k:'montant',l:'Montant (DZD)',t:'number'},{k:'date_facture',l:'Date',t:'date'},
+    {k:'statut',l:'Statut',t:'select',opts:['En attente','Payée','Impayée','Annulée']}
+  ]},
+  dep:{title:'Dépense',table:'depenses',fields:[
+    {k:'description',l:'Description',t:'text'},{k:'categorie',l:'Catégorie',t:'text'},
+    {k:'montant',l:'Montant (DZD)',t:'number'},{k:'date_depense',l:'Date',t:'date'}
+  ]}
+};
+
+let currentForm=null;
+function openModal(key,data=null){
+  const f=FORMS[key]; if(!f) return;
+  currentForm=key; editId=data?data.id:null;
+  document.getElementById('modal-title').textContent=(data?'Modifier ':'Ajouter ')+f.title;
+  const pairs=[];
+  for(let i=0;i<f.fields.length;i+=2) pairs.push(f.fields.slice(i,i+2));
+  document.getElementById('modal-body').innerHTML=pairs.map(pair=>`
+    <div class="form-row">${pair.map(fi=>`
+      <div class="form-group">
+        <label class="form-label">${fi.l}</label>
+        ${fi.t==='select'
+          ?`<select class="form-inp" id="fi-${fi.k}">${fi.opts.map(o=>`<option${data&&data[fi.k]===o?' selected':''}>${o}</option>`).join('')}</select>`
+          :`<input class="form-inp" type="${fi.t}" id="fi-${fi.k}" placeholder="${fi.l}" value="${data?data[fi.k]||'':''}">`
+        }
+      </div>`).join('')}
+    </div>`).join('');
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal(e){
+  if(e&&e.target!==document.getElementById('modal-overlay')) return;
+  document.getElementById('modal-overlay').classList.remove('open');
+  currentForm=null; editId=null;
+}
+
+async function saveModal(){
+  if(!currentForm) return;
+  const f=FORMS[currentForm];
+  const body={};
+  f.fields.forEach(fi=>{
+    const el=document.getElementById('fi-'+fi.k);
+    if(el) body[fi.k]=fi.t==='number'?parseFloat(el.value)||0:el.value;
+  });
+  if(connected){
+    try{
+      if(editId) await sbReq('PATCH',f.table,body,editId);
+      else await sbReq('POST',f.table,body);
+      toast('Enregistré ✓','success');
+      closeModal();
+      await loadAll();
+    }catch(e){toast('Erreur: '+e.message,'error');}
+  } else {
+    // Local mode
+    if(editId){
+      const idx=DB[f.table].findIndex(r=>r.id===editId);
+      if(idx>-1) DB[f.table][idx]={...DB[f.table][idx],...body};
+    } else {
+      const newId=Date.now();
+      DB[f.table].push({id:newId,...body});
+    }
+    save(); refreshAll();
+    toast('Enregistré localement ✓','success');
+    closeModal();
+  }
+}
+
+function editRow(table,id){
+  const tableMap={employes:'emp',departements:'dept',commandes:'cmd',clients:'client',stocks:'stk',fournisseurs:'four',factures:'fact',depenses:'dep'};
+  const data=DB[table].find(r=>r.id===id);
+  if(data) openModal(tableMap[table],data);
+}
+
+async function delRow(table,id){
+  if(!confirm('Supprimer cet enregistrement ?')) return;
+  if(connected){
+    try{await sbDelete(table,id);toast('Supprimé','success');await loadAll();}
+    catch(e){toast('Erreur','error');}
+  } else {
+    DB[table]=DB[table].filter(r=>r.id!==id);
+    save(); refreshAll(); toast('Supprimé','success');
+  }
+}
+
+/* ─── TOAST ─── */
+function toast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast'+(type?' '+type:'');
+  t.classList.add('show');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+/* ─── INIT ─── */
+load();
+refreshAll();
+
+// Keyboard: Enter pour sauvegarder le modal client
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeClientModal();
+    closeClientDetail();
+  }
+  if (e.key === 'Enter' && document.getElementById('client-modal-overlay').style.display === 'flex') {
+    const active = document.activeElement;
+    if (active && active.tagName !== 'BUTTON') saveClient();
+  }
+});
+</script>
+</body>
+</html>
