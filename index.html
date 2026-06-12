@@ -350,9 +350,9 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
     </div>
     <div style="display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border);flex-wrap:wrap">
       <button class="btn" onclick="closeBLModal()">Annuler</button>
-      <button class="btn" id="bl-detail-btn" onclick="openBLLignesModal()" style="display:none">📄 Détail Lignes</button>
+      <button class="btn" id="bl-detail-btn" onclick="openBLLignesModal()">📄 Détail Lignes</button>
       <button class="btn" id="bl-print-btn" onclick="printBL()" style="display:none">🖨 Imprimer BL</button>
-      <button class="btn btn-primary" id="bl-save-btn" onclick="saveBL()">💾 Enregistrer</button>
+      <button class="btn btn-primary" id="bl-save-btn" onclick="saveBL()" disabled style="opacity:.45;cursor:not-allowed" title="Ajoutez au moins une ligne avant d'enregistrer">💾 Enregistrer</button>
     </div>
   </div>
 </div>
@@ -1273,8 +1273,10 @@ function openBLModal(data=null){
   document.getElementById('bl-notes').value   = data ? (data.notes||'') : '';
   calcBLNet();
   // Boutons Détail et Imprimer visibles seulement si BL existant
-  document.getElementById('bl-detail-btn').style.display = isEdit ? '' : 'none';
+  document.getElementById('bl-detail-btn').style.display = '';
   document.getElementById('bl-print-btn').style.display  = isEdit ? '' : 'none';
+  // Enregistrer activé seulement si BL existant avec lignes, ou nouveau après ajout de lignes
+  updateBLSaveBtn(isEdit ? blEditId : null);
   document.getElementById('bl-modal-overlay').style.display='flex';
   setTimeout(()=>document.getElementById('bl-num').focus(),100);
 }
@@ -1347,6 +1349,7 @@ async function saveBL(){
     document.getElementById('bl-print-btn').style.display='';
     document.getElementById('bl-modal-title').textContent='✎ Modifier le Bon de Livraison';
     document.getElementById('bl-modal-sub').textContent=`BL N° ${numBL} — enregistré`;
+    updateBLSaveBtn(blEditId);
   }catch(e){ toast('Erreur: '+e.message,'error'); }
   finally{ btn.textContent='💾 Enregistrer'; btn.disabled=false; }
 }
@@ -1451,6 +1454,7 @@ async function addLigneBL(){
     ['ligne-long','ligne-larg','ligne-ep','ligne-qte','ligne-pu','ligne-montant'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
     document.getElementById('ligne-produit').value='';
     renderLignesBL();
+    updateBLSaveBtn(blLignesEditId);
     toast('Ligne ajoutée ✓','success');
   }catch(e){toast('Erreur: '+e.message,'error');}
 }
@@ -1491,11 +1495,23 @@ function renderLignesBL(){
   </tr>`).join('');
 }
 
+function updateBLSaveBtn(blId){
+  const lignes = (DB.lignes_bon_livraison||[]).filter(l=>l.num_bon===(blId||blEditId));
+  const btn = document.getElementById('bl-save-btn');
+  if(!btn) return;
+  const hasLignes = lignes.length > 0;
+  btn.disabled = !hasLignes;
+  btn.style.opacity = hasLignes ? '1' : '.45';
+  btn.style.cursor  = hasLignes ? 'pointer' : 'not-allowed';
+  btn.title = hasLignes ? '' : 'Ajoutez au moins une ligne avant d'enregistrer';
+}
+
 async function saveLignesBL(){
   toast('Lignes enregistrées ✓','success');
   if(connected) await loadAll();
   renderLignesBL();
   renderBL();
+  updateBLSaveBtn(blLignesEditId);
   document.getElementById('bl-lignes-overlay').style.display='none';
 }
 
