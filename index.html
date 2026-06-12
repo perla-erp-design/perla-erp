@@ -171,7 +171,7 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
   <div class="nav-item" onclick="nav('departements')" id="nav-departements"><span class="nav-icon">🏢</span> Départements</div>
 
   <div class="sidebar-section">Commercial</div>
-  <div class="nav-item" onclick="nav('commandes')" id="nav-commandes"><span class="nav-icon">📋</span> Commandes</div>
+  <div class="nav-item" onclick="nav('commandes')" id="nav-commandes"><span class="nav-icon">📋</span> Bons de Livraison</div>
   <div class="nav-item" onclick="nav('clients')" id="nav-clients"><span class="nav-icon">🤝</span> Clients</div>
 
   <div class="sidebar-section">Approvisionnement</div>
@@ -260,20 +260,194 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 <!-- COMMANDES -->
 <div class="page" id="page-commandes">
   <div class="page-header">
-    <div><div class="page-title">📋 Commandes</div><div class="page-sub">Suivi production & livraisons</div></div>
-    <div class="page-actions"><button class="btn btn-primary" onclick="openModal('cmd')">+ Nouvelle commande</button></div>
+    <div><div class="page-title">📋 Bons de Livraison</div><div class="page-sub">Gestion des bons de livraison clients</div></div>
+    <div class="page-actions">
+      <button class="btn" onclick="exportBL()">⬇ Exporter CSV</button>
+      <button class="btn btn-primary" onclick="openBLModal()">+ Nouveau BL</button>
+    </div>
   </div>
   <div class="page-body">
+    <!-- KPIs BL -->
+    <div class="kpi-grid" id="kpi-bl-grid">
+      <div class="kpi"><div class="kpi-label">Total BL</div><div class="kpi-val" id="kpi-bl-total">0</div><div class="kpi-sub">bons émis</div></div>
+      <div class="kpi"><div class="kpi-label">Montant Total</div><div class="kpi-val" id="kpi-bl-montant" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub">avant remise</div></div>
+      <div class="kpi"><div class="kpi-label">Remises</div><div class="kpi-val" id="kpi-bl-remise" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub">total accordé</div></div>
+      <div class="kpi"><div class="kpi-label">Net à percevoir</div><div class="kpi-val" id="kpi-bl-net" style="font-size:1.1rem;color:var(--gold)">0 DZD</div><div class="kpi-sub">montant net</div></div>
+    </div>
     <div class="table-wrap">
-      <div class="table-toolbar">
-        <input class="search-inp" placeholder="Rechercher…" oninput="filterTable('cmd',this.value)">
-        <select class="filter-sel" onchange="filterTable('cmd','',this.value)">
-          <option value="">Tous statuts</option>
-          <option>En attente</option><option>En cours</option><option>Terminée</option><option>Livrée</option><option>Annulée</option>
+      <div class="table-toolbar" style="flex-wrap:wrap;gap:.5rem">
+        <input class="search-inp" id="bl-search" placeholder="🔍 Rechercher par n° BL, client…" oninput="renderBL(this.value)" style="flex:1;min-width:200px">
+        <select class="filter-sel" id="bl-filter-client" onchange="renderBL(document.getElementById('bl-search').value)">
+          <option value="">Tous les clients</option>
+        </select>
+        <span id="bl-count" style="font-size:.75rem;color:var(--text3);margin-left:auto;align-self:center"></span>
+      </div>
+      <table>
+        <thead><tr>
+          <th>N° BL</th><th>Client</th><th>Date</th>
+          <th style="text-align:right">Montant</th>
+          <th style="text-align:right">Remise</th>
+          <th style="text-align:right">Net</th>
+          <th>Lignes</th>
+          <th style="text-align:center">Actions</th>
+        </tr></thead>
+        <tbody id="tbl-bl"></tbody>
+      </table>
+      <div id="bl-empty" style="display:none;text-align:center;padding:3rem;color:var(--text3)">
+        <div style="font-size:2.5rem;margin-bottom:.75rem">📋</div>
+        <div style="font-size:.9rem">Aucun bon de livraison</div>
+        <div style="font-size:.78rem;margin-top:.35rem">Cliquez sur "Nouveau BL" pour commencer</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NOUVEAU / MODIFIER BL -->
+<div id="bl-modal-overlay" onclick="closeBLModal(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;align-items:center;justify-content:center">
+  <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r16);width:100%;max-width:560px;max-height:92vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.6)">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.25rem;border-bottom:1px solid var(--border)">
+      <div>
+        <div id="bl-modal-title" style="font-size:.95rem;font-weight:600;color:var(--gold-l)">+ Nouveau Bon de Livraison</div>
+        <div id="bl-modal-sub" style="font-size:.75rem;color:var(--text3);margin-top:.2rem">Remplissez les informations du BL</div>
+      </div>
+      <button onclick="closeBLModal()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:1.2rem;padding:.2rem .4rem;border-radius:4px">✕</button>
+    </div>
+    <div style="padding:1.25rem;display:grid;gap:.9rem">
+      <div>
+        <label class="form-label">Client *</label>
+        <select class="form-inp" id="bl-client-select" onchange="onBLClientChange()">
+          <option value="">— Sélectionner un client —</option>
         </select>
       </div>
-      <table><thead><tr><th>Réf.</th><th>Client</th><th>Produit</th><th>Qté</th><th>Montant</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
-      <tbody id="tbl-cmd"></tbody></table>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
+        <div>
+          <label class="form-label">N° Bon de Livraison *</label>
+          <input class="form-inp" id="bl-num" placeholder="ex: BL-2026-001" type="text">
+        </div>
+        <div>
+          <label class="form-label">Date</label>
+          <input class="form-inp" id="bl-date" type="date">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
+        <div>
+          <label class="form-label">Montant Total (DZD)</label>
+          <input class="form-inp" id="bl-montant" type="number" min="0" step="0.01" placeholder="0.00" oninput="calcBLNet()">
+        </div>
+        <div>
+          <label class="form-label">Remise (DZD)</label>
+          <input class="form-inp" id="bl-remise" type="number" min="0" step="0.01" placeholder="0.00" oninput="calcBLNet()">
+        </div>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r8);padding:.75rem 1rem;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:.8rem;color:var(--text3)">Net à percevoir</span>
+        <span id="bl-net-display" style="font-size:1.1rem;font-weight:700;color:var(--gold)">0 DZD</span>
+      </div>
+      <div>
+        <label class="form-label">Notes</label>
+        <textarea class="form-inp" id="bl-notes" rows="2" placeholder="Remarques éventuelles…" style="resize:vertical"></textarea>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border);flex-wrap:wrap">
+      <button class="btn" onclick="closeBLModal()">Annuler</button>
+      <button class="btn" id="bl-detail-btn" onclick="openBLLignesModal()" style="display:none">📄 Détail Lignes</button>
+      <button class="btn" id="bl-print-btn" onclick="printBL()" style="display:none">🖨 Imprimer BL</button>
+      <button class="btn btn-primary" id="bl-save-btn" onclick="saveBL()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL LIGNES BL -->
+<div id="bl-lignes-overlay" onclick="closeBLLignesModal(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1100;align-items:center;justify-content:center">
+  <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r16);width:100%;max-width:900px;max-height:92vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.6)">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.25rem;border-bottom:1px solid var(--border)">
+      <div>
+        <div id="bl-lignes-title" style="font-size:.95rem;font-weight:600;color:var(--gold-l)">📄 Détail du Bon de Livraison</div>
+        <div id="bl-lignes-sub" style="font-size:.75rem;color:var(--text3);margin-top:.2rem">Gérez les lignes de ce bon</div>
+      </div>
+      <button onclick="closeBLLignesModal()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:1.2rem;padding:.2rem .4rem;border-radius:4px">✕</button>
+    </div>
+    <div style="padding:1.25rem">
+      <!-- Formulaire ajout ligne -->
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r8);padding:1rem;margin-bottom:1rem">
+        <div style="font-size:.75rem;font-weight:600;color:var(--gold-l);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.08em">+ Ajouter une ligne</div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:.6rem;margin-bottom:.6rem">
+          <div>
+            <label class="form-label">Produit *</label>
+            <select class="form-inp" id="ligne-produit">
+              <option value="">— Produit —</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Long. (m)</label>
+            <input class="form-inp" id="ligne-long" type="number" step="0.01" min="0" placeholder="0.00" oninput="calcLigneQte()">
+          </div>
+          <div>
+            <label class="form-label">Larg. (m)</label>
+            <input class="form-inp" id="ligne-larg" type="number" step="0.01" min="0" placeholder="0.00" oninput="calcLigneQte()">
+          </div>
+          <div>
+            <label class="form-label">Ép. (m)</label>
+            <input class="form-inp" id="ligne-ep" type="number" step="0.001" min="0" placeholder="0.000" oninput="calcLigneQte()">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:.6rem;align-items:end">
+          <div>
+            <label class="form-label">Unité calc.</label>
+            <select class="form-inp" id="ligne-unite" onchange="calcLigneQte()">
+              <option value="M²">M²</option>
+              <option value="M³">M³</option>
+              <option value="ML">ML</option>
+              <option value="U">Unité</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Quantité</label>
+            <input class="form-inp" id="ligne-qte" type="number" step="0.01" min="0" placeholder="auto">
+          </div>
+          <div>
+            <label class="form-label">Prix Unit. (DZD)</label>
+            <input class="form-inp" id="ligne-pu" type="number" step="0.01" min="0" placeholder="0.00" oninput="calcLigneMontant()">
+          </div>
+          <div>
+            <label class="form-label">Montant</label>
+            <input class="form-inp" id="ligne-montant" type="number" step="0.01" min="0" placeholder="0.00" readonly style="background:var(--bg4);color:var(--gold)">
+          </div>
+          <div>
+            <button class="btn btn-primary" onclick="addLigneBL()" style="white-space:nowrap">+ Ajouter</button>
+          </div>
+        </div>
+      </div>
+      <!-- Tableau lignes -->
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Produit</th><th>Long.</th><th>Larg.</th><th>Ép.</th>
+            <th>Unité</th><th>Qté</th>
+            <th style="text-align:right">P.U (DZD)</th>
+            <th style="text-align:right">Montant</th>
+            <th></th>
+          </tr></thead>
+          <tbody id="tbl-lignes-bl"></tbody>
+        </table>
+      </div>
+      <!-- Totaux -->
+      <div style="display:flex;justify-content:flex-end;margin-top:1rem">
+        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r8);padding:.75rem 1.25rem;min-width:280px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:.35rem">
+            <span style="font-size:.78rem;color:var(--text3)">Sous-total lignes</span>
+            <span id="lignes-subtotal" style="font-weight:600">0 DZD</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding-top:.35rem;border-top:1px solid var(--border)">
+            <span style="font-size:.85rem;font-weight:600;color:var(--gold-l)">Total</span>
+            <span id="lignes-total" style="font-size:1rem;font-weight:700;color:var(--gold)">0 DZD</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border)">
+      <button class="btn" onclick="closeBLLignesModal()">Fermer</button>
+      <button class="btn btn-primary" onclick="saveLignesBL()">💾 Enregistrer les lignes</button>
     </div>
   </div>
 </div>
@@ -583,7 +757,7 @@ let editId=null, editTable=null;
 const DB = {
   employes:[], departements:[], commandes:[], clients:[],
   stocks:[], fournisseurs:[], factures:[], depenses:[],
-  bons_livraison:[], lignes_bon_livraison:[], reglements:[]
+  bons_livraison:[], lignes_bon_livraison:[], reglements:[], produits:[]
 };
 
 /* ─── LOCAL STORAGE ─── */
@@ -805,7 +979,7 @@ function setStatus(ok){
 }
 
 async function loadAll(){
-  const tables=['employes','departements','commandes','clients','stocks','fournisseurs','factures','depenses','bons_livraison','reglements'];
+  const tables=['employes','departements','clients','stocks','fournisseurs','factures','depenses','bons_livraison','lignes_bon_livraison','reglements','produits'];
   await Promise.all(tables.map(async t=>{
     try{DB[t]=await sbSelect(t);}catch(e){DB[t]=DB[t]||[];}
   }));
@@ -940,7 +1114,7 @@ function statusTag(s){
 }
 
 function refreshAll(){
-  renderEmp(); renderDept(); renderCmd(); renderClient();
+  renderEmp(); renderDept(); renderBL(); renderClient();
   renderStk(); renderFour(); renderFact(); renderDep();
   renderDashboard(); updateDeptFilter();
 }
@@ -1000,23 +1174,400 @@ function renderDept(q=''){
   }));
 }
 
-function renderCmd(q='',filter=''){
-  let data=DB.commandes.filter(c=>{
-    const m=!q||(c.client||'').toLowerCase().includes(q)||(c.reference||'').toLowerCase().includes(q)||(c.produit||'').toLowerCase().includes(q);
-    const f=!filter||c.statut===filter;
-    return m&&f;
+/* ═══════════════════════════════════════════════
+   MODULE BONS DE LIVRAISON — CRUD COMPLET
+═══════════════════════════════════════════════ */
+
+let blEditId = null;
+let blLignesTemp = []; // lignes en cours d'édition
+
+function renderCmd() { renderBL(); } // alias pour compatibilité
+
+function renderBL(q='') {
+  const clientFilter = (document.getElementById('bl-filter-client')||{}).value||'';
+  const search = (q||'').toLowerCase();
+  let data = (DB.bons_livraison||[]).filter(b => {
+    const matchQ = !search ||
+      (b.num_bl||'').toLowerCase().includes(search) ||
+      (b.raison_sociale||'').toLowerCase().includes(search);
+    const matchC = !clientFilter || String(b.id_client) === clientFilter;
+    return matchQ && matchC;
+  }).sort((a,b) => new Date(b.created_at||0) - new Date(a.created_at||0));
+
+  const cnt = document.getElementById('bl-count');
+  if(cnt) cnt.textContent = `${data.length} bon${data.length!==1?'s':''}`;
+
+  const tbody = document.getElementById('tbl-bl');
+  const empty = document.getElementById('bl-empty');
+  if(!tbody) return;
+
+  if(!data.length){
+    tbody.innerHTML='';
+    if(empty) empty.style.display='';
+    updateBLKPI();
+    return;
+  }
+  if(empty) empty.style.display='none';
+
+  const lignesCount = {};
+  (DB.lignes_bon_livraison||[]).forEach(l => {
+    lignesCount[l.num_bon] = (lignesCount[l.num_bon]||0)+1;
   });
-  renderTable('tbl-cmd',data.map(c=>`<tr>
-    <td><code style="font-size:.72rem">${c.reference||'—'}</code></td>
-    <td>${c.client||'—'}</td><td>${c.produit||'—'}</td>
-    <td>${c.quantite||0}</td>
-    <td style="color:var(--gold)">${(c.montant||0).toLocaleString()} DZD</td>
-    <td style="font-size:.75rem;color:var(--text3)">${c.date_commande||'—'}</td>
-    <td>${statusTag(c.statut||'En attente')}</td>
-    <td><div class="action-btns">
-      <div class="icon-btn" onclick="editRow('commandes',${c.id})">✎</div>
-      <div class="icon-btn del" onclick="delRow('commandes',${c.id})">✕</div>
-    </div></td></tr>`));
+
+  tbody.innerHTML = data.map(b => {
+    const net = (b.montant||0) - (b.remise||0);
+    const nbLignes = lignesCount[b.id]||0;
+    return `<tr>
+      <td><code style="font-size:.72rem;color:var(--gold)">${b.num_bl||'—'}</code></td>
+      <td><strong>${b.raison_sociale||'—'}</strong></td>
+      <td style="font-size:.75rem;color:var(--text3)">${b.date_bl||'—'}</td>
+      <td style="text-align:right;color:var(--text2)">${(b.montant||0).toLocaleString()} DZD</td>
+      <td style="text-align:right;color:var(--red);font-size:.78rem">${(b.remise||0)>0?'- '+(b.remise||0).toLocaleString()+' DZD':'—'}</td>
+      <td style="text-align:right;font-weight:700;color:var(--gold)">${net.toLocaleString()} DZD</td>
+      <td style="text-align:center"><span class="tag tag-blue">${nbLignes} ligne${nbLignes!==1?'s':''}</span></td>
+      <td>
+        <div class="action-btns">
+          <div class="icon-btn" title="Détail lignes" onclick="openBLLignesModal(${b.id})">📄</div>
+          <div class="icon-btn" title="Imprimer" onclick="printBL(${b.id})">🖨</div>
+          <div class="icon-btn" title="Modifier" onclick="editBL(${b.id})">✎</div>
+          <div class="icon-btn del" title="Supprimer" onclick="deleteBL(${b.id})">✕</div>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+  updateBLKPI();
+}
+
+function updateBLKPI(){
+  const bls = DB.bons_livraison||[];
+  document.getElementById('kpi-bl-total').textContent = bls.length;
+  const totalMt = bls.reduce((a,b)=>a+(b.montant||0),0);
+  const totalRm = bls.reduce((a,b)=>a+(b.remise||0),0);
+  const totalNet = totalMt - totalRm;
+  document.getElementById('kpi-bl-montant').textContent = totalMt.toLocaleString()+' DZD';
+  document.getElementById('kpi-bl-remise').textContent = totalRm.toLocaleString()+' DZD';
+  document.getElementById('kpi-bl-net').textContent = totalNet.toLocaleString()+' DZD';
+  // Remplir filtre clients
+  const sel = document.getElementById('bl-filter-client');
+  if(sel){
+    const cur = sel.value;
+    const clients = [...new Map((DB.bons_livraison||[]).map(b=>[b.id_client,b.raison_sociale])).entries()];
+    sel.innerHTML = '<option value="">Tous les clients</option>' +
+      clients.map(([id,nom])=>`<option value="${id}" ${String(id)===cur?'selected':''}>${nom||'—'}</option>`).join('');
+  }
+}
+
+function openBLModal(data=null){
+  blEditId = data ? data.id : null;
+  const isEdit = !!data;
+  document.getElementById('bl-modal-title').textContent = isEdit ? '✎ Modifier le Bon de Livraison' : '+ Nouveau Bon de Livraison';
+  document.getElementById('bl-modal-sub').textContent   = isEdit ? `BL N° ${data.num_bl}` : 'Remplissez les informations du BL';
+  // Remplir liste clients
+  const sel = document.getElementById('bl-client-select');
+  sel.innerHTML = '<option value="">— Sélectionner un client —</option>' +
+    (DB.clients||[]).map(c=>`<option value="${c.id}" ${data&&data.id_client===c.id?'selected':''}>${c.nom||'—'}</option>`).join('');
+  document.getElementById('bl-num').value     = data ? (data.num_bl||'') : genBLNum();
+  document.getElementById('bl-date').value    = data ? (data.date_bl||today()) : today();
+  document.getElementById('bl-montant').value = data ? (data.montant||0) : 0;
+  document.getElementById('bl-remise').value  = data ? (data.remise||0) : 0;
+  document.getElementById('bl-notes').value   = data ? (data.notes||'') : '';
+  calcBLNet();
+  // Boutons Détail et Imprimer visibles seulement si BL existant
+  document.getElementById('bl-detail-btn').style.display = isEdit ? '' : 'none';
+  document.getElementById('bl-print-btn').style.display  = isEdit ? '' : 'none';
+  document.getElementById('bl-modal-overlay').style.display='flex';
+  setTimeout(()=>document.getElementById('bl-num').focus(),100);
+}
+
+function closeBLModal(e){
+  if(e && e.target !== document.getElementById('bl-modal-overlay')) return;
+  document.getElementById('bl-modal-overlay').style.display='none';
+  blEditId=null;
+}
+
+function onBLClientChange(){
+  const sel = document.getElementById('bl-client-select');
+  // auto-focus num
+}
+
+function calcBLNet(){
+  const mt = parseFloat(document.getElementById('bl-montant').value)||0;
+  const rm = parseFloat(document.getElementById('bl-remise').value)||0;
+  document.getElementById('bl-net-display').textContent = (mt-rm).toLocaleString()+' DZD';
+}
+
+function genBLNum(){
+  const year = new Date().getFullYear();
+  const n = (DB.bons_livraison||[]).length+1;
+  return `BL-${year}-${String(n).padStart(3,'0')}`;
+}
+
+function today(){
+  return new Date().toISOString().slice(0,10);
+}
+
+function editBL(id){
+  const bl = (DB.bons_livraison||[]).find(b=>b.id===id);
+  if(bl) openBLModal(bl);
+}
+
+async function saveBL(){
+  const clientId = parseInt(document.getElementById('bl-client-select').value);
+  if(!clientId){ toast('Sélectionnez un client','error'); return; }
+  const numBL = document.getElementById('bl-num').value.trim();
+  if(!numBL){ toast('Le N° BL est obligatoire','error'); return; }
+  const client = (DB.clients||[]).find(c=>c.id===clientId);
+  const body = {
+    id_client: clientId,
+    raison_sociale: client ? client.nom : '',
+    num_bl: numBL,
+    date_bl: document.getElementById('bl-date').value || today(),
+    montant: parseFloat(document.getElementById('bl-montant').value)||0,
+    remise:  parseFloat(document.getElementById('bl-remise').value)||0,
+    notes:   document.getElementById('bl-notes').value.trim()
+  };
+  const btn = document.getElementById('bl-save-btn');
+  btn.textContent='⏳ …'; btn.disabled=true;
+  try{
+    let savedId = blEditId;
+    if(connected){
+      if(blEditId){ await sbReq('PATCH','bons_livraison',body,blEditId); }
+      else { const r=await sbReq('POST','bons_livraison',body); savedId=r&&r[0]?r[0].id:null; }
+      await loadAll();
+      toast((blEditId?'BL mis à jour ✓':'BL créé ✓'),'success');
+    } else {
+      if(blEditId){ const i=DB.bons_livraison.findIndex(b=>b.id===blEditId); if(i>-1) DB.bons_livraison[i]={...DB.bons_livraison[i],...body}; }
+      else { savedId=Date.now(); DB.bons_livraison.push({id:savedId,...body,created_at:new Date().toISOString()}); }
+      save(); refreshAll();
+      toast((blEditId?'BL mis à jour ✓':'BL créé ✓'),'success');
+    }
+    // Afficher boutons Détail et Imprimer
+    blEditId = blEditId || savedId;
+    document.getElementById('bl-detail-btn').style.display='';
+    document.getElementById('bl-print-btn').style.display='';
+    document.getElementById('bl-modal-title').textContent='✎ Modifier le Bon de Livraison';
+    document.getElementById('bl-modal-sub').textContent=`BL N° ${numBL} — enregistré`;
+  }catch(e){ toast('Erreur: '+e.message,'error'); }
+  finally{ btn.textContent='💾 Enregistrer'; btn.disabled=false; }
+}
+
+async function deleteBL(id){
+  const bl=(DB.bons_livraison||[]).find(b=>b.id===id);
+  if(!bl) return;
+  if(!confirm(`Supprimer le BL N° "${bl.num_bl}" ?\nLes lignes associées seront aussi supprimées.`)) return;
+  try{
+    if(connected){
+      // Supprimer lignes d'abord
+      const lignes=(DB.lignes_bon_livraison||[]).filter(l=>l.num_bon===id);
+      for(const l of lignes) try{await sbDelete('lignes_bon_livraison',l.id);}catch(e){}
+      await sbDelete('bons_livraison',id);
+      await loadAll();
+    } else {
+      DB.bons_livraison=DB.bons_livraison.filter(b=>b.id!==id);
+      DB.lignes_bon_livraison=(DB.lignes_bon_livraison||[]).filter(l=>l.num_bon!==id);
+      save(); refreshAll();
+    }
+    toast('BL supprimé','success');
+  }catch(e){ toast('Erreur: '+e.message,'error'); }
+}
+
+function exportBL(){
+  const data=DB.bons_livraison||[];
+  if(!data.length){toast('Aucun BL à exporter','error');return;}
+  const headers=['N° BL','Client','Date','Montant','Remise','Net','Notes'];
+  const rows=data.map(b=>[b.num_bl||'',b.raison_sociale||'',b.date_bl||'',(b.montant||0),(b.remise||0),(b.montant||0)-(b.remise||0),b.notes||'']);
+  const csv=[headers,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`bons_livraison_perla_${new Date().toISOString().slice(0,10)}.csv`; a.click();
+  toast('Export CSV ✓','success');
+}
+
+/* ── LIGNES BL ── */
+let blLignesEditId = null; // id du BL en cours
+
+function openBLLignesModal(blId){
+  blLignesEditId = blId || blEditId;
+  if(!blLignesEditId){ toast('Enregistrez d\'abord le BL','error'); return; }
+  const bl=(DB.bons_livraison||[]).find(b=>b.id===blLignesEditId);
+  document.getElementById('bl-lignes-title').textContent='📄 Détail — '+(bl?bl.num_bl:'BL');
+  document.getElementById('bl-lignes-sub').textContent=bl?`Client : ${bl.raison_sociale||'—'}`:'';
+  // Remplir liste produits
+  const selP=document.getElementById('ligne-produit');
+  selP.innerHTML='<option value="">— Produit —</option>'+
+    (DB.produits||[]).map(p=>`<option value="${p.id}">${p.nom||p.designation||p.reference||'Produit '+p.id}</option>`).join('');
+  // Vider champs
+  ['ligne-long','ligne-larg','ligne-ep','ligne-qte','ligne-pu','ligne-montant'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('ligne-unite').value='M²';
+  renderLignesBL();
+  document.getElementById('bl-lignes-overlay').style.display='flex';
+}
+
+function closeBLLignesModal(e){
+  if(e && e.target!==document.getElementById('bl-lignes-overlay')) return;
+  document.getElementById('bl-lignes-overlay').style.display='none';
+  blLignesEditId=null;
+}
+
+function calcLigneQte(){
+  const L=parseFloat(document.getElementById('ligne-long').value)||0;
+  const l=parseFloat(document.getElementById('ligne-larg').value)||0;
+  const e=parseFloat(document.getElementById('ligne-ep').value)||0;
+  const unite=document.getElementById('ligne-unite').value;
+  let qte=0;
+  if(unite==='M²') qte=L*l;
+  else if(unite==='M³') qte=L*l*e;
+  else if(unite==='ML') qte=L;
+  else qte=1;
+  if(qte>0) document.getElementById('ligne-qte').value=parseFloat(qte.toFixed(4));
+  calcLigneMontant();
+}
+
+function calcLigneMontant(){
+  const qte=parseFloat(document.getElementById('ligne-qte').value)||0;
+  const pu=parseFloat(document.getElementById('ligne-pu').value)||0;
+  document.getElementById('ligne-montant').value=(qte*pu).toFixed(2);
+}
+
+async function addLigneBL(){
+  const produitId=document.getElementById('ligne-produit').value;
+  if(!produitId){toast('Sélectionnez un produit','error');return;}
+  const produit=(DB.produits||[]).find(p=>String(p.id)===String(produitId));
+  const body={
+    num_bon: blLignesEditId,
+    produit_id: parseInt(produitId),
+    produit_nom: produit?(produit.nom||produit.designation||produit.reference||''):'',
+    long: parseFloat(document.getElementById('ligne-long').value)||0,
+    larg: parseFloat(document.getElementById('ligne-larg').value)||0,
+    ep:   parseFloat(document.getElementById('ligne-ep').value)||0,
+    unite_calcul: document.getElementById('ligne-unite').value||'M²',
+    quantite: parseFloat(document.getElementById('ligne-qte').value)||0,
+    pu: parseFloat(document.getElementById('ligne-pu').value)||0,
+    montant: parseFloat(document.getElementById('ligne-montant').value)||0,
+  };
+  if(body.quantite<=0){toast('Quantité invalide','error');return;}
+  try{
+    if(connected){ await sbReq('POST','lignes_bon_livraison',body); await loadAll(); }
+    else{ DB.lignes_bon_livraison=DB.lignes_bon_livraison||[]; DB.lignes_bon_livraison.push({id:Date.now(),...body}); save(); }
+    ['ligne-long','ligne-larg','ligne-ep','ligne-qte','ligne-pu','ligne-montant'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    document.getElementById('ligne-produit').value='';
+    renderLignesBL();
+    toast('Ligne ajoutée ✓','success');
+  }catch(e){toast('Erreur: '+e.message,'error');}
+}
+
+async function deleteLigne(id){
+  if(!confirm('Supprimer cette ligne ?')) return;
+  try{
+    if(connected){ await sbDelete('lignes_bon_livraison',id); await loadAll(); }
+    else{ DB.lignes_bon_livraison=DB.lignes_bon_livraison.filter(l=>l.id!==id); save(); }
+    renderLignesBL();
+    toast('Ligne supprimée','success');
+  }catch(e){toast('Erreur: '+e.message,'error');}
+}
+
+function renderLignesBL(){
+  const lignes=(DB.lignes_bon_livraison||[]).filter(l=>l.num_bon===blLignesEditId);
+  const tbody=document.getElementById('tbl-lignes-bl');
+  if(!tbody) return;
+  if(!lignes.length){
+    tbody.innerHTML='<tr class="empty-row"><td colspan="9">Aucune ligne — ajoutez des produits ci-dessus</td></tr>';
+    document.getElementById('lignes-subtotal').textContent='0 DZD';
+    document.getElementById('lignes-total').textContent='0 DZD';
+    return;
+  }
+  const total=lignes.reduce((a,l)=>a+(l.montant||0),0);
+  document.getElementById('lignes-subtotal').textContent=total.toLocaleString()+' DZD';
+  document.getElementById('lignes-total').textContent=total.toLocaleString()+' DZD';
+  tbody.innerHTML=lignes.map(l=>`<tr>
+    <td><strong>${l.produit_nom||'—'}</strong></td>
+    <td style="font-size:.75rem;color:var(--text3)">${l.long||0}</td>
+    <td style="font-size:.75rem;color:var(--text3)">${l.larg||0}</td>
+    <td style="font-size:.75rem;color:var(--text3)">${l.ep||0}</td>
+    <td><span class="tag tag-blue" style="font-size:.65rem">${l.unite_calcul||'M²'}</span></td>
+    <td style="font-weight:600">${l.quantite||0}</td>
+    <td style="text-align:right">${(l.pu||0).toLocaleString()}</td>
+    <td style="text-align:right;font-weight:700;color:var(--gold)">${(l.montant||0).toLocaleString()} DZD</td>
+    <td><div class="icon-btn del" onclick="deleteLigne(${l.id})">✕</div></td>
+  </tr>`).join('');
+}
+
+async function saveLignesBL(){
+  toast('Lignes enregistrées ✓','success');
+  if(connected) await loadAll();
+  renderLignesBL();
+  renderBL();
+  document.getElementById('bl-lignes-overlay').style.display='none';
+}
+
+/* ── IMPRESSION BL ── */
+function printBL(blId){
+  const id = blId || blEditId;
+  if(!id){toast('Aucun BL sélectionné','error');return;}
+  const bl=(DB.bons_livraison||[]).find(b=>b.id===id);
+  if(!bl){toast('BL introuvable','error');return;}
+  const lignes=(DB.lignes_bon_livraison||[]).filter(l=>l.num_bon===id);
+  const net=(bl.montant||0)-(bl.remise||0);
+  const win=window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head>
+  <meta charset="UTF-8"><title>BL ${bl.num_bl}</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+    body{padding:20mm;color:#111;font-size:11pt}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8mm;padding-bottom:5mm;border-bottom:2px solid #b8960c}
+    .company{font-size:18pt;font-weight:700;color:#b8960c;letter-spacing:.05em}
+    .company-sub{font-size:9pt;color:#555;margin-top:2px}
+    .bl-info{text-align:right}
+    .bl-num{font-size:14pt;font-weight:700;color:#b8960c}
+    .bl-date{font-size:9pt;color:#555;margin-top:2px}
+    .client-box{background:#f8f4e8;border:1px solid #d4af37;border-radius:4px;padding:4mm 6mm;margin-bottom:6mm}
+    .client-label{font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:.1em;margin-bottom:1mm}
+    .client-name{font-size:12pt;font-weight:700}
+    table{width:100%;border-collapse:collapse;margin-bottom:6mm;font-size:9.5pt}
+    th{background:#b8960c;color:#fff;padding:2mm 3mm;text-align:left;font-size:9pt}
+    td{padding:2mm 3mm;border-bottom:1px solid #eee}
+    tr:nth-child(even) td{background:#fafafa}
+    .text-right{text-align:right}
+    .totals{margin-left:auto;width:240px}
+    .totals-row{display:flex;justify-content:space-between;padding:1.5mm 0;font-size:10pt}
+    .totals-row.net{font-size:12pt;font-weight:700;color:#b8960c;border-top:2px solid #b8960c;margin-top:2mm;padding-top:2mm}
+    .footer{margin-top:12mm;padding-top:5mm;border-top:1px solid #ccc;font-size:8pt;color:#888;text-align:center}
+    @media print{body{padding:15mm}}
+  </style></head><body>
+  <div class="header">
+    <div><div class="company">PERLA</div><div class="company-sub">Marbrerie — Granit & Pierre Naturelle</div></div>
+    <div class="bl-info"><div class="bl-num">BON DE LIVRAISON N° ${bl.num_bl}</div><div class="bl-date">Date : ${bl.date_bl||'—'}</div></div>
+  </div>
+  <div class="client-box">
+    <div class="client-label">Client</div>
+    <div class="client-name">${bl.raison_sociale||'—'}</div>
+  </div>
+  <table>
+    <thead><tr>
+      <th>Produit</th><th class="text-right">Long.</th><th class="text-right">Larg.</th><th class="text-right">Ép.</th>
+      <th>Unité</th><th class="text-right">Qté</th><th class="text-right">P.U (DZD)</th><th class="text-right">Montant (DZD)</th>
+    </tr></thead>
+    <tbody>
+    ${lignes.length ? lignes.map(l=>`<tr>
+      <td>${l.produit_nom||'—'}</td>
+      <td class="text-right">${l.long||0}</td><td class="text-right">${l.larg||0}</td><td class="text-right">${l.ep||0}</td>
+      <td>${l.unite_calcul||'M²'}</td>
+      <td class="text-right">${l.quantite||0}</td>
+      <td class="text-right">${(l.pu||0).toLocaleString()}</td>
+      <td class="text-right"><strong>${(l.montant||0).toLocaleString()}</strong></td>
+    </tr>`).join('') : '<tr><td colspan="8" style="text-align:center;color:#aaa;padding:5mm">Aucune ligne</td></tr>'}
+    </tbody>
+  </table>
+  <div class="totals">
+    <div class="totals-row"><span>Montant total</span><span>${(bl.montant||0).toLocaleString()} DZD</span></div>
+    ${(bl.remise||0)>0?`<div class="totals-row"><span>Remise</span><span>- ${(bl.remise||0).toLocaleString()} DZD</span></div>`:''}
+    <div class="totals-row net"><span>NET À PERCEVOIR</span><span>${net.toLocaleString()} DZD</span></div>
+  </div>
+  ${bl.notes?`<div style="margin-top:8mm;padding:3mm 4mm;background:#f9f9f9;border-left:3px solid #b8960c;font-size:9pt;color:#555">
+    <strong>Notes :</strong> ${bl.notes}</div>`:''}
+  <div class="footer">PERLA — Bon de livraison généré le ${new Date().toLocaleDateString('fr-DZ')} — Document non contractuel</div>
+  <script>window.onload=()=>{window.print();}<\/script>
+  </body></html>`);
+  win.document.close();
 }
 
 /* ═══════════════════════════════════════════════
