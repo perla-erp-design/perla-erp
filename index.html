@@ -1388,9 +1388,15 @@ function exportBL(){
 /* ── LIGNES BL ── */
 let blLignesEditId = null; // id du BL en cours
 
-function openBLLignesModal(blId){
+async function openBLLignesModal(blId){
+  // Si BL pas encore sauvegardé, on le sauvegarde d'abord automatiquement
+  if(!blId && !blEditId){
+    const clientId = parseInt(document.getElementById('bl-client-select').value);
+    if(!clientId){ toast('Sélectionnez un client d\'abord','error'); return; }
+    await saveBLSilent();
+    if(!blEditId){ return; } // échec sauvegarde
+  }
   blLignesEditId = blId || blEditId;
-  if(!blLignesEditId){ toast('Enregistrez d\'abord le BL','error'); return; }
   const bl=(DB.bons_livraison||[]).find(b=>b.id===blLignesEditId);
   document.getElementById('bl-lignes-title').textContent='📄 Détail — '+(bl?bl.num_bl:'BL');
   document.getElementById('bl-lignes-sub').textContent=bl?`Client : ${bl.raison_sociale||'—'}`:'';
@@ -1403,6 +1409,39 @@ function openBLLignesModal(blId){
   document.getElementById('ligne-unite').value='M²';
   renderLignesBL();
   document.getElementById('bl-lignes-overlay').style.display='flex';
+}
+
+// Sauvegarde silencieuse du BL (sans message succès) avant ouverture des lignes
+async function saveBLSilent(){
+  const clientId = parseInt(document.getElementById('bl-client-select').value);
+  if(!clientId) return;
+  const numBL = document.getElementById('bl-num').value.trim() || genBLNum();
+  document.getElementById('bl-num').value = numBL;
+  const client = (DB.clients||[]).find(c=>c.id===clientId);
+  const body = {
+    id_client: clientId,
+    raison_sociale: client ? client.nom : '',
+    num_bl: numBL,
+    date_bl: document.getElementById('bl-date').value || today(),
+    montant: parseFloat(document.getElementById('bl-montant').value)||0,
+    remise:  parseFloat(document.getElementById('bl-remise').value)||0,
+    notes:   document.getElementById('bl-notes').value.trim()
+  };
+  try{
+    if(connected){
+      const r = await sbReq('POST','bons_livraison',body);
+      blEditId = r&&r[0] ? r[0].id : null;
+      await loadAll();
+    } else {
+      blEditId = Date.now();
+      DB.bons_livraison.push({id:blEditId,...body,created_at:new Date().toISOString()});
+      save(); refreshAll();
+    }
+    document.getElementById('bl-detail-btn').style.display='';
+    document.getElementById('bl-print-btn').style.display='';
+    document.getElementById('bl-modal-title').textContent='✎ Modifier le Bon de Livraison';
+    document.getElementById('bl-modal-sub').textContent=`BL N° ${numBL}`;
+  }catch(e){ toast('Erreur sauvegarde BL: '+e.message,'error'); }
 }
 
 function closeBLLignesModal(e){
@@ -1503,7 +1542,7 @@ function updateBLSaveBtn(blId){
   btn.disabled = !hasLignes;
   btn.style.opacity = hasLignes ? '1' : '.45';
   btn.style.cursor  = hasLignes ? 'pointer' : 'not-allowed';
-  btn.title = hasLignes ? '' : 'Ajoutez au moins une ligne avant d'enregistrer';
+  btn.title = hasLignes ? '' : "Ajoutez au moins une ligne avant d'enregistrer";
 }
 
 async function saveLignesBL(){
