@@ -321,16 +321,6 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
         <div>
-          <label class="form-label">N° Bon de Livraison *</label>
-          <input class="form-inp" id="bl-num" placeholder="ex: BL-2026-001" type="text">
-        </div>
-        <div>
-          <label class="form-label">Date</label>
-          <input class="form-inp" id="bl-date" type="date">
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
-        <div>
           <label class="form-label">Montant Total (DZD)</label>
           <input class="form-inp" id="bl-montant" type="number" min="0" step="0.01" placeholder="0.00" oninput="calcBLNet()">
         </div>
@@ -1187,12 +1177,13 @@ function renderBL(q='') {
   const clientFilter = (document.getElementById('bl-filter-client')||{}).value||'';
   const search = (q||'').toLowerCase();
   let data = (DB.bons_livraison||[]).filter(b => {
+    const clientNom = clientNomById(b.id_client);
     const matchQ = !search ||
-      (b.num_bl||'').toLowerCase().includes(search) ||
-      (b.raison_sociale||'').toLowerCase().includes(search);
+      String(b.id).includes(search) ||
+      (clientNom||'').toLowerCase().includes(search);
     const matchC = !clientFilter || String(b.id_client) === clientFilter;
     return matchQ && matchC;
-  }).sort((a,b) => new Date(b.created_at||0) - new Date(a.created_at||0));
+  }).sort((a,b) => (b.id||0) - (a.id||0));
 
   const cnt = document.getElementById('bl-count');
   if(cnt) cnt.textContent = `${data.length} bon${data.length!==1?'s':''}`;
@@ -1217,10 +1208,11 @@ function renderBL(q='') {
   tbody.innerHTML = data.map(b => {
     const net = (b.montant||0) - (b.remise||0);
     const nbLignes = lignesCount[b.id]||0;
+    const clientNom = clientNomById(b.id_client);
     return `<tr>
-      <td><code style="font-size:.72rem;color:var(--gold)">${b.num_bl||'—'}</code></td>
-      <td><strong>${b.raison_sociale||'—'}</strong></td>
-      <td style="font-size:.75rem;color:var(--text3)">${b.date_bl||'—'}</td>
+      <td><code style="font-size:.72rem;color:var(--gold)">BL-${b.id}</code></td>
+      <td><strong>${clientNom||'—'}</strong></td>
+      <td style="font-size:.75rem;color:var(--text3)">${b.created_at ? new Date(b.created_at).toLocaleDateString('fr-FR') : '—'}</td>
       <td style="text-align:right;color:var(--text2)">${(b.montant||0).toLocaleString()} DZD</td>
       <td style="text-align:right;color:var(--red);font-size:.78rem">${(b.remise||0)>0?'- '+(b.remise||0).toLocaleString()+' DZD':'—'}</td>
       <td style="text-align:right;font-weight:700;color:var(--gold)">${net.toLocaleString()} DZD</td>
@@ -1238,6 +1230,16 @@ function renderBL(q='') {
   updateBLKPI();
 }
 
+function clientNomById(id){
+  const c = (DB.clients||[]).find(c=>c.id===id);
+  return c ? (c.nom||c.raison_sociale||'') : '';
+}
+
+function produitNomById(id){
+  const p = (DB.produits||[]).find(p=>p.id===id);
+  return p ? (p.nom||p.designation||p.reference||('Produit '+id)) : ('Produit '+id);
+}
+
 function updateBLKPI(){
   const bls = DB.bons_livraison||[];
   document.getElementById('kpi-bl-total').textContent = bls.length;
@@ -1247,13 +1249,12 @@ function updateBLKPI(){
   document.getElementById('kpi-bl-montant').textContent = totalMt.toLocaleString()+' DZD';
   document.getElementById('kpi-bl-remise').textContent = totalRm.toLocaleString()+' DZD';
   document.getElementById('kpi-bl-net').textContent = totalNet.toLocaleString()+' DZD';
-  // Remplir filtre clients
   const sel = document.getElementById('bl-filter-client');
   if(sel){
     const cur = sel.value;
-    const clients = [...new Map((DB.bons_livraison||[]).map(b=>[b.id_client,b.raison_sociale])).entries()];
+    const ids = [...new Set((DB.bons_livraison||[]).map(b=>b.id_client))];
     sel.innerHTML = '<option value="">Tous les clients</option>' +
-      clients.map(([id,nom])=>`<option value="${id}" ${String(id)===cur?'selected':''}>${nom||'—'}</option>`).join('');
+      ids.map(id=>`<option value="${id}" ${String(id)===cur?'selected':''}>${clientNomById(id)||'—'}</option>`).join('');
   }
 }
 
@@ -1261,24 +1262,18 @@ function openBLModal(data=null){
   blEditId = data ? data.id : null;
   const isEdit = !!data;
   document.getElementById('bl-modal-title').textContent = isEdit ? '✎ Modifier le Bon de Livraison' : '+ Nouveau Bon de Livraison';
-  document.getElementById('bl-modal-sub').textContent   = isEdit ? `BL N° ${data.num_bl}` : 'Remplissez les informations du BL';
-  // Remplir liste clients
+  document.getElementById('bl-modal-sub').textContent   = isEdit ? `BL N° BL-${data.id}` : 'Remplissez les informations du BL';
   const sel = document.getElementById('bl-client-select');
   sel.innerHTML = '<option value="">— Sélectionner un client —</option>' +
-    (DB.clients||[]).map(c=>`<option value="${c.id}" ${data&&data.id_client===c.id?'selected':''}>${c.nom||'—'}</option>`).join('');
-  document.getElementById('bl-num').value     = data ? (data.num_bl||'') : genBLNum();
-  document.getElementById('bl-date').value    = data ? (data.date_bl||today()) : today();
+    (DB.clients||[]).map(c=>`<option value="${c.id}" ${data&&data.id_client===c.id?'selected':''}>${c.nom||c.raison_sociale||'—'}</option>`).join('');
   document.getElementById('bl-montant').value = data ? (data.montant||0) : 0;
   document.getElementById('bl-remise').value  = data ? (data.remise||0) : 0;
   document.getElementById('bl-notes').value   = data ? (data.notes||'') : '';
   calcBLNet();
-  // Boutons Détail et Imprimer visibles seulement si BL existant
   document.getElementById('bl-detail-btn').style.display = '';
   document.getElementById('bl-print-btn').style.display  = isEdit ? '' : 'none';
-  // Enregistrer activé seulement si BL existant avec lignes, ou nouveau après ajout de lignes
   updateBLSaveBtn(isEdit ? blEditId : null);
   document.getElementById('bl-modal-overlay').style.display='flex';
-  setTimeout(()=>document.getElementById('bl-num').focus(),100);
 }
 
 function closeBLModal(e){
@@ -1287,25 +1282,10 @@ function closeBLModal(e){
   blEditId=null;
 }
 
-function onBLClientChange(){
-  const sel = document.getElementById('bl-client-select');
-  // auto-focus num
-}
-
 function calcBLNet(){
   const mt = parseFloat(document.getElementById('bl-montant').value)||0;
   const rm = parseFloat(document.getElementById('bl-remise').value)||0;
   document.getElementById('bl-net-display').textContent = (mt-rm).toLocaleString()+' DZD';
-}
-
-function genBLNum(){
-  const year = new Date().getFullYear();
-  const n = (DB.bons_livraison||[]).length+1;
-  return `BL-${year}-${String(n).padStart(3,'0')}`;
-}
-
-function today(){
-  return new Date().toISOString().slice(0,10);
 }
 
 function editBL(id){
@@ -1316,14 +1296,8 @@ function editBL(id){
 async function saveBL(){
   const clientId = parseInt(document.getElementById('bl-client-select').value);
   if(!clientId){ toast('Sélectionnez un client','error'); return; }
-  const numBL = document.getElementById('bl-num').value.trim();
-  if(!numBL){ toast('Le N° BL est obligatoire','error'); return; }
-  const client = (DB.clients||[]).find(c=>c.id===clientId);
   const body = {
     id_client: clientId,
-    raison_sociale: client ? client.nom : '',
-    num_bl: numBL,
-    date_bl: document.getElementById('bl-date').value || today(),
     montant: parseFloat(document.getElementById('bl-montant').value)||0,
     remise:  parseFloat(document.getElementById('bl-remise').value)||0,
     notes:   document.getElementById('bl-notes').value.trim()
@@ -1331,24 +1305,20 @@ async function saveBL(){
   const btn = document.getElementById('bl-save-btn');
   btn.textContent='⏳ …'; btn.disabled=true;
   try{
-    let savedId = blEditId;
     if(connected){
       if(blEditId){ await sbReq('PATCH','bons_livraison',body,blEditId); }
-      else { const r=await sbReq('POST','bons_livraison',body); savedId=r&&r[0]?r[0].id:null; }
+      else { const r=await sbReq('POST','bons_livraison',body); blEditId=r&&r[0]?r[0].id:null; }
       await loadAll();
-      toast((blEditId?'BL mis à jour ✓':'BL créé ✓'),'success');
     } else {
       if(blEditId){ const i=DB.bons_livraison.findIndex(b=>b.id===blEditId); if(i>-1) DB.bons_livraison[i]={...DB.bons_livraison[i],...body}; }
-      else { savedId=Date.now(); DB.bons_livraison.push({id:savedId,...body,created_at:new Date().toISOString()}); }
+      else { blEditId=Date.now(); DB.bons_livraison.push({id:blEditId,...body,created_at:new Date().toISOString()}); }
       save(); refreshAll();
-      toast((blEditId?'BL mis à jour ✓':'BL créé ✓'),'success');
     }
-    // Afficher boutons Détail et Imprimer
-    blEditId = blEditId || savedId;
+    toast('BL enregistré ✓','success');
     document.getElementById('bl-detail-btn').style.display='';
     document.getElementById('bl-print-btn').style.display='';
     document.getElementById('bl-modal-title').textContent='✎ Modifier le Bon de Livraison';
-    document.getElementById('bl-modal-sub').textContent=`BL N° ${numBL} — enregistré`;
+    document.getElementById('bl-modal-sub').textContent=`BL N° BL-${blEditId} — enregistré`;
     updateBLSaveBtn(blEditId);
   }catch(e){ toast('Erreur: '+e.message,'error'); }
   finally{ btn.textContent='💾 Enregistrer'; btn.disabled=false; }
@@ -1357,12 +1327,11 @@ async function saveBL(){
 async function deleteBL(id){
   const bl=(DB.bons_livraison||[]).find(b=>b.id===id);
   if(!bl) return;
-  if(!confirm(`Supprimer le BL N° "${bl.num_bl}" ?\nLes lignes associées seront aussi supprimées.`)) return;
+  if(!confirm(`Supprimer le BL N° BL-${id} ?\nLes lignes associées seront aussi supprimées.`)) return;
   try{
     if(connected){
-      // Supprimer lignes d'abord
       const lignes=(DB.lignes_bon_livraison||[]).filter(l=>l.num_bon===id);
-      for(const l of lignes) try{await sbDelete('lignes_bon_livraison',l.id);}catch(e){}
+      for(const l of lignes) try{ await sbDeleteComposite('lignes_bon_livraison', l); }catch(e){}
       await sbDelete('bons_livraison',id);
       await loadAll();
     } else {
@@ -1377,52 +1346,47 @@ async function deleteBL(id){
 function exportBL(){
   const data=DB.bons_livraison||[];
   if(!data.length){toast('Aucun BL à exporter','error');return;}
-  const headers=['N° BL','Client','Date','Montant','Remise','Net','Notes'];
-  const rows=data.map(b=>[b.num_bl||'',b.raison_sociale||'',b.date_bl||'',(b.montant||0),(b.remise||0),(b.montant||0)-(b.remise||0),b.notes||'']);
+  const headers=['N° BL','Client','Montant','Remise','Net','Notes'];
+  const rows=data.map(b=>[`BL-${b.id}`,clientNomById(b.id_client),(b.montant||0),(b.remise||0),(b.montant||0)-(b.remise||0),b.notes||'']);
   const csv=[headers,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
   const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
   a.download=`bons_livraison_perla_${new Date().toISOString().slice(0,10)}.csv`; a.click();
   toast('Export CSV ✓','success');
 }
 
-/* ── LIGNES BL ── */
-let blLignesEditId = null; // id du BL en cours
+/* ── LIGNES BL (clé composée: num_bon, produit, long, larg, ep — pas d'id) ── */
+let blLignesEditId = null;
 
 async function openBLLignesModal(blId){
-  // Si BL pas encore sauvegardé, on le sauvegarde d'abord automatiquement
   if(!blId && !blEditId){
     const clientId = parseInt(document.getElementById('bl-client-select').value);
-    if(!clientId){ toast('Sélectionnez un client d\'abord','error'); return; }
+    if(!clientId){ toast("Sélectionnez un client d'abord",'error'); return; }
     await saveBLSilent();
-    if(!blEditId){ return; } // échec sauvegarde
+    if(!blEditId){ return; }
   }
   blLignesEditId = blId || blEditId;
-  const bl=(DB.bons_livraison||[]).find(b=>b.id===blLignesEditId);
-  document.getElementById('bl-lignes-title').textContent='📄 Détail — '+(bl?bl.num_bl:'BL');
-  document.getElementById('bl-lignes-sub').textContent=bl?`Client : ${bl.raison_sociale||'—'}`:'';
-  // Remplir liste produits
+  document.getElementById('bl-lignes-title').textContent='📄 Détail — BL-'+blLignesEditId;
+  document.getElementById('bl-lignes-sub').textContent=`Client : ${clientNomById((DB.bons_livraison||[]).find(b=>b.id===blLignesEditId)?.id_client)||'—'}`;
   const selP=document.getElementById('ligne-produit');
   selP.innerHTML='<option value="">— Produit —</option>'+
     (DB.produits||[]).map(p=>`<option value="${p.id}">${p.nom||p.designation||p.reference||'Produit '+p.id}</option>`).join('');
-  // Vider champs
   ['ligne-long','ligne-larg','ligne-ep','ligne-qte','ligne-pu','ligne-montant'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('ligne-unite').value='M²';
   renderLignesBL();
   document.getElementById('bl-lignes-overlay').style.display='flex';
 }
 
-// Sauvegarde silencieuse du BL (sans message succès) avant ouverture des lignes
+function closeBLLignesModal(e){
+  if(e && e.target!==document.getElementById('bl-lignes-overlay')) return;
+  document.getElementById('bl-lignes-overlay').style.display='none';
+  blLignesEditId=null;
+}
+
 async function saveBLSilent(){
   const clientId = parseInt(document.getElementById('bl-client-select').value);
   if(!clientId) return;
-  const numBL = document.getElementById('bl-num').value.trim() || genBLNum();
-  document.getElementById('bl-num').value = numBL;
-  const client = (DB.clients||[]).find(c=>c.id===clientId);
   const body = {
     id_client: clientId,
-    raison_sociale: client ? client.nom : '',
-    num_bl: numBL,
-    date_bl: document.getElementById('bl-date').value || today(),
     montant: parseFloat(document.getElementById('bl-montant').value)||0,
     remise:  parseFloat(document.getElementById('bl-remise').value)||0,
     notes:   document.getElementById('bl-notes').value.trim()
@@ -1440,14 +1404,8 @@ async function saveBLSilent(){
     document.getElementById('bl-detail-btn').style.display='';
     document.getElementById('bl-print-btn').style.display='';
     document.getElementById('bl-modal-title').textContent='✎ Modifier le Bon de Livraison';
-    document.getElementById('bl-modal-sub').textContent=`BL N° ${numBL}`;
+    document.getElementById('bl-modal-sub').textContent=`BL N° BL-${blEditId}`;
   }catch(e){ toast('Erreur sauvegarde BL: '+e.message,'error'); }
-}
-
-function closeBLLignesModal(e){
-  if(e && e.target!==document.getElementById('bl-lignes-overlay')) return;
-  document.getElementById('bl-lignes-overlay').style.display='none';
-  blLignesEditId=null;
 }
 
 function calcLigneQte(){
@@ -1471,25 +1429,28 @@ function calcLigneMontant(){
 }
 
 async function addLigneBL(){
-  const produitId=document.getElementById('ligne-produit').value;
+  const produitId=parseInt(document.getElementById('ligne-produit').value);
   if(!produitId){toast('Sélectionnez un produit','error');return;}
-  const produit=(DB.produits||[]).find(p=>String(p.id)===String(produitId));
+  const long=parseFloat(document.getElementById('ligne-long').value)||0;
+  const larg=parseFloat(document.getElementById('ligne-larg').value)||0;
+  const ep=parseFloat(document.getElementById('ligne-ep').value)||0;
   const body={
     num_bon: blLignesEditId,
-    produit_id: parseInt(produitId),
-    produit_nom: produit?(produit.nom||produit.designation||produit.reference||''):'',
-    long: parseFloat(document.getElementById('ligne-long').value)||0,
-    larg: parseFloat(document.getElementById('ligne-larg').value)||0,
-    ep:   parseFloat(document.getElementById('ligne-ep').value)||0,
+    produit: produitId,
+    long, larg, ep,
     unite_calcul: document.getElementById('ligne-unite').value||'M²',
     quantite: parseFloat(document.getElementById('ligne-qte').value)||0,
     pu: parseFloat(document.getElementById('ligne-pu').value)||0,
-    montant: parseFloat(document.getElementById('ligne-montant').value)||0,
   };
   if(body.quantite<=0){toast('Quantité invalide','error');return;}
+  // Vérifier unicité clé composée (num_bon, produit, long, larg, ep)
+  const dup = (DB.lignes_bon_livraison||[]).some(l=>
+    l.num_bon===body.num_bon && l.produit===body.produit &&
+    l.long===body.long && l.larg===body.larg && l.ep===body.ep);
+  if(dup){ toast('Une ligne identique existe déjà (même produit + dimensions)','error'); return; }
   try{
     if(connected){ await sbReq('POST','lignes_bon_livraison',body); await loadAll(); }
-    else{ DB.lignes_bon_livraison=DB.lignes_bon_livraison||[]; DB.lignes_bon_livraison.push({id:Date.now(),...body}); save(); }
+    else{ DB.lignes_bon_livraison=DB.lignes_bon_livraison||[]; DB.lignes_bon_livraison.push(body); save(); }
     ['ligne-long','ligne-larg','ligne-ep','ligne-qte','ligne-pu','ligne-montant'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
     document.getElementById('ligne-produit').value='';
     renderLignesBL();
@@ -1498,14 +1459,37 @@ async function addLigneBL(){
   }catch(e){toast('Erreur: '+e.message,'error');}
 }
 
-async function deleteLigne(id){
+async function deleteLigne(num_bon, produit, long, larg, ep){
   if(!confirm('Supprimer cette ligne ?')) return;
   try{
-    if(connected){ await sbDelete('lignes_bon_livraison',id); await loadAll(); }
-    else{ DB.lignes_bon_livraison=DB.lignes_bon_livraison.filter(l=>l.id!==id); save(); }
+    if(connected){
+      await sbDeleteComposite('lignes_bon_livraison', {num_bon, produit, long, larg, ep});
+      await loadAll();
+    } else {
+      DB.lignes_bon_livraison = DB.lignes_bon_livraison.filter(l=>
+        !(l.num_bon===num_bon && l.produit===produit && l.long===long && l.larg===larg && l.ep===ep));
+      save();
+    }
     renderLignesBL();
+    updateBLSaveBtn(blLignesEditId);
     toast('Ligne supprimée','success');
   }catch(e){toast('Erreur: '+e.message,'error');}
+}
+
+// Suppression via clé composée (PostgREST: plusieurs filtres égalité combinés en AND)
+async function sbDeleteComposite(table, row){
+  if(!connected) return;
+  const params = new URLSearchParams();
+  params.set('num_bon', 'eq.'+row.num_bon);
+  params.set('produit', 'eq.'+row.produit);
+  params.set('long', 'eq.'+row.long);
+  params.set('larg', 'eq.'+row.larg);
+  params.set('ep', 'eq.'+row.ep);
+  const r = await fetch(`${SB_URL}/rest/v1/${table}?${params.toString()}`, {
+    method:'DELETE',
+    headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json'}
+  });
+  if(!r.ok) throw new Error(await r.text());
 }
 
 function renderLignesBL(){
@@ -1518,20 +1502,23 @@ function renderLignesBL(){
     document.getElementById('lignes-total').textContent='0 DZD';
     return;
   }
-  const total=lignes.reduce((a,l)=>a+(l.montant||0),0);
+  const total=lignes.reduce((a,l)=>a+((l.quantite||0)*(l.pu||0)),0);
   document.getElementById('lignes-subtotal').textContent=total.toLocaleString()+' DZD';
   document.getElementById('lignes-total').textContent=total.toLocaleString()+' DZD';
-  tbody.innerHTML=lignes.map(l=>`<tr>
-    <td><strong>${l.produit_nom||'—'}</strong></td>
+  tbody.innerHTML=lignes.map(l=>{
+    const montant=(l.quantite||0)*(l.pu||0);
+    return `<tr>
+    <td><strong>${produitNomById(l.produit)}</strong></td>
     <td style="font-size:.75rem;color:var(--text3)">${l.long||0}</td>
     <td style="font-size:.75rem;color:var(--text3)">${l.larg||0}</td>
     <td style="font-size:.75rem;color:var(--text3)">${l.ep||0}</td>
     <td><span class="tag tag-blue" style="font-size:.65rem">${l.unite_calcul||'M²'}</span></td>
     <td style="font-weight:600">${l.quantite||0}</td>
     <td style="text-align:right">${(l.pu||0).toLocaleString()}</td>
-    <td style="text-align:right;font-weight:700;color:var(--gold)">${(l.montant||0).toLocaleString()} DZD</td>
-    <td><div class="icon-btn del" onclick="deleteLigne(${l.id})">✕</div></td>
-  </tr>`).join('');
+    <td style="text-align:right;font-weight:700;color:var(--gold)">${montant.toLocaleString()} DZD</td>
+    <td><div class="icon-btn del" onclick="deleteLigne(${l.num_bon},${l.produit},${l.long},${l.larg},${l.ep})">✕</div></td>
+  </tr>`;
+  }).join('');
 }
 
 function updateBLSaveBtn(blId){
@@ -1562,9 +1549,10 @@ function printBL(blId){
   if(!bl){toast('BL introuvable','error');return;}
   const lignes=(DB.lignes_bon_livraison||[]).filter(l=>l.num_bon===id);
   const net=(bl.montant||0)-(bl.remise||0);
+  const clientNom = clientNomById(bl.id_client);
   const win=window.open('','_blank');
   win.document.write(`<!DOCTYPE html><html><head>
-  <meta charset="UTF-8"><title>BL ${bl.num_bl}</title>
+  <meta charset="UTF-8"><title>BL-${id}</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
     body{padding:20mm;color:#111;font-size:11pt}
@@ -1590,11 +1578,11 @@ function printBL(blId){
   </style></head><body>
   <div class="header">
     <div><div class="company">PERLA</div><div class="company-sub">Marbrerie — Granit & Pierre Naturelle</div></div>
-    <div class="bl-info"><div class="bl-num">BON DE LIVRAISON N° ${bl.num_bl}</div><div class="bl-date">Date : ${bl.date_bl||'—'}</div></div>
+    <div class="bl-info"><div class="bl-num">BON DE LIVRAISON N° BL-${id}</div><div class="bl-date">Date : ${bl.created_at ? new Date(bl.created_at).toLocaleDateString('fr-FR') : '—'}</div></div>
   </div>
   <div class="client-box">
     <div class="client-label">Client</div>
-    <div class="client-name">${bl.raison_sociale||'—'}</div>
+    <div class="client-name">${clientNom||'—'}</div>
   </div>
   <table>
     <thead><tr>
@@ -1602,14 +1590,16 @@ function printBL(blId){
       <th>Unité</th><th class="text-right">Qté</th><th class="text-right">P.U (DZD)</th><th class="text-right">Montant (DZD)</th>
     </tr></thead>
     <tbody>
-    ${lignes.length ? lignes.map(l=>`<tr>
-      <td>${l.produit_nom||'—'}</td>
+    ${lignes.length ? lignes.map(l=>{
+      const montant=(l.quantite||0)*(l.pu||0);
+      return `<tr>
+      <td>${produitNomById(l.produit)}</td>
       <td class="text-right">${l.long||0}</td><td class="text-right">${l.larg||0}</td><td class="text-right">${l.ep||0}</td>
       <td>${l.unite_calcul||'M²'}</td>
       <td class="text-right">${l.quantite||0}</td>
       <td class="text-right">${(l.pu||0).toLocaleString()}</td>
-      <td class="text-right"><strong>${(l.montant||0).toLocaleString()}</strong></td>
-    </tr>`).join('') : '<tr><td colspan="8" style="text-align:center;color:#aaa;padding:5mm">Aucune ligne</td></tr>'}
+      <td class="text-right"><strong>${montant.toLocaleString()}</strong></td>
+    </tr>`;}).join('') : '<tr><td colspan="8" style="text-align:center;color:#aaa;padding:5mm">Aucune ligne</td></tr>'}
     </tbody>
   </table>
   <div class="totals">
@@ -1619,7 +1609,7 @@ function printBL(blId){
   </div>
   ${bl.notes?`<div style="margin-top:8mm;padding:3mm 4mm;background:#f9f9f9;border-left:3px solid #b8960c;font-size:9pt;color:#555">
     <strong>Notes :</strong> ${bl.notes}</div>`:''}
-  <div class="footer">PERLA — Bon de livraison généré le ${new Date().toLocaleDateString('fr-DZ')} — Document non contractuel</div>
+  <div class="footer">PERLA — Bon de livraison généré le ${new Date().toLocaleDateString('fr-FR')} — Document non contractuel</div>
   <script>window.onload=()=>{window.print();}<\/script>
   </body></html>`);
   win.document.close();
