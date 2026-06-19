@@ -1420,9 +1420,8 @@ async function openBLLignesModal(blId){
     if(!blEditId){ return; }
   }
   blLignesEditId = blId || blEditId;
-  // Lecture seule si ce BL est déjà enregistré en base (verrouillé)
-  const blExiste = (DB.bons_livraison||[]).some(b=>b.id===blLignesEditId);
-  const lignesLocked = blExiste;
+  // Lecture seule uniquement si le BL a été explicitement enregistré (verrouillé), pas juste sauvegardé en silence
+  const lignesLocked = blLocked;
   document.getElementById('bl-lignes-title').textContent=(lignesLocked?'🔒 ':'📄 ')+'Détail — BL-'+blLignesEditId;
   document.getElementById('bl-lignes-sub').textContent=`Client : ${clientNomById((DB.bons_livraison||[]).find(b=>b.id===blLignesEditId)?.id_client)||'—'}` + (lignesLocked?' — lecture seule':'');
   const formAjout = document.getElementById('bl-ligne-form-ajout');
