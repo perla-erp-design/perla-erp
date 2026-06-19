@@ -339,7 +339,7 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
       </div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border);flex-wrap:wrap">
-      <button class="btn" onclick="closeBLModal()">Annuler</button>
+      <button class="btn" id="bl-cancel-btn" onclick="closeBLModal()">Annuler</button>
       <button class="btn" id="bl-detail-btn" onclick="openBLLignesModal()">📄 Détail Lignes</button>
       <button class="btn" id="bl-print-btn" onclick="printBL()" style="display:none">🖨 Imprimer BL</button>
       <button class="btn btn-primary" id="bl-save-btn" onclick="saveBL()" disabled style="opacity:.45;cursor:not-allowed" title="Ajoutez au moins une ligne avant d'enregistrer">💾 Enregistrer</button>
@@ -1312,6 +1312,8 @@ function setBLLocked(locked){
       saveBtn.style.display = '';
     }
   }
+  const cancelBtn = document.getElementById('bl-cancel-btn');
+  if(cancelBtn) cancelBtn.textContent = locked ? 'Fermer' : 'Annuler';
 }
 
 async function closeBLModal(e){
