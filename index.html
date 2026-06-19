@@ -322,7 +322,7 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
         <div>
           <label class="form-label">Montant Total (DZD)</label>
-          <input class="form-inp" id="bl-montant" type="number" min="0" step="0.01" placeholder="0.00" oninput="calcBLNet()">
+          <input class="form-inp" id="bl-montant" type="number" min="0" step="0.01" placeholder="0.00" readonly style="background:var(--bg4);color:var(--text2)" title="Calculé automatiquement à partir des lignes">
         </div>
         <div>
           <label class="form-label">Remise (DZD)</label>
@@ -370,21 +370,21 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
           </div>
           <div>
             <label class="form-label">Long. (m)</label>
-            <input class="form-inp" id="ligne-long" type="number" step="0.01" min="0" placeholder="0.00" oninput="calcLigneQte()">
+            <input class="form-inp" id="ligne-long" type="number" step="0.01" min="0" placeholder="0.00" oninput="calcLigneMontant()">
           </div>
           <div>
             <label class="form-label">Larg. (m)</label>
-            <input class="form-inp" id="ligne-larg" type="number" step="0.01" min="0" placeholder="0.00" oninput="calcLigneQte()">
+            <input class="form-inp" id="ligne-larg" type="number" step="0.01" min="0" placeholder="0.00" oninput="calcLigneMontant()">
           </div>
           <div>
             <label class="form-label">Ép. (m)</label>
-            <input class="form-inp" id="ligne-ep" type="number" step="0.001" min="0" placeholder="0.000" oninput="calcLigneQte()">
+            <input class="form-inp" id="ligne-ep" type="number" step="0.001" min="0" placeholder="0.000">
           </div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:.6rem;align-items:end">
           <div>
             <label class="form-label">Unité calc.</label>
-            <select class="form-inp" id="ligne-unite" onchange="calcLigneQte()">
+            <select class="form-inp" id="ligne-unite">
               <option value="M²">M²</option>
               <option value="M³">M³</option>
               <option value="ML">ML</option>
@@ -392,8 +392,8 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
             </select>
           </div>
           <div>
-            <label class="form-label">Quantité</label>
-            <input class="form-inp" id="ligne-qte" type="number" step="0.01" min="0" placeholder="auto">
+            <label class="form-label">Quantité *</label>
+            <input class="form-inp" id="ligne-qte" type="number" step="0.01" min="0" placeholder="0.00" oninput="calcLigneMontant()">
           </div>
           <div>
             <label class="form-label">Prix Unit. (DZD)</label>
@@ -1271,7 +1271,7 @@ function openBLModal(data=null){
   const sel = document.getElementById('bl-client-select');
   sel.innerHTML = '<option value="">— Sélectionner un client —</option>' +
     (DB.clients||[]).map(c=>`<option value="${c.id}" ${data&&data.id_client===c.id?'selected':''}>${c.nom||c.raison_sociale||'—'}</option>`).join('');
-  document.getElementById('bl-montant').value = data ? (data.montant||0) : 0;
+  document.getElementById('bl-montant').value = data ? calcBLMontantFromLignes(data.id).toFixed(2) : '0.00';
   document.getElementById('bl-remise').value  = data ? (data.remise||0) : 0;
   document.getElementById('bl-notes').value   = data ? (data.notes||'') : '';
   calcBLNet();
@@ -1285,6 +1285,18 @@ function closeBLModal(e){
   if(e && e.target !== document.getElementById('bl-modal-overlay')) return;
   document.getElementById('bl-modal-overlay').style.display='none';
   blEditId=null;
+}
+
+function calcBLMontantFromLignes(blId){
+  const lignes = (DB.lignes_bon_livraison||[]).filter(l=>l.num_bon===blId);
+  return lignes.reduce((a,l)=>a+((l.long||0)*(l.larg||0)*(l.quantite||0)*(l.pu||0)),0);
+}
+
+function refreshBLMontantDisplay(blId){
+  const mt = calcBLMontantFromLignes(blId);
+  const mtEl = document.getElementById('bl-montant');
+  if(mtEl) mtEl.value = mt.toFixed(2);
+  calcBLNet();
 }
 
 function calcBLNet(){
@@ -1303,7 +1315,7 @@ async function saveBL(){
   if(!clientId){ toast('Sélectionnez un client','error'); return; }
   const body = {
     id_client: clientId,
-    montant: parseFloat(document.getElementById('bl-montant').value)||0,
+    montant: calcBLMontantFromLignes(blEditId),
     remise:  parseFloat(document.getElementById('bl-remise').value)||0,
     notes:   document.getElementById('bl-notes').value.trim()
   };
@@ -1413,24 +1425,12 @@ async function saveBLSilent(){
   }catch(e){ toast('Erreur sauvegarde BL: '+e.message,'error'); }
 }
 
-function calcLigneQte(){
+function calcLigneMontant(){
   const L=parseFloat(document.getElementById('ligne-long').value)||0;
   const l=parseFloat(document.getElementById('ligne-larg').value)||0;
-  const e=parseFloat(document.getElementById('ligne-ep').value)||0;
-  const unite=document.getElementById('ligne-unite').value;
-  let qte=0;
-  if(unite==='M²') qte=L*l;
-  else if(unite==='M³') qte=L*l*e;
-  else if(unite==='ML') qte=L;
-  else qte=1;
-  if(qte>0) document.getElementById('ligne-qte').value=parseFloat(qte.toFixed(4));
-  calcLigneMontant();
-}
-
-function calcLigneMontant(){
   const qte=parseFloat(document.getElementById('ligne-qte').value)||0;
   const pu=parseFloat(document.getElementById('ligne-pu').value)||0;
-  document.getElementById('ligne-montant').value=(qte*pu).toFixed(2);
+  document.getElementById('ligne-montant').value=(L*l*qte*pu).toFixed(2);
 }
 
 async function addLigneBL(){
@@ -1460,6 +1460,7 @@ async function addLigneBL(){
     document.getElementById('ligne-produit').value='';
     renderLignesBL();
     updateBLSaveBtn(blLignesEditId);
+    refreshBLMontantDisplay(blLignesEditId);
     toast('Ligne ajoutée ✓','success');
   }catch(e){toast('Erreur: '+e.message,'error');}
 }
@@ -1477,6 +1478,7 @@ async function deleteLigne(num_bon, produit, long, larg, ep){
     }
     renderLignesBL();
     updateBLSaveBtn(blLignesEditId);
+    refreshBLMontantDisplay(blLignesEditId);
     toast('Ligne supprimée','success');
   }catch(e){toast('Erreur: '+e.message,'error');}
 }
@@ -1507,11 +1509,11 @@ function renderLignesBL(){
     document.getElementById('lignes-total').textContent='0 DZD';
     return;
   }
-  const total=lignes.reduce((a,l)=>a+((l.quantite||0)*(l.pu||0)),0);
+  const total=lignes.reduce((a,l)=>a+((l.long||0)*(l.larg||0)*(l.quantite||0)*(l.pu||0)),0);
   document.getElementById('lignes-subtotal').textContent=total.toLocaleString()+' DZD';
   document.getElementById('lignes-total').textContent=total.toLocaleString()+' DZD';
   tbody.innerHTML=lignes.map(l=>{
-    const montant=(l.quantite||0)*(l.pu||0);
+    const montant=(l.long||0)*(l.larg||0)*(l.quantite||0)*(l.pu||0);
     return `<tr>
     <td><strong>${produitNomById(l.produit)}</strong></td>
     <td style="font-size:.75rem;color:var(--text3)">${l.long||0}</td>
@@ -1538,11 +1540,18 @@ function updateBLSaveBtn(blId){
 }
 
 async function saveLignesBL(){
+  // Persister le montant recalculé (somme des lignes) sur le BL
+  const montant = calcBLMontantFromLignes(blLignesEditId);
+  try{
+    if(connected){ await sbReq('PATCH','bons_livraison',{montant},blLignesEditId); }
+    else { const i=DB.bons_livraison.findIndex(b=>b.id===blLignesEditId); if(i>-1) DB.bons_livraison[i].montant=montant; save(); }
+  }catch(e){ toast('Erreur mise à jour montant BL: '+e.message,'error'); }
   toast('Lignes enregistrées ✓','success');
   if(connected) await loadAll();
   renderLignesBL();
   renderBL();
   updateBLSaveBtn(blLignesEditId);
+  refreshBLMontantDisplay(blLignesEditId);
   document.getElementById('bl-lignes-overlay').style.display='none';
 }
 
@@ -1596,7 +1605,7 @@ function printBL(blId){
     </tr></thead>
     <tbody>
     ${lignes.length ? lignes.map(l=>{
-      const montant=(l.quantite||0)*(l.pu||0);
+      const montant=(l.long||0)*(l.larg||0)*(l.quantite||0)*(l.pu||0);
       return `<tr>
       <td>${produitNomById(l.produit)}</td>
       <td class="text-right">${l.long||0}</td><td class="text-right">${l.larg||0}</td><td class="text-right">${l.ep||0}</td>
