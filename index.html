@@ -1432,6 +1432,8 @@ function exportBL(){
 let blLignesEditId = null;
 
 async function openBLLignesModal(blId){
+  // Si on ouvre depuis le tableau principal avec un id existant => BL déjà enregistré => verrouillé
+  const openingExistingFromTable = !!blId;
   if(!blId && !blEditId){
     const clientId = parseInt(document.getElementById('bl-client-select').value);
     if(!clientId){ toast("Sélectionnez un client d'abord",'error'); return; }
@@ -1439,8 +1441,8 @@ async function openBLLignesModal(blId){
     if(!blEditId){ return; }
   }
   blLignesEditId = blId || blEditId;
-  // Lecture seule uniquement si le BL a été explicitement enregistré (verrouillé), pas juste sauvegardé en silence
-  const lignesLocked = blLocked;
+  // Verrouillé si: ouvert depuis le tableau (BL déjà existant), OU le modal BL est en mode verrouillé
+  const lignesLocked = openingExistingFromTable || blLocked;
   document.getElementById('bl-lignes-title').textContent=(lignesLocked?'🔒 ':'📄 ')+'Détail — BL-'+blLignesEditId;
   document.getElementById('bl-lignes-sub').textContent=`Client : ${clientNomById((DB.bons_livraison||[]).find(b=>b.id===blLignesEditId)?.id_client)||'—'}` + (lignesLocked?' — lecture seule':'');
   const formAjout = document.getElementById('bl-ligne-form-ajout');
