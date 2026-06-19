@@ -1314,10 +1314,29 @@ function setBLLocked(locked){
   }
 }
 
-function closeBLModal(e){
+async function closeBLModal(e){
   if(e && e.target !== document.getElementById('bl-modal-overlay')) return;
+  // Si le BL a été créé en silence (via Détail Lignes) mais jamais enregistré explicitement, on l'annule complètement
+  if(blEditId && !blLocked){
+    await cancelUnsavedBL(blEditId);
+  }
   document.getElementById('bl-modal-overlay').style.display='none';
   blEditId=null;
+}
+
+async function cancelUnsavedBL(id){
+  try{
+    if(connected){
+      const lignes=(DB.lignes_bon_livraison||[]).filter(l=>l.num_bon===id);
+      for(const l of lignes) try{ await sbDeleteComposite('lignes_bon_livraison', l); }catch(e){}
+      await sbDelete('bons_livraison', id);
+      await loadAll();
+    } else {
+      DB.bons_livraison = DB.bons_livraison.filter(b=>b.id!==id);
+      DB.lignes_bon_livraison = (DB.lignes_bon_livraison||[]).filter(l=>l.num_bon!==id);
+      save(); refreshAll();
+    }
+  }catch(e){ console.warn('Erreur annulation BL:', e.message); }
 }
 
 function calcBLMontantFromLignes(blId){
