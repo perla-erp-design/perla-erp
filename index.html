@@ -322,7 +322,7 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
         <div>
           <label class="form-label">Montant Total (DZD)</label>
-          <input class="form-inp" id="bl-montant" type="number" min="0" step="0.01" placeholder="0.00" readonly style="background:var(--bg4);color:var(--text2)" title="Calculé automatiquement à partir des lignes">
+          <div class="form-inp" id="bl-montant" style="background:var(--bg4);color:var(--text2);display:flex;align-items:center" title="Calculé automatiquement à partir des lignes" data-raw="0">0 DZD</div>
         </div>
         <div>
           <label class="form-label">Remise (DZD)</label>
@@ -359,7 +359,7 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
     </div>
     <div style="padding:1.25rem">
       <!-- Formulaire ajout ligne -->
-      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r8);padding:1rem;margin-bottom:1rem">
+      <div id="bl-ligne-form-ajout" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r8);padding:1rem;margin-bottom:1rem">
         <div style="font-size:.75rem;font-weight:600;color:var(--gold-l);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.08em">+ Ajouter une ligne</div>
         <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:.6rem;margin-bottom:.6rem">
           <div>
@@ -437,7 +437,7 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
     </div>
     <div style="display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border)">
       <button class="btn" onclick="closeBLLignesModal()">Fermer</button>
-      <button class="btn btn-primary" onclick="saveLignesBL()">💾 Enregistrer les lignes</button>
+      <button class="btn btn-primary" id="bl-lignes-save-btn" onclick="saveLignesBL()">💾 Enregistrer les lignes</button>
     </div>
   </div>
 </div>
@@ -1175,6 +1175,14 @@ function renderDept(q=''){
 
 let blEditId = null;
 let blLignesTemp = []; // lignes en cours d'édition
+let blLocked = false; // true si le BL enregistré est verrouillé (lecture seule)
+
+function fmtDZD(n){
+  return Math.round(n||0).toLocaleString('fr-FR')+' DZD';
+}
+function fmtNum(n){
+  return Math.round(n||0).toLocaleString('fr-FR');
+}
 
 function renderCmd() { renderBL(); } // alias pour compatibilité
 
@@ -1218,9 +1226,9 @@ function renderBL(q='') {
       <td><code style="font-size:.72rem;color:var(--gold)">BL-${b.id}</code></td>
       <td><strong>${clientNom||'—'}</strong></td>
       <td style="font-size:.75rem;color:var(--text3)">${b.created_at ? new Date(b.created_at).toLocaleDateString('fr-FR') : '—'}</td>
-      <td style="text-align:right;color:var(--text2)">${(b.montant||0).toLocaleString()} DZD</td>
-      <td style="text-align:right;color:var(--red);font-size:.78rem">${(b.remise||0)>0?'- '+(b.remise||0).toLocaleString()+' DZD':'—'}</td>
-      <td style="text-align:right;font-weight:700;color:var(--gold)">${net.toLocaleString()} DZD</td>
+      <td style="text-align:right;color:var(--text2)">${fmtDZD(b.montant)}</td>
+      <td style="text-align:right;color:var(--red);font-size:.78rem">${(b.remise||0)>0?'- '+fmtDZD(b.remise):'—'}</td>
+      <td style="text-align:right;font-weight:700;color:var(--gold)">${fmtDZD(net)}</td>
       <td style="text-align:center"><span class="tag tag-blue">${nbLignes} ligne${nbLignes!==1?'s':''}</span></td>
       <td>
         <div class="action-btns">
@@ -1251,9 +1259,9 @@ function updateBLKPI(){
   const totalMt = bls.reduce((a,b)=>a+(b.montant||0),0);
   const totalRm = bls.reduce((a,b)=>a+(b.remise||0),0);
   const totalNet = totalMt - totalRm;
-  document.getElementById('kpi-bl-montant').textContent = totalMt.toLocaleString()+' DZD';
-  document.getElementById('kpi-bl-remise').textContent = totalRm.toLocaleString()+' DZD';
-  document.getElementById('kpi-bl-net').textContent = totalNet.toLocaleString()+' DZD';
+  document.getElementById('kpi-bl-montant').textContent = fmtDZD(totalMt);
+  document.getElementById('kpi-bl-remise').textContent = fmtDZD(totalRm);
+  document.getElementById('kpi-bl-net').textContent = fmtDZD(totalNet);
   const sel = document.getElementById('bl-filter-client');
   if(sel){
     const cur = sel.value;
@@ -1266,19 +1274,44 @@ function updateBLKPI(){
 function openBLModal(data=null){
   blEditId = data ? data.id : null;
   const isEdit = !!data;
-  document.getElementById('bl-modal-title').textContent = isEdit ? '✎ Modifier le Bon de Livraison' : '+ Nouveau Bon de Livraison';
-  document.getElementById('bl-modal-sub').textContent   = isEdit ? `BL N° BL-${data.id}` : 'Remplissez les informations du BL';
+  document.getElementById('bl-modal-title').textContent = isEdit ? '🔒 Bon de Livraison (enregistré)' : '+ Nouveau Bon de Livraison';
+  document.getElementById('bl-modal-sub').textContent   = isEdit ? `BL N° BL-${data.id} — lecture seule` : 'Remplissez les informations du BL';
   const sel = document.getElementById('bl-client-select');
   sel.innerHTML = '<option value="">— Sélectionner un client —</option>' +
     (DB.clients||[]).map(c=>`<option value="${c.id}" ${data&&data.id_client===c.id?'selected':''}>${c.nom||c.raison_sociale||'—'}</option>`).join('');
-  document.getElementById('bl-montant').value = data ? calcBLMontantFromLignes(data.id).toFixed(2) : '0.00';
+  setBLMontantDisplay(data ? calcBLMontantFromLignes(data.id) : 0);
   document.getElementById('bl-remise').value  = data ? (data.remise||0) : 0;
   document.getElementById('bl-notes').value   = data ? (data.notes||'') : 'LA MARCHANDISE NE PEUT ETRE NI ECHANGER NI REMBOURCER';
   calcBLNet();
   document.getElementById('bl-detail-btn').style.display = '';
   document.getElementById('bl-print-btn').style.display  = isEdit ? '' : 'none';
   updateBLSaveBtn(isEdit ? blEditId : null);
+  setBLLocked(isEdit);
   document.getElementById('bl-modal-overlay').style.display='flex';
+}
+
+function setBLLocked(locked){
+  blLocked = locked;
+  ['bl-client-select','bl-remise','bl-notes'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el){ el.disabled = locked; el.style.opacity = locked ? '.6' : '1'; el.style.cursor = locked ? 'not-allowed' : ''; }
+  });
+  const detailBtn = document.getElementById('bl-detail-btn');
+  const saveBtn   = document.getElementById('bl-save-btn');
+  if(detailBtn){
+    detailBtn.disabled = locked;
+    detailBtn.style.opacity = locked ? '.45' : '1';
+    detailBtn.style.cursor  = locked ? 'not-allowed' : 'pointer';
+    detailBtn.title = locked ? 'BL déjà enregistré — verrouillé' : '';
+  }
+  if(saveBtn){
+    if(locked){
+      saveBtn.disabled = true;
+      saveBtn.style.display = 'none';
+    } else {
+      saveBtn.style.display = '';
+    }
+  }
 }
 
 function closeBLModal(e){
@@ -1292,17 +1325,21 @@ function calcBLMontantFromLignes(blId){
   return lignes.reduce((a,l)=>a+((l.long||0)*(l.larg||0)*(l.quantite||0)*(l.pu||0)),0);
 }
 
-function refreshBLMontantDisplay(blId){
-  const mt = calcBLMontantFromLignes(blId);
+function setBLMontantDisplay(mt){
   const mtEl = document.getElementById('bl-montant');
-  if(mtEl) mtEl.value = mt.toFixed(2);
+  if(mtEl){ mtEl.dataset.raw = mt; mtEl.textContent = fmtDZD(mt); }
   calcBLNet();
 }
 
+function refreshBLMontantDisplay(blId){
+  setBLMontantDisplay(calcBLMontantFromLignes(blId));
+}
+
 function calcBLNet(){
-  const mt = parseFloat(document.getElementById('bl-montant').value)||0;
+  const mtEl = document.getElementById('bl-montant');
+  const mt = mtEl ? (parseFloat(mtEl.dataset.raw)||0) : 0;
   const rm = parseFloat(document.getElementById('bl-remise').value)||0;
-  document.getElementById('bl-net-display').textContent = (mt-rm).toLocaleString()+' DZD';
+  document.getElementById('bl-net-display').textContent = fmtDZD(mt-rm);
 }
 
 function editBL(id){
@@ -1334,9 +1371,10 @@ async function saveBL(){
     toast('BL enregistré ✓','success');
     document.getElementById('bl-detail-btn').style.display='';
     document.getElementById('bl-print-btn').style.display='';
-    document.getElementById('bl-modal-title').textContent='✎ Modifier le Bon de Livraison';
-    document.getElementById('bl-modal-sub').textContent=`BL N° BL-${blEditId} — enregistré`;
+    document.getElementById('bl-modal-title').textContent='🔒 Bon de Livraison (enregistré)';
+    document.getElementById('bl-modal-sub').textContent=`BL N° BL-${blEditId} — lecture seule`;
     updateBLSaveBtn(blEditId);
+    setBLLocked(true);
   }catch(e){ toast('Erreur: '+e.message,'error'); }
   finally{ btn.textContent='💾 Enregistrer'; btn.disabled=false; }
 }
@@ -1382,14 +1420,21 @@ async function openBLLignesModal(blId){
     if(!blEditId){ return; }
   }
   blLignesEditId = blId || blEditId;
-  document.getElementById('bl-lignes-title').textContent='📄 Détail — BL-'+blLignesEditId;
-  document.getElementById('bl-lignes-sub').textContent=`Client : ${clientNomById((DB.bons_livraison||[]).find(b=>b.id===blLignesEditId)?.id_client)||'—'}`;
+  // Lecture seule si ce BL est déjà enregistré en base (verrouillé)
+  const blExiste = (DB.bons_livraison||[]).some(b=>b.id===blLignesEditId);
+  const lignesLocked = blExiste;
+  document.getElementById('bl-lignes-title').textContent=(lignesLocked?'🔒 ':'📄 ')+'Détail — BL-'+blLignesEditId;
+  document.getElementById('bl-lignes-sub').textContent=`Client : ${clientNomById((DB.bons_livraison||[]).find(b=>b.id===blLignesEditId)?.id_client)||'—'}` + (lignesLocked?' — lecture seule':'');
+  const formAjout = document.getElementById('bl-ligne-form-ajout');
+  if(formAjout) formAjout.style.display = lignesLocked ? 'none' : '';
+  const saveLignesBtn = document.getElementById('bl-lignes-save-btn');
+  if(saveLignesBtn) saveLignesBtn.style.display = lignesLocked ? 'none' : '';
   const selP=document.getElementById('ligne-produit');
   selP.innerHTML='<option value="">— Produit —</option>'+
     (DB.produits||[]).map(p=>`<option value="${p.id}">${p.nom||p.designation||p.reference||'Produit '+p.id}</option>`).join('');
   ['ligne-long','ligne-larg','ligne-ep','ligne-qte','ligne-pu','ligne-montant'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('ligne-unite').value='M²';
-  renderLignesBL();
+  renderLignesBL(lignesLocked);
   document.getElementById('bl-lignes-overlay').style.display='flex';
 }
 
@@ -1404,7 +1449,7 @@ async function saveBLSilent(){
   if(!clientId) return;
   const body = {
     id_client: clientId,
-    montant: parseFloat(document.getElementById('bl-montant').value)||0,
+    montant: parseFloat(document.getElementById('bl-montant').dataset.raw)||0,
     remise:  parseFloat(document.getElementById('bl-remise').value)||0,
     notes:   document.getElementById('bl-notes').value.trim()
   };
@@ -1498,7 +1543,7 @@ async function sbDeleteComposite(table, row){
   if(!r.ok) throw new Error(await r.text());
 }
 
-function renderLignesBL(){
+function renderLignesBL(locked=false){
   const lignes=(DB.lignes_bon_livraison||[]).filter(l=>l.num_bon===blLignesEditId);
   const tbody=document.getElementById('tbl-lignes-bl');
   if(!tbody) return;
@@ -1509,8 +1554,8 @@ function renderLignesBL(){
     return;
   }
   const total=lignes.reduce((a,l)=>a+((l.long||0)*(l.larg||0)*(l.quantite||0)*(l.pu||0)),0);
-  document.getElementById('lignes-subtotal').textContent=total.toLocaleString()+' DZD';
-  document.getElementById('lignes-total').textContent=total.toLocaleString()+' DZD';
+  document.getElementById('lignes-subtotal').textContent=fmtDZD(total);
+  document.getElementById('lignes-total').textContent=fmtDZD(total);
   tbody.innerHTML=lignes.map(l=>{
     const montant=(l.long||0)*(l.larg||0)*(l.quantite||0)*(l.pu||0);
     return `<tr>
@@ -1520,9 +1565,9 @@ function renderLignesBL(){
     <td style="font-size:.75rem;color:var(--text3)">${l.ep||0}</td>
     <td><span class="tag tag-blue" style="font-size:.65rem">${l.unite_calcul||'M²'}</span></td>
     <td style="font-weight:600">${l.quantite||0}</td>
-    <td style="text-align:right">${(l.pu||0).toLocaleString()}</td>
-    <td style="text-align:right;font-weight:700;color:var(--gold)">${montant.toLocaleString()} DZD</td>
-    <td><div class="icon-btn del" onclick="deleteLigne(${l.num_bon},${l.produit},${l.long},${l.larg},${l.ep})">✕</div></td>
+    <td style="text-align:right">${fmtNum(l.pu)}</td>
+    <td style="text-align:right;font-weight:700;color:var(--gold)">${fmtDZD(montant)}</td>
+    <td>${locked?'':`<div class="icon-btn del" onclick="deleteLigne(${l.num_bon},${l.produit},${l.long},${l.larg},${l.ep})">✕</div>`}</td>
   </tr>`;
   }).join('');
 }
@@ -1610,15 +1655,15 @@ function printBL(blId){
       <td class="text-right">${l.long||0}</td><td class="text-right">${l.larg||0}</td><td class="text-right">${l.ep||0}</td>
       <td>${l.unite_calcul||'M²'}</td>
       <td class="text-right">${l.quantite||0}</td>
-      <td class="text-right">${(l.pu||0).toLocaleString()}</td>
-      <td class="text-right"><strong>${montant.toLocaleString()}</strong></td>
+      <td class="text-right">${fmtNum(l.pu)}</td>
+      <td class="text-right"><strong>${fmtNum(montant)}</strong></td>
     </tr>`;}).join('') : '<tr><td colspan="8" style="text-align:center;color:#aaa;padding:5mm">Aucune ligne</td></tr>'}
     </tbody>
   </table>
   <div class="totals">
-    <div class="totals-row"><span>Montant total</span><span>${(bl.montant||0).toLocaleString()} DZD</span></div>
-    ${(bl.remise||0)>0?`<div class="totals-row"><span>Remise</span><span>- ${(bl.remise||0).toLocaleString()} DZD</span></div>`:''}
-    <div class="totals-row net"><span>NET À PERCEVOIR</span><span>${net.toLocaleString()} DZD</span></div>
+    <div class="totals-row"><span>Montant total</span><span>${fmtDZD(bl.montant)}</span></div>
+    ${(bl.remise||0)>0?`<div class="totals-row"><span>Remise</span><span>- ${fmtDZD(bl.remise)}</span></div>`:''}
+    <div class="totals-row net"><span>NET À PERCEVOIR</span><span>${fmtDZD(net)}</span></div>
   </div>
   ${bl.notes?`<div style="margin-top:8mm;padding:3mm 4mm;background:#f9f9f9;border-left:3px solid #b8960c;font-size:9pt;color:#555">
     <strong>Notes :</strong> ${bl.notes}</div>`:''}
