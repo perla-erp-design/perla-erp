@@ -335,7 +335,7 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
       </div>
       <div>
         <label class="form-label">Notes</label>
-        <textarea class="form-inp" id="bl-notes" rows="2" placeholder="Remarques éventuelles…" style="resize:vertical"></textarea>
+        <textarea class="form-inp" id="bl-notes" rows="2" placeholder="Remarques éventuelles…" style="resize:vertical">LA MARCHANDISE NE PEUT ETRE NI ECHANGER NI REMBOURCER</textarea>
       </div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border);flex-wrap:wrap">
@@ -1273,7 +1273,7 @@ function openBLModal(data=null){
     (DB.clients||[]).map(c=>`<option value="${c.id}" ${data&&data.id_client===c.id?'selected':''}>${c.nom||c.raison_sociale||'—'}</option>`).join('');
   document.getElementById('bl-montant').value = data ? calcBLMontantFromLignes(data.id).toFixed(2) : '0.00';
   document.getElementById('bl-remise').value  = data ? (data.remise||0) : 0;
-  document.getElementById('bl-notes').value   = data ? (data.notes||'') : '';
+  document.getElementById('bl-notes').value   = data ? (data.notes||'') : 'LA MARCHANDISE NE PEUT ETRE NI ECHANGER NI REMBOURCER';
   calcBLNet();
   document.getElementById('bl-detail-btn').style.display = '';
   document.getElementById('bl-print-btn').style.display  = isEdit ? '' : 'none';
@@ -1419,7 +1419,6 @@ async function saveBLSilent(){
       save(); refreshAll();
     }
     document.getElementById('bl-detail-btn').style.display='';
-    document.getElementById('bl-print-btn').style.display='';
     document.getElementById('bl-modal-title').textContent='✎ Modifier le Bon de Livraison';
     document.getElementById('bl-modal-sub').textContent=`BL N° BL-${blEditId}`;
   }catch(e){ toast('Erreur sauvegarde BL: '+e.message,'error'); }
