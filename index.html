@@ -1477,6 +1477,14 @@ let blEditId = null;
 let blLignesTemp = []; // lignes en cours d'édition
 let blLocked = false; // true si le BL enregistré est verrouillé (lecture seule)
 
+function today(){
+  return new Date().toISOString().slice(0,10);
+}
+
+function onBLClientChange(){
+  // réservé pour logique future (ex: pré-remplissage)
+}
+
 function fmtDZD(n){
   return Math.round(n||0).toLocaleString('fr-FR')+' DZD';
 }
