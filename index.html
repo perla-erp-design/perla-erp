@@ -176,6 +176,7 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 
   <div class="sidebar-section">Approvisionnement</div>
   <div class="nav-item" onclick="nav('reception')" id="nav-reception"><span class="nav-icon">📥</span> Bons de Réception</div>
+  <div class="nav-item" onclick="nav('reglements-four')" id="nav-reglements-four"><span class="nav-icon">💳</span> Règlements Fournisseurs</div>
   <div class="nav-item" onclick="nav('stocks')" id="nav-stocks"><span class="nav-icon">📦</span> Stocks</div>
   <div class="nav-item" onclick="nav('fournisseurs')" id="nav-fournisseurs"><span class="nav-icon">🚚</span> Fournisseurs</div>
 
@@ -187,6 +188,8 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
   <div class="sidebar-section">États</div>
   <div class="nav-item" onclick="nav('etat-creances')" id="nav-etat-creances"><span class="nav-icon">📊</span> Créances Clients</div>
   <div class="nav-item" onclick="nav('etat-historique')" id="nav-etat-historique"><span class="nav-icon">📜</span> Historique Client</div>
+  <div class="nav-item" onclick="nav('etat-dettes')" id="nav-etat-dettes"><span class="nav-icon">📊</span> Dettes Fournisseurs</div>
+  <div class="nav-item" onclick="nav('etat-historique-four')" id="nav-etat-historique-four"><span class="nav-icon">📜</span> Historique Fournisseur</div>
 
   <div class="sidebar-footer">
     <button class="db-config-btn" onclick="nav('settings')">⚙ Configuration base de données</button>
@@ -751,6 +754,105 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
   </div>
 </div>
 
+<!-- RÈGLEMENTS FOURNISSEURS -->
+<div class="page" id="page-reglements-four">
+  <div class="page-header">
+    <div><div class="page-title">💳 Règlements Fournisseurs</div><div class="page-sub">Suivi des paiements effectués aux fournisseurs</div></div>
+    <div class="page-actions">
+      <button class="btn" onclick="exportReglementsFour()">⬇ Exporter CSV</button>
+      <button class="btn btn-primary" onclick="openReglementFourModal()">+ Règlement</button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="kpi-grid" id="kpi-regf-grid">
+      <div class="kpi"><div class="kpi-label">Total Règlements</div><div class="kpi-val" id="kpi-regf-total">0</div><div class="kpi-sub">paiements effectués</div></div>
+      <div class="kpi"><div class="kpi-label">Montant Total</div><div class="kpi-val" id="kpi-regf-montant" style="font-size:1.1rem;color:var(--gold)">0 DZD</div><div class="kpi-sub">décaissé</div></div>
+      <div class="kpi"><div class="kpi-label">Espèce</div><div class="kpi-val" id="kpi-regf-espece" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub">paiements cash</div></div>
+      <div class="kpi"><div class="kpi-label">Service (compensation)</div><div class="kpi-val" id="kpi-regf-service" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub">marchandise échangée</div></div>
+    </div>
+    <div class="table-wrap">
+      <div class="table-toolbar" style="flex-wrap:wrap;gap:.5rem">
+        <input class="search-inp" id="regf-search" placeholder="🔍 Rechercher par fournisseur…" oninput="renderReglementsFour(this.value)" style="flex:1;min-width:200px">
+        <select class="filter-sel" id="regf-filter-type" onchange="renderReglementsFour(document.getElementById('regf-search').value)">
+          <option value="">Tous types</option>
+          <option value="Chèque">Chèque</option>
+          <option value="Espèce">Espèce</option>
+          <option value="Virement">Virement</option>
+          <option value="Service">Service</option>
+        </select>
+        <span id="regf-count" style="font-size:.75rem;color:var(--text3);margin-left:auto;align-self:center"></span>
+      </div>
+      <table>
+        <thead><tr>
+          <th>Fournisseur</th><th>Date</th><th>Type</th>
+          <th style="text-align:right">Montant</th>
+          <th>Référence</th>
+          <th style="text-align:center">Actions</th>
+        </tr></thead>
+        <tbody id="tbl-regf"></tbody>
+      </table>
+      <div id="regf-empty" style="display:none;text-align:center;padding:3rem;color:var(--text3)">
+        <div style="font-size:2.5rem;margin-bottom:.75rem">💳</div>
+        <div style="font-size:.9rem">Aucun règlement enregistré</div>
+        <div style="font-size:.78rem;margin-top:.35rem">Cliquez sur "+ Règlement" pour commencer</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RÈGLEMENT FOURNISSEUR -->
+<div id="regf-modal-overlay" onclick="closeReglementFourModal(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;align-items:center;justify-content:center">
+  <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r16);width:100%;max-width:480px;max-height:92vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.6)">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.25rem;border-bottom:1px solid var(--border)">
+      <div>
+        <div id="regf-modal-title" style="font-size:.95rem;font-weight:600;color:var(--gold-l)">+ Nouveau Règlement Fournisseur</div>
+        <div style="font-size:.75rem;color:var(--text3);margin-top:.2rem">Enregistrer un paiement effectué</div>
+      </div>
+      <button onclick="closeReglementFourModal()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:1.2rem;padding:.2rem .4rem;border-radius:4px">✕</button>
+    </div>
+    <div style="padding:1.25rem;display:grid;gap:.9rem">
+      <div>
+        <label class="form-label">Fournisseur *</label>
+        <select class="form-inp" id="regf-fournisseur-select">
+          <option value="">— Sélectionner un fournisseur —</option>
+        </select>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
+        <div>
+          <label class="form-label">Date *</label>
+          <input class="form-inp" id="regf-date" type="date">
+        </div>
+        <div>
+          <label class="form-label">Montant (DZD) *</label>
+          <input class="form-inp" id="regf-montant" type="text" inputmode="numeric" placeholder="0" oninput="formatMontantInput(this)">
+        </div>
+      </div>
+      <div>
+        <label class="form-label">Type de paiement *</label>
+        <select class="form-inp" id="regf-type" onchange="onRegFTypeChange()">
+          <option value="Espèce">Espèce</option>
+          <option value="Chèque">Chèque</option>
+          <option value="Virement">Virement</option>
+          <option value="Service">Service (marchandise échangée)</option>
+        </select>
+      </div>
+      <div id="regf-ref-wrap" style="display:none">
+        <label class="form-label" id="regf-ref-label">N° Chèque</label>
+        <input class="form-inp" id="regf-reference" type="text" placeholder="ex: 0012345">
+      </div>
+      <div>
+        <label class="form-label">Notes</label>
+        <textarea class="form-inp" id="regf-notes" rows="2" placeholder="Remarques éventuelles…" style="resize:vertical"></textarea>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border)">
+      <button class="btn" id="regf-cancel-btn" onclick="closeReglementFourModal()">Annuler</button>
+      <button class="btn" id="regf-print-btn" onclick="printReglementFour(regfEditId)" style="display:none">🖨 Imprimer</button>
+      <button class="btn btn-primary" id="regf-save-btn" onclick="saveReglementFour()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL RÈGLEMENT -->
 <div id="reg-modal-overlay" onclick="closeReglementModal(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;align-items:center;justify-content:center">
   <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r16);width:100%;max-width:480px;max-height:92vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.6)">
@@ -1062,6 +1164,84 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
   </div>
 </div>
 
+<!-- ÉTAT — DETTES FOURNISSEURS -->
+<div class="page" id="page-etat-dettes">
+  <div class="page-header">
+    <div><div class="page-title">📊 État des Dettes Fournisseurs</div><div class="page-sub">Synthèse achats / règlements / solde par fournisseur</div></div>
+    <div class="page-actions">
+      <button class="btn" onclick="exportDettes()">⬇ Exporter CSV</button>
+      <button class="btn btn-primary" onclick="printDettes()">🖨 Imprimer l'état</button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="kpi-grid" id="kpi-dettes-grid">
+      <div class="kpi"><div class="kpi-label">Total Achats</div><div class="kpi-val" id="kpi-dt-achats" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub">tous BR confondus</div></div>
+      <div class="kpi"><div class="kpi-label">Total Règlements</div><div class="kpi-val" id="kpi-dt-reg" style="font-size:1.1rem;color:var(--green)">0 DZD</div><div class="kpi-sub">décaissé</div></div>
+      <div class="kpi"><div class="kpi-label">Solde Dettes</div><div class="kpi-val" id="kpi-dt-solde" style="font-size:1.1rem;color:var(--gold)">0 DZD</div><div class="kpi-sub">reste à payer</div></div>
+      <div class="kpi"><div class="kpi-label">Fournisseurs créditeurs</div><div class="kpi-val" id="kpi-dt-nb">0</div><div class="kpi-sub">soldes positifs</div></div>
+    </div>
+    <div class="table-wrap">
+      <div class="table-toolbar">
+        <input class="search-inp" id="dt-search" placeholder="🔍 Rechercher un fournisseur…" oninput="renderDettes(this.value)">
+      </div>
+      <table>
+        <thead><tr>
+          <th>Réf. Fournisseur</th><th>Nom Fournisseur</th>
+          <th style="text-align:right">Total Achat</th>
+          <th style="text-align:right">Total Règlement</th>
+          <th style="text-align:right">Solde</th>
+          <th style="text-align:center">Actions</th>
+        </tr></thead>
+        <tbody id="tbl-dettes"></tbody>
+      </table>
+      <div id="dettes-empty" style="display:none;text-align:center;padding:3rem;color:var(--text3)">
+        <div style="font-size:2.5rem;margin-bottom:.75rem">📊</div>
+        <div style="font-size:.9rem">Aucune donnée fournisseur</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ÉTAT — HISTORIQUE FOURNISSEUR -->
+<div class="page" id="page-etat-historique-four">
+  <div class="page-header">
+    <div><div class="page-title">📜 Historique Fournisseur</div><div class="page-sub">Relevé chronologique des opérations</div></div>
+    <div class="page-actions">
+      <button class="btn btn-primary" id="histf-print-btn" onclick="printHistoriqueFour()" style="display:none">🖨 Imprimer le relevé</button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="table-wrap" style="margin-bottom:1rem">
+      <div class="table-toolbar">
+        <select class="filter-sel" id="histf-fournisseur-select" onchange="renderHistoriqueFour()" style="flex:1">
+          <option value="">— Sélectionner un fournisseur —</option>
+        </select>
+      </div>
+    </div>
+    <div id="histf-content" style="display:none">
+      <div class="kpi-grid" id="kpi-histf-grid" style="margin-bottom:1rem">
+        <div class="kpi"><div class="kpi-label">Total Achats</div><div class="kpi-val" id="kpi-histf-achats" style="font-size:1.1rem;color:var(--red)">0 DZD</div></div>
+        <div class="kpi"><div class="kpi-label">Total Règlements</div><div class="kpi-val" id="kpi-histf-reg" style="font-size:1.1rem;color:var(--green)">0 DZD</div></div>
+        <div class="kpi"><div class="kpi-label">Solde Final</div><div class="kpi-val" id="kpi-histf-solde" style="font-size:1.1rem;color:var(--gold)">0 DZD</div></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Date</th><th>Opération</th><th>Référence</th>
+            <th style="text-align:right">Montant</th>
+            <th style="text-align:right">Solde Cumulé</th>
+          </tr></thead>
+          <tbody id="tbl-historique-four"></tbody>
+        </table>
+      </div>
+    </div>
+    <div id="histf-empty" style="text-align:center;padding:3rem;color:var(--text3)">
+      <div style="font-size:2.5rem;margin-bottom:.75rem">📜</div>
+      <div style="font-size:.9rem">Sélectionnez un fournisseur pour voir son historique</div>
+    </div>
+  </div>
+</div>
+
 <!-- FACTURES -->
 <div class="page" id="page-factures">
   <div class="page-header">
@@ -1181,7 +1361,7 @@ const DB = {
   employes:[], departements:[], commandes:[], clients:[],
   stocks:[], fournisseurs:[], factures:[], depenses:[],
   bons_livraison:[], lignes_bon_livraison:[], reglements:[], produits:[],
-  bons_reception:[], lignes_bon_reception:[]
+  bons_reception:[], lignes_bon_reception:[], reglements_fournisseurs:[]
 };
 
 /* ─── LOCAL STORAGE ─── */
@@ -1412,7 +1592,7 @@ function setStatus(ok){
 }
 
 async function loadAll(){
-  const tables=['employes','departements','clients','stocks','fournisseurs','factures','depenses','bons_livraison','lignes_bon_livraison','reglements','produits','bons_reception','lignes_bon_reception'];
+  const tables=['employes','departements','clients','stocks','fournisseurs','factures','depenses','bons_livraison','lignes_bon_livraison','reglements','produits','bons_reception','lignes_bon_reception','reglements_fournisseurs'];
   const errors=[];
   await Promise.all(tables.map(async t=>{
     try{DB[t]=await sbSelect(t);}catch(e){DB[t]=DB[t]||[]; errors.push(t+': '+e.message);}
@@ -1551,9 +1731,10 @@ function statusTag(s){
 function refreshAll(){
   renderEmp(); renderDept(); renderBL(); renderClient();
   renderStk(); renderFour(); renderFact(); renderDep();
-  renderReglements(); renderBR();
-  renderCreances();
+  renderReglements(); renderBR(); renderReglementsFour();
+  renderCreances(); renderDettes();
   if(document.getElementById('hist-client-select')) renderHistorique();
+  if(document.getElementById('histf-fournisseur-select')) renderHistoriqueFour();
   renderDashboard(); updateDeptFilter();
 }
 
@@ -2550,6 +2731,479 @@ function printReglement(id){
   ${r.notes?`<div style="margin-top:8mm;padding:3mm 4mm;background:#f9f9f9;border-left:3px solid #b8960c;font-size:9pt;color:#555">
     <strong>Notes :</strong> ${r.notes}</div>`:''}
   <div class="footer">PERLA — Reçu généré le ${new Date().toLocaleDateString('fr-FR')} — Document non contractuel</div>
+  <script>window.onload=()=>{window.print();}<\/script>
+  </body></html>`);
+  win.document.close();
+}
+
+/* ═══════════════════════════════════════════════
+   MODULE RÈGLEMENTS FOURNISSEURS — CRUD COMPLET
+═══════════════════════════════════════════════ */
+
+let regfEditId = null;
+
+function renderReglementsFour(q=''){
+  const typeFilter = (document.getElementById('regf-filter-type')||{}).value||'';
+  const search = (q||'').toLowerCase();
+  let data = (DB.reglements_fournisseurs||[]).filter(r=>{
+    const fourNom = fournisseurNomById(r.id_fournisseur);
+    const matchQ = !search || (fourNom||'').toLowerCase().includes(search);
+    const matchT = !typeFilter || (r.type||'').trim().toLowerCase()===typeFilter.trim().toLowerCase();
+    return matchQ && matchT;
+  }).sort((a,b)=> new Date(b.date||0) - new Date(a.date||0));
+
+  const cnt = document.getElementById('regf-count');
+  if(cnt) cnt.textContent = `${data.length} règlement${data.length!==1?'s':''}`;
+
+  const tbody = document.getElementById('tbl-regf');
+  const empty = document.getElementById('regf-empty');
+  if(!tbody) return;
+
+  if(!data.length){
+    tbody.innerHTML='';
+    if(empty) empty.style.display='';
+    updateRegFKPI();
+    return;
+  }
+  if(empty) empty.style.display='none';
+
+  const typeTagClass = {'Espèce':'tag-green','Chèque':'tag-blue','Virement':'tag-amber','Service':'tag-gray'};
+
+  tbody.innerHTML = data.map(r=>{
+    const fourNom = fournisseurNomById(r.id_fournisseur);
+    return `<tr>
+      <td><strong>${fourNom||'—'}</strong></td>
+      <td style="font-size:.75rem;color:var(--text3)">${r.date ? new Date(r.date).toLocaleDateString('fr-FR') : '—'}</td>
+      <td><span class="tag ${typeTagClass[r.type]||'tag-gray'}">${r.type||'—'}</span></td>
+      <td style="text-align:right;font-weight:700;color:var(--gold)">${fmtDZD(r.montant)}</td>
+      <td style="font-size:.78rem;color:var(--text3)">${r.reference||'—'}</td>
+      <td style="text-align:center">
+        <div class="action-btns">
+          <div class="icon-btn" title="Imprimer reçu" onclick="printReglementFour(${r.id})">🖨</div>
+          <div class="icon-btn" title="Visualiser" onclick="editReglementFour(${r.id})">👁</div>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+  updateRegFKPI();
+}
+
+function updateRegFKPI(){
+  const regs = DB.reglements_fournisseurs||[];
+  document.getElementById('kpi-regf-total').textContent = regs.length;
+  const totalMt = regs.reduce((a,r)=>a+(r.montant||0),0);
+  const espece  = regs.filter(r=>r.type==='Espèce').reduce((a,r)=>a+(r.montant||0),0);
+  const service = regs.filter(r=>r.type==='Service').reduce((a,r)=>a+(r.montant||0),0);
+  document.getElementById('kpi-regf-montant').textContent = fmtDZD(totalMt);
+  document.getElementById('kpi-regf-espece').textContent  = fmtDZD(espece);
+  document.getElementById('kpi-regf-service').textContent = fmtDZD(service);
+}
+
+function openReglementFourModal(data=null){
+  regfEditId = data ? data.id : null;
+  const isEdit = !!data;
+  document.getElementById('regf-modal-title').textContent = isEdit ? '🔒 Règlement (enregistré)' : '+ Nouveau Règlement Fournisseur';
+  const sel = document.getElementById('regf-fournisseur-select');
+  sel.innerHTML = '<option value="">— Sélectionner un fournisseur —</option>' +
+    (DB.fournisseurs||[]).map(f=>`<option value="${f.id}" ${data&&data.id_fournisseur===f.id?'selected':''}>${f.nom||'—'}</option>`).join('');
+  document.getElementById('regf-date').value = data ? (data.date||today()) : today();
+  const mtEl = document.getElementById('regf-montant');
+  const mtVal = data ? (data.montant||0) : 0;
+  mtEl.dataset.raw = mtVal;
+  mtEl.value = mtVal ? Number(mtVal).toLocaleString('fr-FR') : '';
+  document.getElementById('regf-type').value = data ? (data.type||'Espèce') : 'Espèce';
+  document.getElementById('regf-reference').value = data ? (data.reference||'') : '';
+  document.getElementById('regf-notes').value = data ? (data.notes||'') : '';
+  onRegFTypeChange();
+  setRegFLocked(isEdit);
+  document.getElementById('regf-modal-overlay').style.display='flex';
+}
+
+function setRegFLocked(locked){
+  ['regf-fournisseur-select','regf-date','regf-montant','regf-type','regf-reference','regf-notes'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el){ el.disabled = locked; el.style.opacity = locked ? '.6' : '1'; el.style.cursor = locked ? 'not-allowed' : ''; }
+  });
+  const saveBtn  = document.getElementById('regf-save-btn');
+  const printBtn = document.getElementById('regf-print-btn');
+  const cancelBtn= document.getElementById('regf-cancel-btn');
+  if(saveBtn)  saveBtn.style.display  = locked ? 'none' : '';
+  if(printBtn) printBtn.style.display = locked ? '' : 'none';
+  if(cancelBtn) cancelBtn.textContent = locked ? 'Fermer' : 'Annuler';
+}
+
+function closeReglementFourModal(e){
+  if(e && e.target !== document.getElementById('regf-modal-overlay')) return;
+  document.getElementById('regf-modal-overlay').style.display='none';
+  regfEditId=null;
+}
+
+function onRegFTypeChange(){
+  const type = document.getElementById('regf-type').value;
+  const wrap = document.getElementById('regf-ref-wrap');
+  const label = document.getElementById('regf-ref-label');
+  if(type==='Espèce' || type==='Service'){
+    wrap.style.display='none';
+  } else {
+    wrap.style.display='';
+    label.textContent = type==='Chèque' ? 'N° Chèque' : 'N° Virement / Référence bancaire';
+  }
+}
+
+function editReglementFour(id){
+  const r = (DB.reglements_fournisseurs||[]).find(r=>r.id===id);
+  if(r) openReglementFourModal(r);
+}
+
+async function saveReglementFour(){
+  const fournisseurId = parseInt(document.getElementById('regf-fournisseur-select').value);
+  if(!fournisseurId){ toast('Sélectionnez un fournisseur','error'); return; }
+  const montant = parseFloat(document.getElementById('regf-montant').dataset.raw)||0;
+  if(montant<=0){ toast('Le montant doit être supérieur à 0','error'); return; }
+  const body = {
+    id_fournisseur: fournisseurId,
+    date: document.getElementById('regf-date').value || today(),
+    montant,
+    type: document.getElementById('regf-type').value,
+    reference: document.getElementById('regf-reference').value.trim(),
+    notes: document.getElementById('regf-notes').value.trim()
+  };
+  const btn = document.getElementById('regf-save-btn');
+  btn.textContent='⏳ …'; btn.disabled=true;
+  try{
+    if(connected){
+      if(regfEditId){ await sbReq('PATCH','reglements_fournisseurs',body,regfEditId); }
+      else { const r=await sbReq('POST','reglements_fournisseurs',body); regfEditId=r&&r[0]?r[0].id:null; }
+      await loadAll();
+    } else {
+      if(regfEditId){ const i=DB.reglements_fournisseurs.findIndex(r=>r.id===regfEditId); if(i>-1) DB.reglements_fournisseurs[i]={...DB.reglements_fournisseurs[i],...body}; }
+      else { regfEditId=Date.now(); DB.reglements_fournisseurs.push({id:regfEditId,...body,created_at:new Date().toISOString()}); }
+      save(); refreshAll();
+    }
+    toast('Règlement enregistré ✓','success');
+    document.getElementById('regf-modal-title').textContent='🔒 Règlement (enregistré)';
+    setRegFLocked(true);
+  }catch(e){ toast('Erreur: '+e.message,'error'); }
+  finally{ btn.textContent='💾 Enregistrer'; btn.disabled=false; }
+}
+
+function exportReglementsFour(){
+  const data=DB.reglements_fournisseurs||[];
+  if(!data.length){toast('Aucun règlement à exporter','error');return;}
+  const headers=['Fournisseur','Date','Type','Montant','Référence','Notes'];
+  const rows=data.map(r=>[fournisseurNomById(r.id_fournisseur),r.date||'',r.type||'',(r.montant||0),r.reference||'',r.notes||'']);
+  const csv=[headers,...rows].map(row=>row.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`reglements_fournisseurs_perla_${new Date().toISOString().slice(0,10)}.csv`; a.click();
+  toast('Export CSV ✓','success');
+}
+
+function printReglementFour(id){
+  const r=(DB.reglements_fournisseurs||[]).find(r=>r.id===id);
+  if(!r){toast('Règlement introuvable','error');return;}
+  const fourNom = fournisseurNomById(r.id_fournisseur);
+  const win=window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head>
+  <meta charset="UTF-8"><title>Reçu règlement fournisseur</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+    body{padding:20mm;color:#111;font-size:11pt}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8mm;padding-bottom:5mm;border-bottom:2px solid #b8960c}
+    .company{font-size:18pt;font-weight:700;color:#b8960c;letter-spacing:.05em}
+    .company-sub{font-size:9pt;color:#555;margin-top:2px}
+    .doc-title{font-size:14pt;font-weight:700;color:#b8960c;text-align:right}
+    .info-box{background:#f8f4e8;border:1px solid #d4af37;border-radius:4px;padding:5mm 6mm;margin-bottom:6mm}
+    .row{display:flex;justify-content:space-between;padding:2mm 0;font-size:10.5pt;border-bottom:1px solid #eee}
+    .row:last-child{border-bottom:none}
+    .label{color:#888;font-size:9pt;text-transform:uppercase;letter-spacing:.05em}
+    .montant-box{background:#fff8e6;border:2px solid #b8960c;border-radius:6px;padding:6mm;text-align:center;margin-top:6mm}
+    .montant-val{font-size:20pt;font-weight:700;color:#b8960c}
+    .footer{margin-top:14mm;padding-top:5mm;border-top:1px solid #ccc;font-size:8pt;color:#888;text-align:center}
+    @media print{body{padding:15mm}}
+  </style></head><body>
+  <div class="header">
+    <div><div class="company">PERLA</div><div class="company-sub">Marbrerie — Granit & Pierre Naturelle</div></div>
+    <div class="doc-title">REÇU DE RÈGLEMENT FOURNISSEUR</div>
+  </div>
+  <div class="info-box">
+    <div class="row"><span class="label">Fournisseur</span><span><strong>${fourNom||'—'}</strong></span></div>
+    <div class="row"><span class="label">Date</span><span>${r.date ? new Date(r.date).toLocaleDateString('fr-FR') : '—'}</span></div>
+    <div class="row"><span class="label">Type de paiement</span><span>${r.type||'—'}</span></div>
+    ${r.reference?`<div class="row"><span class="label">Référence</span><span>${r.reference}</span></div>`:''}
+  </div>
+  <div class="montant-box">
+    <div class="label" style="margin-bottom:2mm">Montant versé</div>
+    <div class="montant-val">${fmtDZD(r.montant)}</div>
+  </div>
+  ${r.notes?`<div style="margin-top:8mm;padding:3mm 4mm;background:#f9f9f9;border-left:3px solid #b8960c;font-size:9pt;color:#555">
+    <strong>Notes :</strong> ${r.notes}</div>`:''}
+  <div class="footer">PERLA — Reçu généré le ${new Date().toLocaleDateString('fr-FR')} — Document non contractuel</div>
+  <script>window.onload=()=>{window.print();}<\/script>
+  </body></html>`);
+  win.document.close();
+}
+
+/* ═══════════════════════════════════════════════
+   MODULE ÉTATS FOURNISSEURS — DETTES & HISTORIQUE
+═══════════════════════════════════════════════ */
+
+function totalAchatsFournisseur(fournisseurId){
+  return (DB.bons_reception||[]).filter(b=>String(b.id_fournisseur)===String(fournisseurId))
+    .reduce((a,b)=>a+((b.montant||0)-(b.remise||0)),0);
+}
+
+function totalReglementsFournisseur(fournisseurId){
+  return (DB.reglements_fournisseurs||[]).filter(r=>String(r.id_fournisseur)===String(fournisseurId))
+    .reduce((a,r)=>a+(r.montant||0),0);
+}
+
+function renderDettes(q=''){
+  const search=(q||'').toLowerCase();
+  const fournisseurs=(DB.fournisseurs||[]).filter(f=>{
+    const nom=(f.nom||'').toLowerCase();
+    return !search || nom.includes(search) || String(f.id).includes(search);
+  });
+
+  const rows = fournisseurs.map(f=>{
+    const achats = totalAchatsFournisseur(f.id);
+    const reglements = totalReglementsFournisseur(f.id);
+    const solde = achats - reglements;
+    return {id:f.id, nom:f.nom||'—', achats, reglements, solde};
+  }).sort((a,b)=>b.solde-a.solde);
+
+  const tbody=document.getElementById('tbl-dettes');
+  const empty=document.getElementById('dettes-empty');
+  if(!tbody) return;
+
+  if(!rows.length){
+    tbody.innerHTML=''; if(empty) empty.style.display='';
+    updateDettesKPI([]);
+    return;
+  }
+  if(empty) empty.style.display='none';
+
+  tbody.innerHTML = rows.map(r=>`<tr>
+    <td><code style="font-size:.72rem;color:var(--text3)">FR-${r.id}</code></td>
+    <td><strong>${r.nom}</strong></td>
+    <td style="text-align:right">${fmtDZD(r.achats)}</td>
+    <td style="text-align:right;color:var(--green)">${fmtDZD(r.reglements)}</td>
+    <td style="text-align:right;font-weight:700;color:${r.solde>0?'var(--gold)':'var(--text2)'}">${fmtDZD(r.solde)}</td>
+    <td style="text-align:center"><div class="action-btns">
+      <div class="icon-btn" title="Voir historique" onclick="goToHistoriqueFour(${r.id})">📜</div>
+    </div></td>
+  </tr>`).join('');
+
+  updateDettesKPI(rows);
+}
+
+function updateDettesKPI(rows){
+  const totalAchats = rows.reduce((a,r)=>a+r.achats,0);
+  const totalReg = rows.reduce((a,r)=>a+r.reglements,0);
+  const totalSolde = totalAchats - totalReg;
+  const nbCrediteurs = rows.filter(r=>r.solde>0).length;
+  document.getElementById('kpi-dt-achats').textContent = fmtDZD(totalAchats);
+  document.getElementById('kpi-dt-reg').textContent = fmtDZD(totalReg);
+  document.getElementById('kpi-dt-solde').textContent = fmtDZD(totalSolde);
+  document.getElementById('kpi-dt-nb').textContent = nbCrediteurs;
+}
+
+function exportDettes(){
+  const fournisseurs=(DB.fournisseurs||[]);
+  if(!fournisseurs.length){toast('Aucun fournisseur','error');return;}
+  const headers=['Réf. Fournisseur','Nom Fournisseur','Total Achat','Total Règlement','Solde'];
+  const rows=fournisseurs.map(f=>{
+    const achats=totalAchatsFournisseur(f.id), reglements=totalReglementsFournisseur(f.id);
+    return [`FR-${f.id}`, f.nom||'—', Math.round(achats), Math.round(reglements), Math.round(achats-reglements)];
+  });
+  const csv=[headers,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`dettes_fournisseurs_perla_${new Date().toISOString().slice(0,10)}.csv`; a.click();
+  toast('Export CSV ✓','success');
+}
+
+function printDettes(){
+  const fournisseurs=(DB.fournisseurs||[]);
+  const rows = fournisseurs.map(f=>{
+    const achats=totalAchatsFournisseur(f.id), reglements=totalReglementsFournisseur(f.id);
+    return {id:f.id, nom:f.nom||'—', achats, reglements, solde:achats-reglements};
+  }).sort((a,b)=>b.solde-a.solde);
+  const totalAchats=rows.reduce((a,r)=>a+r.achats,0);
+  const totalReg=rows.reduce((a,r)=>a+r.reglements,0);
+  const totalSolde=totalAchats-totalReg;
+
+  const win=window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head>
+  <meta charset="UTF-8"><title>État des Dettes Fournisseurs</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+    body{padding:18mm;color:#111;font-size:10pt}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8mm;padding-bottom:5mm;border-bottom:2px solid #b8960c}
+    .company{font-size:18pt;font-weight:700;color:#b8960c;letter-spacing:.05em}
+    .company-sub{font-size:9pt;color:#555;margin-top:2px}
+    .doc-title{font-size:13pt;font-weight:700;color:#b8960c;text-align:right}
+    .doc-date{font-size:9pt;color:#555;text-align:right;margin-top:2px}
+    table{width:100%;border-collapse:collapse;margin-bottom:6mm;font-size:9pt}
+    th{background:#b8960c;color:#fff;padding:2mm 2.5mm;text-align:left;font-size:8.5pt}
+    td{padding:1.8mm 2.5mm;border-bottom:1px solid #eee}
+    tr:nth-child(even) td{background:#fafafa}
+    .text-right{text-align:right}
+    tfoot td{font-weight:700;border-top:2px solid #b8960c;background:#fff8e6}
+    .footer{margin-top:10mm;padding-top:4mm;border-top:1px solid #ccc;font-size:8pt;color:#888;text-align:center}
+    @media print{body{padding:12mm}}
+  </style></head><body>
+  <div class="header">
+    <div><div class="company">PERLA</div><div class="company-sub">Marbrerie — Granit & Pierre Naturelle</div></div>
+    <div><div class="doc-title">ÉTAT DES DETTES FOURNISSEURS</div><div class="doc-date">Au ${new Date().toLocaleDateString('fr-FR')}</div></div>
+  </div>
+  <table>
+    <thead><tr><th>Réf.</th><th>Fournisseur</th><th class="text-right">Total Achat</th><th class="text-right">Total Règlement</th><th class="text-right">Solde</th></tr></thead>
+    <tbody>
+    ${rows.map(r=>`<tr><td>FR-${r.id}</td><td>${r.nom}</td><td class="text-right">${fmtDZD(r.achats)}</td><td class="text-right">${fmtDZD(r.reglements)}</td><td class="text-right"><strong>${fmtDZD(r.solde)}</strong></td></tr>`).join('')}
+    </tbody>
+    <tfoot>
+      <tr><td colspan="2">TOTAL</td><td class="text-right">${fmtDZD(totalAchats)}</td><td class="text-right">${fmtDZD(totalReg)}</td><td class="text-right">${fmtDZD(totalSolde)}</td></tr>
+    </tfoot>
+  </table>
+  <div class="footer">PERLA — État généré le ${new Date().toLocaleDateString('fr-FR')} — Document non contractuel</div>
+  <script>window.onload=()=>{window.print();}<\/script>
+  </body></html>`);
+  win.document.close();
+}
+
+function goToHistoriqueFour(fournisseurId){
+  nav('etat-historique-four');
+  setTimeout(()=>{
+    const sel=document.getElementById('histf-fournisseur-select');
+    if(sel){ sel.value=fournisseurId; renderHistoriqueFour(); }
+  },50);
+}
+
+function fillHistFourSelect(){
+  const sel=document.getElementById('histf-fournisseur-select');
+  if(!sel) return;
+  const cur=sel.value;
+  sel.innerHTML='<option value="">— Sélectionner un fournisseur —</option>'+
+    (DB.fournisseurs||[]).map(f=>`<option value="${f.id}" ${String(f.id)===cur?'selected':''}>${f.nom||'—'}</option>`).join('');
+}
+
+function renderHistoriqueFour(){
+  fillHistFourSelect();
+  const fournisseurId = document.getElementById('histf-fournisseur-select').value;
+  const content = document.getElementById('histf-content');
+  const empty = document.getElementById('histf-empty');
+  const printBtn = document.getElementById('histf-print-btn');
+  if(!fournisseurId){
+    content.style.display='none'; empty.style.display='';
+    if(printBtn) printBtn.style.display='none';
+    return;
+  }
+  empty.style.display='none'; content.style.display='';
+  if(printBtn) printBtn.style.display='';
+
+  const ops = [];
+  (DB.bons_reception||[]).filter(b=>String(b.id_fournisseur)===String(fournisseurId)).forEach(b=>{
+    const net = (b.montant||0)-(b.remise||0);
+    ops.push({date: b.created_at||today(), type:'Achat', ref:`BR-${b.id}`, montant: -net});
+  });
+  (DB.reglements_fournisseurs||[]).filter(r=>String(r.id_fournisseur)===String(fournisseurId)).forEach(r=>{
+    ops.push({date: r.date||r.created_at||today(), type:'Règlement', ref: r.reference||r.type||'—', montant: r.montant||0});
+  });
+  ops.sort((a,b)=> new Date(a.date) - new Date(b.date));
+
+  let solde=0;
+  const rows = ops.map(op=>{
+    solde += op.montant;
+    return {...op, soldeCumule: solde};
+  });
+
+  const totalAchats = ops.filter(o=>o.type==='Achat').reduce((a,o)=>a+Math.abs(o.montant),0);
+  const totalReg = ops.filter(o=>o.type==='Règlement').reduce((a,o)=>a+o.montant,0);
+  document.getElementById('kpi-histf-achats').textContent = fmtDZD(totalAchats);
+  document.getElementById('kpi-histf-reg').textContent = fmtDZD(totalReg);
+  document.getElementById('kpi-histf-solde').textContent = fmtDZD(solde);
+
+  const tbody=document.getElementById('tbl-historique-four');
+  if(!rows.length){
+    tbody.innerHTML='<tr class="empty-row"><td colspan="5">Aucune opération pour ce fournisseur</td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.map(r=>`<tr>
+    <td style="font-size:.78rem;color:var(--text3)">${new Date(r.date).toLocaleDateString('fr-FR')}</td>
+    <td><span class="tag ${r.type==='Achat'?'tag-red':'tag-green'}">${r.type}</span></td>
+    <td style="font-size:.78rem;color:var(--text3)">${r.ref}</td>
+    <td style="text-align:right;font-weight:600;color:${r.montant<0?'var(--red)':'var(--green)'}">${r.montant<0?'- ':'+ '}${fmtDZD(Math.abs(r.montant))}</td>
+    <td style="text-align:right;font-weight:700;color:var(--gold)">${fmtDZD(r.soldeCumule)}</td>
+  </tr>`).join('');
+}
+
+function printHistoriqueFour(){
+  const fournisseurId = document.getElementById('histf-fournisseur-select').value;
+  if(!fournisseurId){ toast('Sélectionnez un fournisseur','error'); return; }
+  const fournisseur = (DB.fournisseurs||[]).find(f=>String(f.id)===String(fournisseurId));
+  const fournisseurNom = fournisseur ? (fournisseur.nom||'—') : '—';
+
+  const ops = [];
+  (DB.bons_reception||[]).filter(b=>String(b.id_fournisseur)===String(fournisseurId)).forEach(b=>{
+    const net = (b.montant||0)-(b.remise||0);
+    ops.push({date: b.created_at||today(), type:'Achat', ref:`BR-${b.id}`, montant: -net});
+  });
+  (DB.reglements_fournisseurs||[]).filter(r=>String(r.id_fournisseur)===String(fournisseurId)).forEach(r=>{
+    ops.push({date: r.date||r.created_at||today(), type:'Règlement', ref: r.reference||r.type||'—', montant: r.montant||0});
+  });
+  ops.sort((a,b)=> new Date(a.date) - new Date(b.date));
+
+  let solde=0;
+  const rows = ops.map(op=>{ solde += op.montant; return {...op, soldeCumule: solde}; });
+  const totalAchats = ops.filter(o=>o.type==='Achat').reduce((a,o)=>a+Math.abs(o.montant),0);
+  const totalReg = ops.filter(o=>o.type==='Règlement').reduce((a,o)=>a+o.montant,0);
+
+  const win=window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head>
+  <meta charset="UTF-8"><title>Historique — ${fournisseurNom}</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+    body{padding:18mm;color:#111;font-size:10pt}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6mm;padding-bottom:5mm;border-bottom:2px solid #b8960c}
+    .company{font-size:18pt;font-weight:700;color:#b8960c;letter-spacing:.05em}
+    .company-sub{font-size:9pt;color:#555;margin-top:2px}
+    .doc-title{font-size:13pt;font-weight:700;color:#b8960c;text-align:right}
+    .doc-date{font-size:9pt;color:#555;text-align:right;margin-top:2px}
+    .client-box{background:#f8f4e8;border:1px solid #d4af37;border-radius:4px;padding:4mm 6mm;margin-bottom:6mm}
+    .client-name{font-size:12pt;font-weight:700}
+    table{width:100%;border-collapse:collapse;margin-bottom:6mm;font-size:9.5pt}
+    th{background:#b8960c;color:#fff;padding:2mm 3mm;text-align:left;font-size:9pt}
+    td{padding:2mm 3mm;border-bottom:1px solid #eee}
+    tr:nth-child(even) td{background:#fafafa}
+    .text-right{text-align:right}
+    .totals{margin-left:auto;width:280px;margin-top:4mm}
+    .totals-row{display:flex;justify-content:space-between;padding:1.5mm 0;font-size:10pt}
+    .totals-row.net{font-size:12pt;font-weight:700;color:#b8960c;border-top:2px solid #b8960c;margin-top:2mm;padding-top:2mm}
+    .footer{margin-top:10mm;padding-top:4mm;border-top:1px solid #ccc;font-size:8pt;color:#888;text-align:center}
+    @media print{body{padding:12mm}}
+  </style></head><body>
+  <div class="header">
+    <div><div class="company">PERLA</div><div class="company-sub">Marbrerie — Granit & Pierre Naturelle</div></div>
+    <div><div class="doc-title">RELEVÉ DE COMPTE FOURNISSEUR</div><div class="doc-date">Au ${new Date().toLocaleDateString('fr-FR')}</div></div>
+  </div>
+  <div class="client-box"><div class="client-name">${fournisseurNom}</div></div>
+  <table>
+    <thead><tr><th>Date</th><th>Opération</th><th>Référence</th><th class="text-right">Montant</th><th class="text-right">Solde Cumulé</th></tr></thead>
+    <tbody>
+    ${rows.length ? rows.map(r=>`<tr>
+      <td>${new Date(r.date).toLocaleDateString('fr-FR')}</td>
+      <td>${r.type}</td>
+      <td>${r.ref}</td>
+      <td class="text-right">${r.montant<0?'- ':'+ '}${fmtDZD(Math.abs(r.montant))}</td>
+      <td class="text-right"><strong>${fmtDZD(r.soldeCumule)}</strong></td>
+    </tr>`).join('') : '<tr><td colspan="5" style="text-align:center;color:#aaa;padding:5mm">Aucune opération</td></tr>'}
+    </tbody>
+  </table>
+  <div class="totals">
+    <div class="totals-row"><span>Total Achats</span><span>- ${fmtDZD(totalAchats)}</span></div>
+    <div class="totals-row"><span>Total Règlements</span><span>+ ${fmtDZD(totalReg)}</span></div>
+    <div class="totals-row net"><span>SOLDE FINAL</span><span>${fmtDZD(solde)}</span></div>
+  </div>
+  <div class="footer">PERLA — Relevé généré le ${new Date().toLocaleDateString('fr-FR')} — Document non contractuel</div>
   <script>window.onload=()=>{window.print();}<\/script>
   </body></html>`);
   win.document.close();
