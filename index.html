@@ -720,7 +720,8 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
       </div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border)">
-      <button class="btn" onclick="closeReglementModal()">Annuler</button>
+      <button class="btn" id="reg-cancel-btn" onclick="closeReglementModal()">Annuler</button>
+      <button class="btn" id="reg-print-btn" onclick="printReglement(regEditId)" style="display:none">🖨 Imprimer</button>
       <button class="btn btn-primary" id="reg-save-btn" onclick="saveReglement()">💾 Enregistrer</button>
     </div>
   </div>
@@ -1311,8 +1312,7 @@ function renderReglements(q=''){
       <td style="text-align:center">
         <div class="action-btns">
           <div class="icon-btn" title="Imprimer reçu" onclick="printReglement(${r.id})">🖨</div>
-          <div class="icon-btn" title="Modifier" onclick="editReglement(${r.id})">✎</div>
-          <div class="icon-btn del" title="Supprimer" onclick="deleteReglement(${r.id})">✕</div>
+          <div class="icon-btn" title="Visualiser" onclick="editReglement(${r.id})">👁</div>
         </div>
       </td>
     </tr>`;
@@ -1334,7 +1334,7 @@ function updateRegKPI(){
 function openReglementModal(data=null){
   regEditId = data ? data.id : null;
   const isEdit = !!data;
-  document.getElementById('reg-modal-title').textContent = isEdit ? '✎ Modifier le Règlement' : '+ Nouveau Règlement';
+  document.getElementById('reg-modal-title').textContent = isEdit ? '🔒 Règlement (enregistré)' : '+ Nouveau Règlement';
   const sel = document.getElementById('reg-client-select');
   sel.innerHTML = '<option value="">— Sélectionner un client —</option>' +
     (DB.clients||[]).map(c=>`<option value="${c.id}" ${data&&data.id_client===c.id?'selected':''}>${c.nom||c.raison_sociale||'—'}</option>`).join('');
@@ -1344,7 +1344,21 @@ function openReglementModal(data=null){
   document.getElementById('reg-reference').value = data ? (data.reference||'') : '';
   document.getElementById('reg-notes').value   = data ? (data.notes||'') : '';
   onRegTypeChange();
+  setRegLocked(isEdit);
   document.getElementById('reg-modal-overlay').style.display='flex';
+}
+
+function setRegLocked(locked){
+  ['reg-client-select','reg-date','reg-montant','reg-type','reg-reference','reg-notes'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el){ el.disabled = locked; el.style.opacity = locked ? '.6' : '1'; el.style.cursor = locked ? 'not-allowed' : ''; }
+  });
+  const saveBtn  = document.getElementById('reg-save-btn');
+  const printBtn = document.getElementById('reg-print-btn');
+  const cancelBtn= document.getElementById('reg-cancel-btn');
+  if(saveBtn)  saveBtn.style.display  = locked ? 'none' : '';
+  if(printBtn) printBtn.style.display = locked ? '' : 'none';
+  if(cancelBtn) cancelBtn.textContent = locked ? 'Fermer' : 'Annuler';
 }
 
 function closeReglementModal(e){
@@ -1388,16 +1402,16 @@ async function saveReglement(){
   try{
     if(connected){
       if(regEditId){ await sbReq('PATCH','reglements',body,regEditId); }
-      else { await sbReq('POST','reglements',body); }
+      else { const r=await sbReq('POST','reglements',body); regEditId=r&&r[0]?r[0].id:null; }
       await loadAll();
     } else {
       if(regEditId){ const i=DB.reglements.findIndex(r=>r.id===regEditId); if(i>-1) DB.reglements[i]={...DB.reglements[i],...body}; }
-      else { DB.reglements.push({id:Date.now(),...body,created_at:new Date().toISOString()}); }
+      else { regEditId=Date.now(); DB.reglements.push({id:regEditId,...body,created_at:new Date().toISOString()}); }
       save(); refreshAll();
     }
     toast('Règlement enregistré ✓','success');
-    document.getElementById('reg-modal-overlay').style.display='none';
-    regEditId=null;
+    document.getElementById('reg-modal-title').textContent='🔒 Règlement (enregistré)';
+    setRegLocked(true);
   }catch(e){ toast('Erreur: '+e.message,'error'); }
   finally{ btn.textContent='💾 Enregistrer'; btn.disabled=false; }
 }
