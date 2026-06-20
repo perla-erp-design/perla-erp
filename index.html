@@ -181,6 +181,7 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
   <div class="nav-item" onclick="nav('fournisseurs')" id="nav-fournisseurs"><span class="nav-icon">🚚</span> Fournisseurs</div>
 
   <div class="sidebar-section">Finance</div>
+  <div class="nav-item" onclick="nav('caisse')" id="nav-caisse"><span class="nav-icon">🏦</span> Compte Caisse</div>
   <div class="nav-item" onclick="nav('reglements')" id="nav-reglements"><span class="nav-icon">💰</span> Règlements</div>
   <div class="nav-item" onclick="nav('factures')" id="nav-factures"><span class="nav-icon">🧾</span> Factures</div>
   <div class="nav-item" onclick="nav('depenses')" id="nav-depenses"><span class="nav-icon">💸</span> Dépenses</div>
@@ -705,6 +706,53 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
       <div class="table-toolbar"><input class="search-inp" placeholder="Rechercher…" oninput="filterTable('four',this.value)"></div>
       <table><thead><tr><th>Nom</th><th>Pays</th><th>Adresse</th><th>Personne Contact</th><th>Contact</th><th>Type</th><th>Actions</th></tr></thead>
       <tbody id="tbl-four"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- COMPTE CAISSE -->
+<div class="page" id="page-caisse">
+  <div class="page-header">
+    <div><div class="page-title">🏦 Compte Caisse</div><div class="page-sub">Trésorerie en temps réel</div></div>
+    <div class="page-actions">
+      <button class="btn" onclick="exportCaisse()">⬇ Exporter CSV</button>
+      <button class="btn btn-primary" onclick="printTicketCaisse()">🖨 Ticket de caisse du jour</button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div style="background:linear-gradient(135deg,var(--bg3),var(--bg2));border:1px solid var(--border2);border-radius:var(--r16);padding:1.75rem;margin-bottom:1.25rem;text-align:center">
+      <div style="font-size:.78rem;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem">Solde Caisse Actuel</div>
+      <div id="caisse-solde-actuel" style="font-size:2.2rem;font-weight:700;color:var(--gold)">0 DZD</div>
+    </div>
+    <div class="kpi-grid" id="kpi-caisse-grid">
+      <div class="kpi"><div class="kpi-label">Entrées (Règlements clients)</div><div class="kpi-val" id="kpi-caisse-entrees" style="font-size:1.1rem;color:var(--green)">0 DZD</div><div class="kpi-sub">total encaissé</div></div>
+      <div class="kpi"><div class="kpi-label">Sorties (Règlements fournisseurs)</div><div class="kpi-val" id="kpi-caisse-sorties-four" style="font-size:1.1rem;color:var(--red)">0 DZD</div><div class="kpi-sub">total décaissé</div></div>
+      <div class="kpi"><div class="kpi-label">Sorties (Dépenses)</div><div class="kpi-val" id="kpi-caisse-depenses" style="font-size:1.1rem;color:var(--red)">0 DZD</div><div class="kpi-sub">frais divers</div></div>
+      <div class="kpi"><div class="kpi-label">Mouvements aujourd'hui</div><div class="kpi-val" id="kpi-caisse-today">0</div><div class="kpi-sub">opérations du jour</div></div>
+    </div>
+    <div class="table-wrap">
+      <div class="table-toolbar" style="flex-wrap:wrap;gap:.5rem">
+        <select class="filter-sel" id="caisse-filter-type" onchange="renderCaisse()">
+          <option value="">Tous mouvements</option>
+          <option value="Entrée">Entrées uniquement</option>
+          <option value="Sortie">Sorties uniquement</option>
+        </select>
+        <input class="search-inp" id="caisse-date-filter" type="date" onchange="renderCaisse()" style="max-width:180px">
+        <button class="btn" onclick="document.getElementById('caisse-date-filter').value='';renderCaisse()">Toutes dates</button>
+        <span id="caisse-count" style="font-size:.75rem;color:var(--text3);margin-left:auto;align-self:center"></span>
+      </div>
+      <table>
+        <thead><tr>
+          <th>Date</th><th>Opération</th><th>Détail</th>
+          <th style="text-align:right">Montant</th>
+          <th style="text-align:right">Solde Cumulé</th>
+        </tr></thead>
+        <tbody id="tbl-caisse"></tbody>
+      </table>
+      <div id="caisse-empty" style="display:none;text-align:center;padding:3rem;color:var(--text3)">
+        <div style="font-size:2.5rem;margin-bottom:.75rem">🏦</div>
+        <div style="font-size:.9rem">Aucun mouvement de caisse</div>
+      </div>
     </div>
   </div>
 </div>
@@ -1732,7 +1780,7 @@ function refreshAll(){
   renderEmp(); renderDept(); renderBL(); renderClient();
   renderStk(); renderFour(); renderFact(); renderDep();
   renderReglements(); renderBR(); renderReglementsFour();
-  renderCreances(); renderDettes();
+  renderCreances(); renderDettes(); renderCaisse();
   if(document.getElementById('hist-client-select')) renderHistorique();
   if(document.getElementById('histf-fournisseur-select')) renderHistoriqueFour();
   renderDashboard(); updateDeptFilter();
@@ -2731,6 +2779,183 @@ function printReglement(id){
   ${r.notes?`<div style="margin-top:8mm;padding:3mm 4mm;background:#f9f9f9;border-left:3px solid #b8960c;font-size:9pt;color:#555">
     <strong>Notes :</strong> ${r.notes}</div>`:''}
   <div class="footer">PERLA — Reçu généré le ${new Date().toLocaleDateString('fr-FR')} — Document non contractuel</div>
+  <script>window.onload=()=>{window.print();}<\/script>
+  </body></html>`);
+  win.document.close();
+}
+
+/* ═══════════════════════════════════════════════
+   MODULE COMPTE CAISSE — Trésorerie automatique
+═══════════════════════════════════════════════ */
+
+// Construit la liste chronologique de tous les mouvements de caisse
+function buildCaisseMouvements(){
+  const movs = [];
+  (DB.reglements||[]).forEach(r=>{
+    movs.push({
+      date: r.date || r.created_at || today(),
+      sens: 'Entrée',
+      type: 'Règlement client',
+      detail: clientNomById(r.id_client) + (r.type ? ` (${r.type})` : ''),
+      montant: r.montant||0,
+      ref: r.reference||''
+    });
+  });
+  (DB.reglements_fournisseurs||[]).forEach(r=>{
+    movs.push({
+      date: r.date || r.created_at || today(),
+      sens: 'Sortie',
+      type: 'Règlement fournisseur',
+      detail: fournisseurNomById(r.id_fournisseur) + (r.type ? ` (${r.type})` : ''),
+      montant: r.montant||0,
+      ref: r.reference||''
+    });
+  });
+  (DB.depenses||[]).forEach(d=>{
+    movs.push({
+      date: d.date_depense || d.created_at || today(),
+      sens: 'Sortie',
+      type: 'Dépense',
+      detail: (d.description||'—') + (d.categorie ? ` — ${d.categorie}` : ''),
+      montant: d.montant||0,
+      ref: ''
+    });
+  });
+  movs.sort((a,b)=> new Date(a.date) - new Date(b.date));
+  let solde=0;
+  return movs.map(m=>{
+    solde += (m.sens==='Entrée' ? m.montant : -m.montant);
+    return {...m, soldeCumule: solde};
+  });
+}
+
+function soldeCaisseActuel(){
+  const movs = buildCaisseMouvements();
+  return movs.length ? movs[movs.length-1].soldeCumule : 0;
+}
+
+function renderCaisse(){
+  const typeFilter = (document.getElementById('caisse-filter-type')||{}).value||'';
+  const dateFilter = (document.getElementById('caisse-date-filter')||{}).value||'';
+  let movs = buildCaisseMouvements();
+
+  document.getElementById('caisse-solde-actuel').textContent = fmtDZD(movs.length ? movs[movs.length-1].soldeCumule : 0);
+
+  const totalEntrees = (DB.reglements||[]).reduce((a,r)=>a+(r.montant||0),0);
+  const totalSortiesFour = (DB.reglements_fournisseurs||[]).reduce((a,r)=>a+(r.montant||0),0);
+  const totalDepenses = (DB.depenses||[]).reduce((a,d)=>a+(d.montant||0),0);
+  document.getElementById('kpi-caisse-entrees').textContent = fmtDZD(totalEntrees);
+  document.getElementById('kpi-caisse-sorties-four').textContent = fmtDZD(totalSortiesFour);
+  document.getElementById('kpi-caisse-depenses').textContent = fmtDZD(totalDepenses);
+
+  const todayStr = today();
+  const todayCount = movs.filter(m=>String(m.date).slice(0,10)===todayStr).length;
+  document.getElementById('kpi-caisse-today').textContent = todayCount;
+
+  let filtered = movs.filter(m=>{
+    const matchType = !typeFilter || m.sens===typeFilter;
+    const matchDate = !dateFilter || String(m.date).slice(0,10)===dateFilter;
+    return matchType && matchDate;
+  });
+
+  const cnt = document.getElementById('caisse-count');
+  if(cnt) cnt.textContent = `${filtered.length} mouvement${filtered.length!==1?'s':''}`;
+
+  const tbody = document.getElementById('tbl-caisse');
+  const empty = document.getElementById('caisse-empty');
+  if(!tbody) return;
+
+  if(!filtered.length){
+    tbody.innerHTML=''; if(empty) empty.style.display='';
+    return;
+  }
+  if(empty) empty.style.display='none';
+
+  // Afficher du plus récent au plus ancien
+  const display = [...filtered].reverse();
+
+  tbody.innerHTML = display.map(m=>`<tr>
+    <td style="font-size:.78rem;color:var(--text3)">${new Date(m.date).toLocaleDateString('fr-FR')}</td>
+    <td><span class="tag ${m.sens==='Entrée'?'tag-green':'tag-red'}">${m.type}</span></td>
+    <td style="font-size:.82rem">${m.detail}</td>
+    <td style="text-align:right;font-weight:600;color:${m.sens==='Entrée'?'var(--green)':'var(--red)'}">${m.sens==='Entrée'?'+ ':'- '}${fmtDZD(m.montant)}</td>
+    <td style="text-align:right;font-weight:700;color:var(--gold)">${fmtDZD(m.soldeCumule)}</td>
+  </tr>`).join('');
+}
+
+function exportCaisse(){
+  const movs = buildCaisseMouvements();
+  if(!movs.length){toast('Aucun mouvement à exporter','error');return;}
+  const headers=['Date','Sens','Type','Détail','Montant','Solde Cumulé'];
+  const rows=movs.map(m=>[new Date(m.date).toLocaleDateString('fr-FR'),m.sens,m.type,m.detail,Math.round(m.montant),Math.round(m.soldeCumule)]);
+  const csv=[headers,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`compte_caisse_perla_${new Date().toISOString().slice(0,10)}.csv`; a.click();
+  toast('Export CSV ✓','success');
+}
+
+// TICKET DE CAISSE — état journalier
+function printTicketCaisse(dateStr){
+  const targetDate = dateStr || today();
+  const movs = buildCaisseMouvements();
+  const soldeAvant = movs.filter(m=>String(m.date).slice(0,10) < targetDate).reduce((a,m)=>m.soldeCumule,0);
+  const movsJour = movs.filter(m=>String(m.date).slice(0,10)===targetDate);
+  const soldeApres = movsJour.length ? movsJour[movsJour.length-1].soldeCumule : soldeAvant;
+
+  const entreesJour = movsJour.filter(m=>m.sens==='Entrée').reduce((a,m)=>a+m.montant,0);
+  const sortiesJour = movsJour.filter(m=>m.sens==='Sortie').reduce((a,m)=>a+m.montant,0);
+
+  const win=window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head>
+  <meta charset="UTF-8"><title>Ticket de Caisse — ${new Date(targetDate).toLocaleDateString('fr-FR')}</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+    body{padding:18mm;color:#111;font-size:10pt}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6mm;padding-bottom:5mm;border-bottom:2px solid #b8960c}
+    .company{font-size:18pt;font-weight:700;color:#b8960c;letter-spacing:.05em}
+    .company-sub{font-size:9pt;color:#555;margin-top:2px}
+    .doc-title{font-size:13pt;font-weight:700;color:#b8960c;text-align:right}
+    .doc-date{font-size:9pt;color:#555;text-align:right;margin-top:2px}
+    .solde-box{display:flex;justify-content:space-between;gap:4mm;margin-bottom:6mm}
+    .solde-card{flex:1;background:#f8f4e8;border:1px solid #d4af37;border-radius:4px;padding:4mm;text-align:center}
+    .solde-label{font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1.5mm}
+    .solde-val{font-size:13pt;font-weight:700;color:#b8960c}
+    table{width:100%;border-collapse:collapse;margin-bottom:6mm;font-size:9pt}
+    th{background:#b8960c;color:#fff;padding:2mm 2.5mm;text-align:left;font-size:8.5pt}
+    td{padding:1.8mm 2.5mm;border-bottom:1px solid #eee}
+    tr:nth-child(even) td{background:#fafafa}
+    .text-right{text-align:right}
+    .totals{margin-left:auto;width:280px;margin-top:4mm}
+    .totals-row{display:flex;justify-content:space-between;padding:1.5mm 0;font-size:10pt}
+    .totals-row.net{font-size:12pt;font-weight:700;color:#b8960c;border-top:2px solid #b8960c;margin-top:2mm;padding-top:2mm}
+    .footer{margin-top:10mm;padding-top:4mm;border-top:1px solid #ccc;font-size:8pt;color:#888;text-align:center}
+    @media print{body{padding:12mm}}
+  </style></head><body>
+  <div class="header">
+    <div><div class="company">PERLA</div><div class="company-sub">Marbrerie — Granit & Pierre Naturelle</div></div>
+    <div><div class="doc-title">TICKET DE CAISSE</div><div class="doc-date">${new Date(targetDate).toLocaleDateString('fr-FR',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</div></div>
+  </div>
+  <div class="solde-box">
+    <div class="solde-card"><div class="solde-label">Solde Ouverture</div><div class="solde-val">${fmtDZD(soldeAvant)}</div></div>
+    <div class="solde-card"><div class="solde-label">Solde Clôture</div><div class="solde-val">${fmtDZD(soldeApres)}</div></div>
+  </div>
+  <table>
+    <thead><tr><th>Type</th><th>Détail</th><th class="text-right">Montant</th><th class="text-right">Solde</th></tr></thead>
+    <tbody>
+    ${movsJour.length ? movsJour.map(m=>`<tr>
+      <td>${m.type}</td>
+      <td>${m.detail}</td>
+      <td class="text-right">${m.sens==='Entrée'?'+ ':'- '}${fmtDZD(m.montant)}</td>
+      <td class="text-right"><strong>${fmtDZD(m.soldeCumule)}</strong></td>
+    </tr>`).join('') : '<tr><td colspan="4" style="text-align:center;color:#aaa;padding:5mm">Aucun mouvement ce jour</td></tr>'}
+    </tbody>
+  </table>
+  <div class="totals">
+    <div class="totals-row"><span>Total Entrées</span><span>+ ${fmtDZD(entreesJour)}</span></div>
+    <div class="totals-row"><span>Total Sorties</span><span>- ${fmtDZD(sortiesJour)}</span></div>
+    <div class="totals-row net"><span>SOLDE DE CLÔTURE</span><span>${fmtDZD(soldeApres)}</span></div>
+  </div>
+  <div class="footer">PERLA — Ticket de caisse généré le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}</div>
   <script>window.onload=()=>{window.print();}<\/script>
   </body></html>`);
   win.document.close();
