@@ -175,6 +175,7 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
   <div class="nav-item" onclick="nav('clients')" id="nav-clients"><span class="nav-icon">🤝</span> Clients</div>
 
   <div class="sidebar-section">Approvisionnement</div>
+  <div class="nav-item" onclick="nav('reception')" id="nav-reception"><span class="nav-icon">📥</span> Bons de Réception</div>
   <div class="nav-item" onclick="nav('stocks')" id="nav-stocks"><span class="nav-icon">📦</span> Stocks</div>
   <div class="nav-item" onclick="nav('fournisseurs')" id="nav-fournisseurs"><span class="nav-icon">🚚</span> Fournisseurs</div>
 
@@ -628,7 +629,7 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
   <div class="page-body">
     <div class="table-wrap">
       <div class="table-toolbar"><input class="search-inp" placeholder="Rechercher…" oninput="filterTable('four',this.value)"></div>
-      <table><thead><tr><th>Nom</th><th>Pays</th><th>Contact</th><th>Type</th><th>Actions</th></tr></thead>
+      <table><thead><tr><th>Nom</th><th>Pays</th><th>Adresse</th><th>Personne Contact</th><th>Contact</th><th>Type</th><th>Actions</th></tr></thead>
       <tbody id="tbl-four"></tbody></table>
     </div>
   </div>
@@ -727,6 +728,187 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
       <button class="btn" id="reg-cancel-btn" onclick="closeReglementModal()">Annuler</button>
       <button class="btn" id="reg-print-btn" onclick="printReglement(regEditId)" style="display:none">🖨 Imprimer</button>
       <button class="btn btn-primary" id="reg-save-btn" onclick="saveReglement()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- BONS DE RÉCEPTION -->
+<div class="page" id="page-reception">
+  <div class="page-header">
+    <div><div class="page-title">📥 Bons de Réception</div><div class="page-sub">Gestion des réceptions fournisseurs</div></div>
+    <div class="page-actions">
+      <button class="btn" onclick="exportBR()">⬇ Exporter CSV</button>
+      <button class="btn btn-primary" onclick="openBRModal()">+ Nouveau BR</button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="kpi-grid" id="kpi-br-grid">
+      <div class="kpi"><div class="kpi-label">Total BR</div><div class="kpi-val" id="kpi-br-total">0</div><div class="kpi-sub">bons reçus</div></div>
+      <div class="kpi"><div class="kpi-label">Montant Total</div><div class="kpi-val" id="kpi-br-montant" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub">avant remise</div></div>
+      <div class="kpi"><div class="kpi-label">Remises</div><div class="kpi-val" id="kpi-br-remise" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub">total accordé</div></div>
+      <div class="kpi"><div class="kpi-label">Net à payer</div><div class="kpi-val" id="kpi-br-net" style="font-size:1.1rem;color:var(--gold)">0 DZD</div><div class="kpi-sub">montant net</div></div>
+    </div>
+    <div class="table-wrap">
+      <div class="table-toolbar" style="flex-wrap:wrap;gap:.5rem">
+        <input class="search-inp" id="br-search" placeholder="🔍 Rechercher par n° BR, fournisseur…" oninput="renderBR(this.value)" style="flex:1;min-width:200px">
+        <select class="filter-sel" id="br-filter-fournisseur" onchange="renderBR(document.getElementById('br-search').value)">
+          <option value="">Tous les fournisseurs</option>
+        </select>
+        <span id="br-count" style="font-size:.75rem;color:var(--text3);margin-left:auto;align-self:center"></span>
+      </div>
+      <table>
+        <thead><tr>
+          <th>N° BR</th><th>Fournisseur</th><th>Date</th>
+          <th style="text-align:right">Montant</th>
+          <th style="text-align:right">Remise</th>
+          <th style="text-align:right">Net</th>
+          <th>Lignes</th>
+          <th style="text-align:center">Actions</th>
+        </tr></thead>
+        <tbody id="tbl-br"></tbody>
+      </table>
+      <div id="br-empty" style="display:none;text-align:center;padding:3rem;color:var(--text3)">
+        <div style="font-size:2.5rem;margin-bottom:.75rem">📥</div>
+        <div style="font-size:.9rem">Aucun bon de réception</div>
+        <div style="font-size:.78rem;margin-top:.35rem">Cliquez sur "Nouveau BR" pour commencer</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NOUVEAU / MODIFIER BR -->
+<div id="br-modal-overlay" onclick="closeBRModal(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;align-items:center;justify-content:center">
+  <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r16);width:100%;max-width:560px;max-height:92vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.6)">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.25rem;border-bottom:1px solid var(--border)">
+      <div>
+        <div id="br-modal-title" style="font-size:.95rem;font-weight:600;color:var(--gold-l)">+ Nouveau Bon de Réception</div>
+        <div id="br-modal-sub" style="font-size:.75rem;color:var(--text3);margin-top:.2rem">Remplissez les informations du BR</div>
+      </div>
+      <button onclick="closeBRModal()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:1.2rem;padding:.2rem .4rem;border-radius:4px">✕</button>
+    </div>
+    <div style="padding:1.25rem;display:grid;gap:.9rem">
+      <div>
+        <label class="form-label">Fournisseur *</label>
+        <select class="form-inp" id="br-fournisseur-select">
+          <option value="">— Sélectionner un fournisseur —</option>
+        </select>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
+        <div>
+          <label class="form-label">Montant Total (DZD)</label>
+          <div class="form-inp" id="br-montant" style="background:var(--bg4);color:var(--text2);display:flex;align-items:center" title="Calculé automatiquement à partir des lignes" data-raw="0">0 DZD</div>
+        </div>
+        <div>
+          <label class="form-label">Remise (DZD)</label>
+          <input class="form-inp" id="br-remise" type="number" min="0" step="0.01" placeholder="0.00" oninput="calcBRNet()">
+        </div>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r8);padding:.75rem 1rem;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:.8rem;color:var(--text3)">Net à payer</span>
+        <span id="br-net-display" style="font-size:1.1rem;font-weight:700;color:var(--gold)">0 DZD</span>
+      </div>
+      <div>
+        <label class="form-label">Notes</label>
+        <textarea class="form-inp" id="br-notes" rows="2" placeholder="Remarques éventuelles…" style="resize:vertical"></textarea>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border);flex-wrap:wrap">
+      <button class="btn" id="br-cancel-btn" onclick="closeBRModal()">Annuler</button>
+      <button class="btn" id="br-detail-btn" onclick="openBRLignesModal()">📄 Détail Lignes</button>
+      <button class="btn" id="br-print-btn" onclick="printBR()" style="display:none">🖨 Imprimer BR</button>
+      <button class="btn btn-primary" id="br-save-btn" onclick="saveBR()" disabled style="opacity:.45;cursor:not-allowed" title="Ajoutez au moins une ligne avant d'enregistrer">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL LIGNES BR -->
+<div id="br-lignes-overlay" onclick="closeBRLignesModal(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1100;align-items:center;justify-content:center">
+  <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r16);width:100%;max-width:900px;max-height:92vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.6)">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.25rem;border-bottom:1px solid var(--border)">
+      <div>
+        <div id="br-lignes-title" style="font-size:.95rem;font-weight:600;color:var(--gold-l)">📄 Détail du Bon de Réception</div>
+        <div id="br-lignes-sub" style="font-size:.75rem;color:var(--text3);margin-top:.2rem">Gérez les lignes de ce bon</div>
+      </div>
+      <button onclick="closeBRLignesModal()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:1.2rem;padding:.2rem .4rem;border-radius:4px">✕</button>
+    </div>
+    <div style="padding:1.25rem">
+      <div id="br-ligne-form-ajout" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r8);padding:1rem;margin-bottom:1rem">
+        <div style="font-size:.75rem;font-weight:600;color:var(--gold-l);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.08em">+ Ajouter une ligne</div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:.6rem;margin-bottom:.6rem">
+          <div>
+            <label class="form-label">Produit *</label>
+            <select class="form-inp" id="br-ligne-produit">
+              <option value="">— Produit —</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Long. (m)</label>
+            <input class="form-inp" id="br-ligne-long" type="number" step="0.01" min="0" placeholder="0.00" oninput="calcBRLigneMontant()">
+          </div>
+          <div>
+            <label class="form-label">Larg. (m)</label>
+            <input class="form-inp" id="br-ligne-larg" type="number" step="0.01" min="0" placeholder="0.00" oninput="calcBRLigneMontant()">
+          </div>
+          <div>
+            <label class="form-label">Ép. (m)</label>
+            <input class="form-inp" id="br-ligne-ep" type="number" step="0.001" min="0" placeholder="0.000">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:.6rem;align-items:end">
+          <div>
+            <label class="form-label">Unité calc.</label>
+            <select class="form-inp" id="br-ligne-unite">
+              <option value="M²">M²</option>
+              <option value="M³">M³</option>
+              <option value="ML">ML</option>
+              <option value="U">Unité</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Quantité *</label>
+            <input class="form-inp" id="br-ligne-qte" type="number" step="0.01" min="0" placeholder="0.00" oninput="calcBRLigneMontant()">
+          </div>
+          <div>
+            <label class="form-label">Prix Unit. (DZD)</label>
+            <input class="form-inp" id="br-ligne-pu" type="number" step="0.01" min="0" placeholder="0.00" oninput="calcBRLigneMontant()">
+          </div>
+          <div>
+            <label class="form-label">Montant</label>
+            <input class="form-inp" id="br-ligne-montant" type="number" step="0.01" min="0" placeholder="0.00" readonly style="background:var(--bg4);color:var(--gold)">
+          </div>
+          <div>
+            <button class="btn btn-primary" onclick="addLigneBR()" style="white-space:nowrap">+ Ajouter</button>
+          </div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Produit</th><th>Long.</th><th>Larg.</th><th>Ép.</th>
+            <th>Unité</th><th>Qté</th>
+            <th style="text-align:right">P.U (DZD)</th>
+            <th style="text-align:right">Montant</th>
+            <th></th>
+          </tr></thead>
+          <tbody id="tbl-lignes-br"></tbody>
+        </table>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-top:1rem">
+        <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r8);padding:.75rem 1.25rem;min-width:280px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:.35rem">
+            <span style="font-size:.78rem;color:var(--text3)">Sous-total lignes</span>
+            <span id="br-lignes-subtotal" style="font-weight:600">0 DZD</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding-top:.35rem;border-top:1px solid var(--border)">
+            <span style="font-size:.85rem;font-weight:600;color:var(--gold-l)">Total</span>
+            <span id="br-lignes-total" style="font-size:1rem;font-weight:700;color:var(--gold)">0 DZD</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border)">
+      <button class="btn" onclick="closeBRLignesModal()">Fermer</button>
+      <button class="btn btn-primary" id="br-lignes-save-btn" onclick="saveLignesBR()">💾 Enregistrer les lignes</button>
     </div>
   </div>
 </div>
@@ -927,7 +1109,8 @@ let editId=null, editTable=null;
 const DB = {
   employes:[], departements:[], commandes:[], clients:[],
   stocks:[], fournisseurs:[], factures:[], depenses:[],
-  bons_livraison:[], lignes_bon_livraison:[], reglements:[], produits:[]
+  bons_livraison:[], lignes_bon_livraison:[], reglements:[], produits:[],
+  bons_reception:[], lignes_bon_reception:[]
 };
 
 /* ─── LOCAL STORAGE ─── */
@@ -960,7 +1143,7 @@ async function sbReq(method,table,body,id){
   return r.status===204?[]:r.json();
 }
 async function sbSelect(table,filter=''){
-  const noIdTables=['lignes_bon_livraison'];
+  const noIdTables=['lignes_bon_livraison','lignes_bon_reception'];
   const orderPart = noIdTables.includes(table) ? '' : 'order=id.asc';
   const qs = [orderPart, filter].filter(Boolean).join('&');
   const url=`${SB_URL}/rest/v1/${table}${qs?'?'+qs:''}`;
@@ -1152,7 +1335,7 @@ function setStatus(ok){
 }
 
 async function loadAll(){
-  const tables=['employes','departements','clients','stocks','fournisseurs','factures','depenses','bons_livraison','lignes_bon_livraison','reglements','produits'];
+  const tables=['employes','departements','clients','stocks','fournisseurs','factures','depenses','bons_livraison','lignes_bon_livraison','reglements','produits','bons_reception','lignes_bon_reception'];
   const errors=[];
   await Promise.all(tables.map(async t=>{
     try{DB[t]=await sbSelect(t);}catch(e){DB[t]=DB[t]||[]; errors.push(t+': '+e.message);}
@@ -1291,7 +1474,7 @@ function statusTag(s){
 function refreshAll(){
   renderEmp(); renderDept(); renderBL(); renderClient();
   renderStk(); renderFour(); renderFact(); renderDep();
-  renderReglements();
+  renderReglements(); renderBR();
   renderCreances();
   if(document.getElementById('hist-client-select')) renderHistorique();
   renderDashboard(); updateDeptFilter();
@@ -1350,6 +1533,458 @@ function renderDept(q=''){
         <div class="icon-btn del" onclick="delRow('departements',${d.id})">✕</div>
       </div></td></tr>`;
   }));
+}
+
+/* ═══════════════════════════════════════════════
+   MODULE BONS DE RÉCEPTION — CRUD COMPLET
+═══════════════════════════════════════════════ */
+
+let brEditId = null;
+let brLocked = false;
+let brLignesEditId = null;
+
+function fournisseurNomById(id){
+  const f = (DB.fournisseurs||[]).find(f=>String(f.id)===String(id));
+  return f ? (f.nom||'') : '';
+}
+
+function renderBR(q=''){
+  const fourFilter = (document.getElementById('br-filter-fournisseur')||{}).value||'';
+  const search = (q||'').toLowerCase();
+  let data = (DB.bons_reception||[]).filter(b=>{
+    const fourNom = fournisseurNomById(b.id_fournisseur);
+    const matchQ = !search ||
+      String(b.id).includes(search) ||
+      (fourNom||'').toLowerCase().includes(search);
+    const matchF = !fourFilter || String(b.id_fournisseur)===fourFilter;
+    return matchQ && matchF;
+  }).sort((a,b)=>(b.id||0)-(a.id||0));
+
+  const cnt = document.getElementById('br-count');
+  if(cnt) cnt.textContent = `${data.length} bon${data.length!==1?'s':''}`;
+
+  const tbody = document.getElementById('tbl-br');
+  const empty = document.getElementById('br-empty');
+  if(!tbody) return;
+
+  if(!data.length){
+    tbody.innerHTML=''; if(empty) empty.style.display='';
+    updateBRKPI(); return;
+  }
+  if(empty) empty.style.display='none';
+
+  const lignesCount = {};
+  (DB.lignes_bon_reception||[]).forEach(l=>{ lignesCount[l.num_bon]=(lignesCount[l.num_bon]||0)+1; });
+
+  tbody.innerHTML = data.map(b=>{
+    const net = (b.montant||0)-(b.remise||0);
+    const nbLignes = lignesCount[b.id]||0;
+    const fourNom = fournisseurNomById(b.id_fournisseur);
+    return `<tr>
+      <td><code style="font-size:.72rem;color:var(--gold)">BR-${b.id}</code></td>
+      <td><strong>${fourNom||'—'}</strong></td>
+      <td style="font-size:.75rem;color:var(--text3)">${b.created_at ? new Date(b.created_at).toLocaleDateString('fr-FR') : '—'}</td>
+      <td style="text-align:right;color:var(--text2)">${fmtDZD(b.montant)}</td>
+      <td style="text-align:right;color:var(--red);font-size:.78rem">${(b.remise||0)>0?'- '+fmtDZD(b.remise):'—'}</td>
+      <td style="text-align:right;font-weight:700;color:var(--gold)">${fmtDZD(net)}</td>
+      <td style="text-align:center"><span class="tag tag-blue">${nbLignes} ligne${nbLignes!==1?'s':''}</span></td>
+      <td>
+        <div class="action-btns">
+          <div class="icon-btn" title="Détail lignes" onclick="openBRLignesModal(${b.id})">📄</div>
+          <div class="icon-btn" title="Imprimer" onclick="printBR(${b.id})">🖨</div>
+          <div class="icon-btn" title="Voir" onclick="editBR(${b.id})">✎</div>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+  updateBRKPI();
+}
+
+function updateBRKPI(){
+  const brs = DB.bons_reception||[];
+  document.getElementById('kpi-br-total').textContent = brs.length;
+  const totalMt = brs.reduce((a,b)=>a+(b.montant||0),0);
+  const totalRm = brs.reduce((a,b)=>a+(b.remise||0),0);
+  document.getElementById('kpi-br-montant').textContent = fmtDZD(totalMt);
+  document.getElementById('kpi-br-remise').textContent = fmtDZD(totalRm);
+  document.getElementById('kpi-br-net').textContent = fmtDZD(totalMt-totalRm);
+  const sel = document.getElementById('br-filter-fournisseur');
+  if(sel){
+    const cur = sel.value;
+    const ids = [...new Set((DB.bons_reception||[]).map(b=>b.id_fournisseur))];
+    sel.innerHTML = '<option value="">Tous les fournisseurs</option>'+
+      ids.map(id=>`<option value="${id}" ${String(id)===cur?'selected':''}>${fournisseurNomById(id)||'—'}</option>`).join('');
+  }
+}
+
+function calcBRMontantFromLignes(brId){
+  const lignes=(DB.lignes_bon_reception||[]).filter(l=>l.num_bon===brId);
+  return lignes.reduce((a,l)=>a+((l.long||0)*(l.larg||0)*(l.quantite||0)*(l.pu||0)),0);
+}
+
+function setBRMontantDisplay(mt){
+  const mtEl=document.getElementById('br-montant');
+  if(mtEl){ mtEl.dataset.raw=mt; mtEl.textContent=fmtDZD(mt); }
+  calcBRNet();
+}
+
+function refreshBRMontantDisplay(brId){
+  setBRMontantDisplay(calcBRMontantFromLignes(brId));
+}
+
+function calcBRNet(){
+  const mtEl=document.getElementById('br-montant');
+  const mt=mtEl?(parseFloat(mtEl.dataset.raw)||0):0;
+  const rm=parseFloat(document.getElementById('br-remise').value)||0;
+  document.getElementById('br-net-display').textContent=fmtDZD(mt-rm);
+}
+
+function openBRModal(data=null){
+  brEditId = data ? data.id : null;
+  const isEdit = !!data;
+  document.getElementById('br-modal-title').textContent = isEdit ? '🔒 Bon de Réception (enregistré)' : '+ Nouveau Bon de Réception';
+  document.getElementById('br-modal-sub').textContent = isEdit ? `BR N° BR-${data.id} — lecture seule` : 'Remplissez les informations du BR';
+  const sel = document.getElementById('br-fournisseur-select');
+  sel.innerHTML = '<option value="">— Sélectionner un fournisseur —</option>'+
+    (DB.fournisseurs||[]).map(f=>`<option value="${f.id}" ${data&&data.id_fournisseur===f.id?'selected':''}>${f.nom||'—'}</option>`).join('');
+  setBRMontantDisplay(data ? calcBRMontantFromLignes(data.id) : 0);
+  document.getElementById('br-remise').value = data ? (data.remise||0) : 0;
+  document.getElementById('br-notes').value = data ? (data.notes||'') : '';
+  calcBRNet();
+  document.getElementById('br-detail-btn').style.display='';
+  document.getElementById('br-print-btn').style.display = isEdit ? '' : 'none';
+  updateBRSaveBtn(isEdit ? brEditId : null);
+  setBRLocked(isEdit);
+  document.getElementById('br-modal-overlay').style.display='flex';
+}
+
+function setBRLocked(locked){
+  brLocked = locked;
+  ['br-fournisseur-select','br-remise','br-notes'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){ el.disabled=locked; el.style.opacity=locked?'.6':'1'; el.style.cursor=locked?'not-allowed':''; }
+  });
+  const detailBtn=document.getElementById('br-detail-btn');
+  const saveBtn=document.getElementById('br-save-btn');
+  const cancelBtn=document.getElementById('br-cancel-btn');
+  if(detailBtn){
+    detailBtn.disabled=locked;
+    detailBtn.style.opacity=locked?'.45':'1';
+    detailBtn.style.cursor=locked?'not-allowed':'pointer';
+    detailBtn.title=locked?'BR déjà enregistré — verrouillé':'';
+  }
+  if(saveBtn) saveBtn.style.display = locked ? 'none' : '';
+  if(cancelBtn) cancelBtn.textContent = locked ? 'Fermer' : 'Annuler';
+}
+
+async function closeBRModal(e){
+  if(e && e.target!==document.getElementById('br-modal-overlay')) return;
+  if(brEditId && !brLocked){ await cancelUnsavedBR(brEditId); }
+  document.getElementById('br-modal-overlay').style.display='none';
+  brEditId=null;
+}
+
+async function cancelUnsavedBR(id){
+  try{
+    if(connected){
+      const lignes=(DB.lignes_bon_reception||[]).filter(l=>l.num_bon===id);
+      for(const l of lignes) try{ await sbDeleteComposite('lignes_bon_reception', l); }catch(e){}
+      await sbDelete('bons_reception', id);
+      await loadAll();
+    } else {
+      DB.bons_reception = DB.bons_reception.filter(b=>b.id!==id);
+      DB.lignes_bon_reception = (DB.lignes_bon_reception||[]).filter(l=>l.num_bon!==id);
+      save(); refreshAll();
+    }
+  }catch(e){ console.warn('Erreur annulation BR:', e.message); }
+}
+
+function editBR(id){
+  const br=(DB.bons_reception||[]).find(b=>b.id===id);
+  if(br) openBRModal(br);
+}
+
+async function saveBR(){
+  const fournisseurId = parseInt(document.getElementById('br-fournisseur-select').value);
+  if(!fournisseurId){ toast('Sélectionnez un fournisseur','error'); return; }
+  const body = {
+    id_fournisseur: fournisseurId,
+    montant: calcBRMontantFromLignes(brEditId),
+    remise: parseFloat(document.getElementById('br-remise').value)||0,
+    notes: document.getElementById('br-notes').value.trim()
+  };
+  const btn=document.getElementById('br-save-btn');
+  btn.textContent='⏳ …'; btn.disabled=true;
+  try{
+    if(connected){
+      if(brEditId){ await sbReq('PATCH','bons_reception',body,brEditId); }
+      else { const r=await sbReq('POST','bons_reception',body); brEditId=r&&r[0]?r[0].id:null; }
+      await loadAll();
+    } else {
+      if(brEditId){ const i=DB.bons_reception.findIndex(b=>b.id===brEditId); if(i>-1) DB.bons_reception[i]={...DB.bons_reception[i],...body}; }
+      else { brEditId=Date.now(); DB.bons_reception.push({id:brEditId,...body,created_at:new Date().toISOString()}); }
+      save(); refreshAll();
+    }
+    toast('BR enregistré ✓','success');
+    document.getElementById('br-detail-btn').style.display='';
+    document.getElementById('br-print-btn').style.display='';
+    document.getElementById('br-modal-title').textContent='🔒 Bon de Réception (enregistré)';
+    document.getElementById('br-modal-sub').textContent=`BR N° BR-${brEditId} — lecture seule`;
+    updateBRSaveBtn(brEditId);
+    setBRLocked(true);
+  }catch(e){ toast('Erreur: '+e.message,'error'); }
+  finally{ btn.textContent='💾 Enregistrer'; btn.disabled=false; }
+}
+
+function exportBR(){
+  const data=DB.bons_reception||[];
+  if(!data.length){toast('Aucun BR à exporter','error');return;}
+  const headers=['N° BR','Fournisseur','Montant','Remise','Net','Notes'];
+  const rows=data.map(b=>[`BR-${b.id}`,fournisseurNomById(b.id_fournisseur),Math.round(b.montant||0),Math.round(b.remise||0),Math.round((b.montant||0)-(b.remise||0)),b.notes||'']);
+  const csv=[headers,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`bons_reception_perla_${new Date().toISOString().slice(0,10)}.csv`; a.click();
+  toast('Export CSV ✓','success');
+}
+
+/* ── LIGNES BR ── */
+async function openBRLignesModal(brId){
+  const openingExistingFromTable = !!brId;
+  if(!brId && !brEditId){
+    const fournisseurId = parseInt(document.getElementById('br-fournisseur-select').value);
+    if(!fournisseurId){ toast("Sélectionnez un fournisseur d'abord",'error'); return; }
+    await saveBRSilent();
+    if(!brEditId){ return; }
+  }
+  brLignesEditId = brId || brEditId;
+  const lignesLocked = openingExistingFromTable || brLocked;
+  document.getElementById('br-lignes-title').textContent=(lignesLocked?'🔒 ':'📄 ')+'Détail — BR-'+brLignesEditId;
+  document.getElementById('br-lignes-sub').textContent=`Fournisseur : ${fournisseurNomById((DB.bons_reception||[]).find(b=>b.id===brLignesEditId)?.id_fournisseur)||'—'}`+(lignesLocked?' — lecture seule':'');
+  const formAjout=document.getElementById('br-ligne-form-ajout');
+  if(formAjout) formAjout.style.display = lignesLocked ? 'none' : '';
+  const saveLignesBtn=document.getElementById('br-lignes-save-btn');
+  if(saveLignesBtn) saveLignesBtn.style.display = lignesLocked ? 'none' : '';
+  const selP=document.getElementById('br-ligne-produit');
+  selP.innerHTML='<option value="">— Produit —</option>'+
+    (DB.produits||[]).map(p=>`<option value="${p.id}">${p.nom||p.designation||p.reference||'Produit '+p.id}</option>`).join('');
+  ['br-ligne-long','br-ligne-larg','br-ligne-ep','br-ligne-qte','br-ligne-pu','br-ligne-montant'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('br-ligne-unite').value='M²';
+  renderLignesBR(lignesLocked);
+  document.getElementById('br-lignes-overlay').style.display='flex';
+}
+
+function closeBRLignesModal(e){
+  if(e && e.target!==document.getElementById('br-lignes-overlay')) return;
+  document.getElementById('br-lignes-overlay').style.display='none';
+  brLignesEditId=null;
+}
+
+async function saveBRSilent(){
+  const fournisseurId = parseInt(document.getElementById('br-fournisseur-select').value);
+  if(!fournisseurId) return;
+  const body = {
+    id_fournisseur: fournisseurId,
+    montant: parseFloat(document.getElementById('br-montant').dataset.raw)||0,
+    remise: parseFloat(document.getElementById('br-remise').value)||0,
+    notes: document.getElementById('br-notes').value.trim()
+  };
+  try{
+    if(connected){
+      const r=await sbReq('POST','bons_reception',body);
+      brEditId=r&&r[0]?r[0].id:null;
+      await loadAll();
+    } else {
+      brEditId=Date.now();
+      DB.bons_reception.push({id:brEditId,...body,created_at:new Date().toISOString()});
+      save(); refreshAll();
+    }
+    document.getElementById('br-detail-btn').style.display='';
+    document.getElementById('br-modal-title').textContent='✎ Modifier le Bon de Réception';
+    document.getElementById('br-modal-sub').textContent=`BR N° BR-${brEditId}`;
+  }catch(e){ toast('Erreur sauvegarde BR: '+e.message,'error'); }
+}
+
+function calcBRLigneMontant(){
+  const L=parseFloat(document.getElementById('br-ligne-long').value)||0;
+  const l=parseFloat(document.getElementById('br-ligne-larg').value)||0;
+  const qte=parseFloat(document.getElementById('br-ligne-qte').value)||0;
+  const pu=parseFloat(document.getElementById('br-ligne-pu').value)||0;
+  document.getElementById('br-ligne-montant').value=(L*l*qte*pu).toFixed(2);
+}
+
+async function addLigneBR(){
+  const produitId=parseInt(document.getElementById('br-ligne-produit').value);
+  if(!produitId){toast('Sélectionnez un produit','error');return;}
+  const long=parseFloat(document.getElementById('br-ligne-long').value)||0;
+  const larg=parseFloat(document.getElementById('br-ligne-larg').value)||0;
+  const ep=parseFloat(document.getElementById('br-ligne-ep').value)||0;
+  const body={
+    num_bon: brLignesEditId,
+    produit: produitId,
+    long, larg, ep,
+    unite_calcul: document.getElementById('br-ligne-unite').value||'M²',
+    quantite: parseFloat(document.getElementById('br-ligne-qte').value)||0,
+    pu: parseFloat(document.getElementById('br-ligne-pu').value)||0,
+  };
+  if(body.quantite<=0){toast('Quantité invalide','error');return;}
+  const dup=(DB.lignes_bon_reception||[]).some(l=>
+    l.num_bon===body.num_bon && l.produit===body.produit &&
+    l.long===body.long && l.larg===body.larg && l.ep===body.ep);
+  if(dup){ toast('Une ligne identique existe déjà (même produit + dimensions)','error'); return; }
+  try{
+    if(connected){ await sbReq('POST','lignes_bon_reception',body); await loadAll(); }
+    else { DB.lignes_bon_reception=DB.lignes_bon_reception||[]; DB.lignes_bon_reception.push(body); save(); }
+    ['br-ligne-long','br-ligne-larg','br-ligne-ep','br-ligne-qte','br-ligne-pu','br-ligne-montant'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    document.getElementById('br-ligne-produit').value='';
+    renderLignesBR();
+    updateBRSaveBtn(brLignesEditId);
+    refreshBRMontantDisplay(brLignesEditId);
+    toast('Ligne ajoutée ✓','success');
+  }catch(e){toast('Erreur: '+e.message,'error');}
+}
+
+async function deleteLigneBR(num_bon,produit,long,larg,ep){
+  if(!confirm('Supprimer cette ligne ?')) return;
+  try{
+    if(connected){ await sbDeleteComposite('lignes_bon_reception',{num_bon,produit,long,larg,ep}); await loadAll(); }
+    else {
+      DB.lignes_bon_reception = DB.lignes_bon_reception.filter(l=>
+        !(l.num_bon===num_bon && l.produit===produit && l.long===long && l.larg===larg && l.ep===ep));
+      save();
+    }
+    renderLignesBR();
+    updateBRSaveBtn(brLignesEditId);
+    refreshBRMontantDisplay(brLignesEditId);
+    toast('Ligne supprimée','success');
+  }catch(e){toast('Erreur: '+e.message,'error');}
+}
+
+function renderLignesBR(locked=false){
+  const lignes=(DB.lignes_bon_reception||[]).filter(l=>l.num_bon===brLignesEditId);
+  const tbody=document.getElementById('tbl-lignes-br');
+  if(!tbody) return;
+  if(!lignes.length){
+    tbody.innerHTML='<tr class="empty-row"><td colspan="9">Aucune ligne — ajoutez des produits ci-dessus</td></tr>';
+    document.getElementById('br-lignes-subtotal').textContent='0 DZD';
+    document.getElementById('br-lignes-total').textContent='0 DZD';
+    return;
+  }
+  const total=lignes.reduce((a,l)=>a+((l.long||0)*(l.larg||0)*(l.quantite||0)*(l.pu||0)),0);
+  document.getElementById('br-lignes-subtotal').textContent=fmtDZD(total);
+  document.getElementById('br-lignes-total').textContent=fmtDZD(total);
+  tbody.innerHTML=lignes.map(l=>{
+    const montant=(l.long||0)*(l.larg||0)*(l.quantite||0)*(l.pu||0);
+    return `<tr>
+    <td><strong>${produitNomById(l.produit)}</strong></td>
+    <td style="font-size:.75rem;color:var(--text3)">${l.long||0}</td>
+    <td style="font-size:.75rem;color:var(--text3)">${l.larg||0}</td>
+    <td style="font-size:.75rem;color:var(--text3)">${l.ep||0}</td>
+    <td><span class="tag tag-blue" style="font-size:.65rem">${l.unite_calcul||'M²'}</span></td>
+    <td style="font-weight:600">${l.quantite||0}</td>
+    <td style="text-align:right">${fmtNum(l.pu)}</td>
+    <td style="text-align:right;font-weight:700;color:var(--gold)">${fmtDZD(montant)}</td>
+    <td>${locked?'':`<div class="icon-btn del" onclick="deleteLigneBR(${l.num_bon},${l.produit},${l.long},${l.larg},${l.ep})">✕</div>`}</td>
+  </tr>`;
+  }).join('');
+}
+
+function updateBRSaveBtn(brId){
+  const lignes=(DB.lignes_bon_reception||[]).filter(l=>l.num_bon===(brId||brEditId));
+  const btn=document.getElementById('br-save-btn');
+  if(!btn) return;
+  const hasLignes=lignes.length>0;
+  btn.disabled=!hasLignes;
+  btn.style.opacity=hasLignes?'1':'.45';
+  btn.style.cursor=hasLignes?'pointer':'not-allowed';
+  btn.title=hasLignes?'':"Ajoutez au moins une ligne avant d'enregistrer";
+}
+
+async function saveLignesBR(){
+  const montant=calcBRMontantFromLignes(brLignesEditId);
+  try{
+    if(connected){ await sbReq('PATCH','bons_reception',{montant},brLignesEditId); }
+    else { const i=DB.bons_reception.findIndex(b=>b.id===brLignesEditId); if(i>-1) DB.bons_reception[i].montant=montant; save(); }
+  }catch(e){ toast('Erreur mise à jour montant BR: '+e.message,'error'); }
+  toast('Lignes enregistrées ✓','success');
+  if(connected) await loadAll();
+  renderLignesBR();
+  renderBR();
+  updateBRSaveBtn(brLignesEditId);
+  refreshBRMontantDisplay(brLignesEditId);
+  document.getElementById('br-lignes-overlay').style.display='none';
+}
+
+function printBR(brId){
+  const id=brId||brEditId;
+  if(!id){toast('Aucun BR sélectionné','error');return;}
+  const br=(DB.bons_reception||[]).find(b=>b.id===id);
+  if(!br){toast('BR introuvable','error');return;}
+  const lignes=(DB.lignes_bon_reception||[]).filter(l=>l.num_bon===id);
+  const net=(br.montant||0)-(br.remise||0);
+  const fourNom=fournisseurNomById(br.id_fournisseur);
+  const win=window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head>
+  <meta charset="UTF-8"><title>BR-${id}</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+    body{padding:20mm;color:#111;font-size:11pt}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8mm;padding-bottom:5mm;border-bottom:2px solid #b8960c}
+    .company{font-size:18pt;font-weight:700;color:#b8960c;letter-spacing:.05em}
+    .company-sub{font-size:9pt;color:#555;margin-top:2px}
+    .bl-info{text-align:right}
+    .bl-num{font-size:14pt;font-weight:700;color:#b8960c}
+    .bl-date{font-size:9pt;color:#555;margin-top:2px}
+    .client-box{background:#f8f4e8;border:1px solid #d4af37;border-radius:4px;padding:4mm 6mm;margin-bottom:6mm}
+    .client-label{font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:.1em;margin-bottom:1mm}
+    .client-name{font-size:12pt;font-weight:700}
+    table{width:100%;border-collapse:collapse;margin-bottom:6mm;font-size:9.5pt}
+    th{background:#b8960c;color:#fff;padding:2mm 3mm;text-align:left;font-size:9pt}
+    td{padding:2mm 3mm;border-bottom:1px solid #eee}
+    tr:nth-child(even) td{background:#fafafa}
+    .text-right{text-align:right}
+    .totals{margin-left:auto;width:240px}
+    .totals-row{display:flex;justify-content:space-between;padding:1.5mm 0;font-size:10pt}
+    .totals-row.net{font-size:12pt;font-weight:700;color:#b8960c;border-top:2px solid #b8960c;margin-top:2mm;padding-top:2mm}
+    .footer{margin-top:12mm;padding-top:5mm;border-top:1px solid #ccc;font-size:8pt;color:#888;text-align:center}
+    @media print{body{padding:15mm}}
+  </style></head><body>
+  <div class="header">
+    <div><div class="company">PERLA</div><div class="company-sub">Marbrerie — Granit & Pierre Naturelle</div></div>
+    <div class="bl-info"><div class="bl-num">BON DE RÉCEPTION N° BR-${id}</div><div class="bl-date">Date : ${br.created_at ? new Date(br.created_at).toLocaleDateString('fr-FR') : '—'}</div></div>
+  </div>
+  <div class="client-box">
+    <div class="client-label">Fournisseur</div>
+    <div class="client-name">${fourNom||'—'}</div>
+  </div>
+  <table>
+    <thead><tr>
+      <th>Produit</th><th class="text-right">Long.</th><th class="text-right">Larg.</th><th class="text-right">Ép.</th>
+      <th>Unité</th><th class="text-right">Qté</th><th class="text-right">P.U (DZD)</th><th class="text-right">Montant (DZD)</th>
+    </tr></thead>
+    <tbody>
+    ${lignes.length ? lignes.map(l=>{
+      const montant=(l.long||0)*(l.larg||0)*(l.quantite||0)*(l.pu||0);
+      return `<tr>
+      <td>${produitNomById(l.produit)}</td>
+      <td class="text-right">${l.long||0}</td><td class="text-right">${l.larg||0}</td><td class="text-right">${l.ep||0}</td>
+      <td>${l.unite_calcul||'M²'}</td>
+      <td class="text-right">${l.quantite||0}</td>
+      <td class="text-right">${fmtNum(l.pu)}</td>
+      <td class="text-right"><strong>${fmtNum(montant)}</strong></td>
+    </tr>`;}).join('') : '<tr><td colspan="8" style="text-align:center;color:#aaa;padding:5mm">Aucune ligne</td></tr>'}
+    </tbody>
+  </table>
+  <div class="totals">
+    <div class="totals-row"><span>Montant total</span><span>${fmtDZD(br.montant)}</span></div>
+    ${(br.remise||0)>0?`<div class="totals-row"><span>Remise</span><span>- ${fmtDZD(br.remise)}</span></div>`:''}
+    <div class="totals-row net"><span>NET À PAYER</span><span>${fmtDZD(net)}</span></div>
+  </div>
+  ${br.notes?`<div style="margin-top:8mm;padding:3mm 4mm;background:#f9f9f9;border-left:3px solid #b8960c;font-size:9pt;color:#555">
+    <strong>Notes :</strong> ${br.notes}</div>`:''}
+  <div class="footer">PERLA — Bon de réception généré le ${new Date().toLocaleDateString('fr-FR')} — Document non contractuel</div>
+  <script>window.onload=()=>{window.print();}<\/script>
+  </body></html>`);
+  win.document.close();
 }
 
 /* ═══════════════════════════════════════════════
@@ -2649,12 +3284,54 @@ function renderFour(q=''){
   let data=DB.fournisseurs.filter(f=>!q||(f.nom||'').toLowerCase().includes(q));
   renderTable('tbl-four',data.map(f=>`<tr>
     <td><strong>${f.nom||'—'}</strong></td>
-    <td>${f.pays||'—'}</td><td>${f.contact||'—'}</td>
+    <td>${f.pays||'—'}</td>
+    <td style="font-size:.78rem;color:var(--text3)">${f.adresse||'—'}</td>
+    <td>${f.personne_contact||'—'}</td>
+    <td>${f.contact||'—'}</td>
     <td>${statusTag(f.type||'Local')}</td>
     <td><div class="action-btns">
+      <div class="icon-btn" title="Imprimer fiche" onclick="printFournisseur(${f.id})">🖨</div>
       <div class="icon-btn" onclick="editRow('fournisseurs',${f.id})">✎</div>
       <div class="icon-btn del" onclick="delRow('fournisseurs',${f.id})">✕</div>
     </div></td></tr>`));
+}
+
+function printFournisseur(id){
+  const f=(DB.fournisseurs||[]).find(f=>f.id===id);
+  if(!f){toast('Fournisseur introuvable','error');return;}
+  const win=window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head>
+  <meta charset="UTF-8"><title>Fiche Fournisseur — ${f.nom||''}</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+    body{padding:20mm;color:#111;font-size:11pt}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8mm;padding-bottom:5mm;border-bottom:2px solid #b8960c}
+    .company{font-size:18pt;font-weight:700;color:#b8960c;letter-spacing:.05em}
+    .company-sub{font-size:9pt;color:#555;margin-top:2px}
+    .doc-title{font-size:13pt;font-weight:700;color:#b8960c;text-align:right}
+    .info-box{background:#f8f4e8;border:1px solid #d4af37;border-radius:4px;padding:5mm 6mm;margin-bottom:6mm}
+    .row{display:flex;justify-content:space-between;padding:2.5mm 0;font-size:10.5pt;border-bottom:1px solid #eee}
+    .row:last-child{border-bottom:none}
+    .label{color:#888;font-size:9pt;text-transform:uppercase;letter-spacing:.05em}
+    .footer{margin-top:14mm;padding-top:5mm;border-top:1px solid #ccc;font-size:8pt;color:#888;text-align:center}
+    @media print{body{padding:15mm}}
+  </style></head><body>
+  <div class="header">
+    <div><div class="company">PERLA</div><div class="company-sub">Marbrerie — Granit & Pierre Naturelle</div></div>
+    <div class="doc-title">FICHE FOURNISSEUR</div>
+  </div>
+  <div class="info-box">
+    <div class="row"><span class="label">Nom</span><span><strong>${f.nom||'—'}</strong></span></div>
+    <div class="row"><span class="label">Pays</span><span>${f.pays||'—'}</span></div>
+    <div class="row"><span class="label">Adresse</span><span>${f.adresse||'—'}</span></div>
+    <div class="row"><span class="label">Personne à contacter</span><span>${f.personne_contact||'—'}</span></div>
+    <div class="row"><span class="label">Contact</span><span>${f.contact||'—'}</span></div>
+    <div class="row"><span class="label">Type</span><span>${f.type||'—'}</span></div>
+  </div>
+  <div class="footer">PERLA — Fiche générée le ${new Date().toLocaleDateString('fr-FR')} — Document non contractuel</div>
+  <script>window.onload=()=>{window.print();}<\/script>
+  </body></html>`);
+  win.document.close();
 }
 
 function renderFact(q=''){
@@ -2775,7 +3452,8 @@ const FORMS={
   ]},
   four:{title:'Fournisseur',table:'fournisseurs',fields:[
     {k:'nom',l:'Nom',t:'text'},{k:'pays',l:'Pays',t:'text'},
-    {k:'contact',l:'Contact',t:'text'},
+    {k:'adresse',l:'Adresse',t:'text'},{k:'personne_contact',l:'Personne à contacter',t:'text'},
+    {k:'contact',l:'Téléphone / Email',t:'text'},
     {k:'type',l:'Type',t:'select',opts:['Local','Import','Les deux']}
   ]},
   fact:{title:'Facture',table:'factures',fields:[
