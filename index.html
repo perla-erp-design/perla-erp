@@ -1280,7 +1280,7 @@ function renderReglements(q=''){
   let data = (DB.reglements||[]).filter(r=>{
     const clientNom = clientNomById(r.id_client);
     const matchQ = !search || (clientNom||'').toLowerCase().includes(search);
-    const matchT = !typeFilter || r.type===typeFilter;
+    const matchT = !typeFilter || (r.type||'').trim().toLowerCase()===typeFilter.trim().toLowerCase();
     return matchQ && matchT;
   }).sort((a,b)=> new Date(b.date||0) - new Date(a.date||0));
 
@@ -1566,12 +1566,12 @@ function renderBL(q='') {
 }
 
 function clientNomById(id){
-  const c = (DB.clients||[]).find(c=>c.id===id);
+  const c = (DB.clients||[]).find(c=>String(c.id)===String(id));
   return c ? (c.nom||c.raison_sociale||'') : '';
 }
 
 function produitNomById(id){
-  const p = (DB.produits||[]).find(p=>p.id===id);
+  const p = (DB.produits||[]).find(p=>String(p.id)===String(id));
   return p ? (p.nom||p.designation||p.reference||('Produit '+id)) : ('Produit '+id);
 }
 
