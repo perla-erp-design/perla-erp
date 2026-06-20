@@ -183,6 +183,10 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
   <div class="nav-item" onclick="nav('factures')" id="nav-factures"><span class="nav-icon">🧾</span> Factures</div>
   <div class="nav-item" onclick="nav('depenses')" id="nav-depenses"><span class="nav-icon">💸</span> Dépenses</div>
 
+  <div class="sidebar-section">États</div>
+  <div class="nav-item" onclick="nav('etat-creances')" id="nav-etat-creances"><span class="nav-icon">📊</span> Créances Clients</div>
+  <div class="nav-item" onclick="nav('etat-historique')" id="nav-etat-historique"><span class="nav-icon">📜</span> Historique Client</div>
+
   <div class="sidebar-footer">
     <button class="db-config-btn" onclick="nav('settings')">⚙ Configuration base de données</button>
   </div>
@@ -699,7 +703,7 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
         </div>
         <div>
           <label class="form-label">Montant (DZD) *</label>
-          <input class="form-inp" id="reg-montant" type="number" min="0" step="0.01" placeholder="0.00">
+          <input class="form-inp" id="reg-montant" type="text" inputmode="numeric" placeholder="0" oninput="formatMontantInput(this)">
         </div>
       </div>
       <div>
@@ -723,6 +727,84 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
       <button class="btn" id="reg-cancel-btn" onclick="closeReglementModal()">Annuler</button>
       <button class="btn" id="reg-print-btn" onclick="printReglement(regEditId)" style="display:none">🖨 Imprimer</button>
       <button class="btn btn-primary" id="reg-save-btn" onclick="saveReglement()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ÉTAT — CRÉANCES CLIENTS -->
+<div class="page" id="page-etat-creances">
+  <div class="page-header">
+    <div><div class="page-title">📊 État des Créances Clients</div><div class="page-sub">Synthèse achats / règlements / solde par client</div></div>
+    <div class="page-actions">
+      <button class="btn" onclick="exportCreances()">⬇ Exporter CSV</button>
+      <button class="btn btn-primary" onclick="printCreances()">🖨 Imprimer l'état</button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="kpi-grid" id="kpi-creances-grid">
+      <div class="kpi"><div class="kpi-label">Total Achats</div><div class="kpi-val" id="kpi-cr-achats" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub">tous BL confondus</div></div>
+      <div class="kpi"><div class="kpi-label">Total Règlements</div><div class="kpi-val" id="kpi-cr-reg" style="font-size:1.1rem;color:var(--green)">0 DZD</div><div class="kpi-sub">encaissé</div></div>
+      <div class="kpi"><div class="kpi-label">Solde Créances</div><div class="kpi-val" id="kpi-cr-solde" style="font-size:1.1rem;color:var(--gold)">0 DZD</div><div class="kpi-sub">reste à percevoir</div></div>
+      <div class="kpi"><div class="kpi-label">Clients débiteurs</div><div class="kpi-val" id="kpi-cr-nb">0</div><div class="kpi-sub">soldes positifs</div></div>
+    </div>
+    <div class="table-wrap">
+      <div class="table-toolbar">
+        <input class="search-inp" id="cr-search" placeholder="🔍 Rechercher un client…" oninput="renderCreances(this.value)">
+      </div>
+      <table>
+        <thead><tr>
+          <th>Réf. Client</th><th>Nom Client</th>
+          <th style="text-align:right">Total Achat</th>
+          <th style="text-align:right">Total Règlement</th>
+          <th style="text-align:right">Solde</th>
+          <th style="text-align:center">Actions</th>
+        </tr></thead>
+        <tbody id="tbl-creances"></tbody>
+      </table>
+      <div id="creances-empty" style="display:none;text-align:center;padding:3rem;color:var(--text3)">
+        <div style="font-size:2.5rem;margin-bottom:.75rem">📊</div>
+        <div style="font-size:.9rem">Aucune donnée client</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ÉTAT — HISTORIQUE CLIENT -->
+<div class="page" id="page-etat-historique">
+  <div class="page-header">
+    <div><div class="page-title">📜 Historique Client</div><div class="page-sub">Relevé chronologique des opérations</div></div>
+    <div class="page-actions">
+      <button class="btn btn-primary" id="hist-print-btn" onclick="printHistorique()" style="display:none">🖨 Imprimer le relevé</button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="table-wrap" style="margin-bottom:1rem">
+      <div class="table-toolbar">
+        <select class="filter-sel" id="hist-client-select" onchange="renderHistorique()" style="flex:1">
+          <option value="">— Sélectionner un client —</option>
+        </select>
+      </div>
+    </div>
+    <div id="hist-content" style="display:none">
+      <div class="kpi-grid" id="kpi-hist-grid" style="margin-bottom:1rem">
+        <div class="kpi"><div class="kpi-label">Total Achats</div><div class="kpi-val" id="kpi-hist-achats" style="font-size:1.1rem;color:var(--red)">0 DZD</div></div>
+        <div class="kpi"><div class="kpi-label">Total Règlements</div><div class="kpi-val" id="kpi-hist-reg" style="font-size:1.1rem;color:var(--green)">0 DZD</div></div>
+        <div class="kpi"><div class="kpi-label">Solde Final</div><div class="kpi-val" id="kpi-hist-solde" style="font-size:1.1rem;color:var(--gold)">0 DZD</div></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Date</th><th>Opération</th><th>Référence</th>
+            <th style="text-align:right">Montant</th>
+            <th style="text-align:right">Solde Cumulé</th>
+          </tr></thead>
+          <tbody id="tbl-historique"></tbody>
+        </table>
+      </div>
+    </div>
+    <div id="hist-empty" style="text-align:center;padding:3rem;color:var(--text3)">
+      <div style="font-size:2.5rem;margin-bottom:.75rem">📜</div>
+      <div style="font-size:.9rem">Sélectionnez un client pour voir son historique</div>
     </div>
   </div>
 </div>
@@ -1210,6 +1292,8 @@ function refreshAll(){
   renderEmp(); renderDept(); renderBL(); renderClient();
   renderStk(); renderFour(); renderFact(); renderDep();
   renderReglements();
+  renderCreances();
+  if(document.getElementById('hist-client-select')) renderHistorique();
   renderDashboard(); updateDeptFilter();
 }
 
@@ -1266,6 +1350,275 @@ function renderDept(q=''){
         <div class="icon-btn del" onclick="delRow('departements',${d.id})">✕</div>
       </div></td></tr>`;
   }));
+}
+
+/* ═══════════════════════════════════════════════
+   MODULE ÉTATS — CRÉANCES & HISTORIQUE CLIENT
+═══════════════════════════════════════════════ */
+
+// Calcule total achats (somme montant net des BL) pour un client
+function totalAchatsClient(clientId){
+  return (DB.bons_livraison||[]).filter(b=>String(b.id_client)===String(clientId))
+    .reduce((a,b)=>a+((b.montant||0)-(b.remise||0)),0);
+}
+
+// Calcule total règlements pour un client
+function totalReglementsClient(clientId){
+  return (DB.reglements||[]).filter(r=>String(r.id_client)===String(clientId))
+    .reduce((a,r)=>a+(r.montant||0),0);
+}
+
+function renderCreances(q=''){
+  const search=(q||'').toLowerCase();
+  const clients=(DB.clients||[]).filter(c=>{
+    const nom=(c.nom||c.raison_sociale||'').toLowerCase();
+    return !search || nom.includes(search) || String(c.id).includes(search);
+  });
+
+  const rows = clients.map(c=>{
+    const achats = totalAchatsClient(c.id);
+    const reglements = totalReglementsClient(c.id);
+    const solde = achats - reglements;
+    return {id:c.id, nom:c.nom||c.raison_sociale||'—', achats, reglements, solde};
+  }).sort((a,b)=>b.solde-a.solde);
+
+  const tbody=document.getElementById('tbl-creances');
+  const empty=document.getElementById('creances-empty');
+  if(!tbody) return;
+
+  if(!rows.length){
+    tbody.innerHTML=''; if(empty) empty.style.display='';
+    updateCreancesKPI([]);
+    return;
+  }
+  if(empty) empty.style.display='none';
+
+  tbody.innerHTML = rows.map(r=>`<tr>
+    <td><code style="font-size:.72rem;color:var(--text3)">CL-${r.id}</code></td>
+    <td><strong>${r.nom}</strong></td>
+    <td style="text-align:right">${fmtDZD(r.achats)}</td>
+    <td style="text-align:right;color:var(--green)">${fmtDZD(r.reglements)}</td>
+    <td style="text-align:right;font-weight:700;color:${r.solde>0?'var(--gold)':'var(--text2)'}">${fmtDZD(r.solde)}</td>
+    <td style="text-align:center"><div class="action-btns">
+      <div class="icon-btn" title="Voir historique" onclick="goToHistorique(${r.id})">📜</div>
+    </div></td>
+  </tr>`).join('');
+
+  updateCreancesKPI(rows);
+}
+
+function updateCreancesKPI(rows){
+  const totalAchats = rows.reduce((a,r)=>a+r.achats,0);
+  const totalReg = rows.reduce((a,r)=>a+r.reglements,0);
+  const totalSolde = totalAchats - totalReg;
+  const nbDebiteurs = rows.filter(r=>r.solde>0).length;
+  document.getElementById('kpi-cr-achats').textContent = fmtDZD(totalAchats);
+  document.getElementById('kpi-cr-reg').textContent = fmtDZD(totalReg);
+  document.getElementById('kpi-cr-solde').textContent = fmtDZD(totalSolde);
+  document.getElementById('kpi-cr-nb').textContent = nbDebiteurs;
+}
+
+function exportCreances(){
+  const clients=(DB.clients||[]);
+  if(!clients.length){toast('Aucun client','error');return;}
+  const headers=['Réf. Client','Nom Client','Total Achat','Total Règlement','Solde'];
+  const rows=clients.map(c=>{
+    const achats=totalAchatsClient(c.id), reglements=totalReglementsClient(c.id);
+    return [`CL-${c.id}`, c.nom||c.raison_sociale||'—', Math.round(achats), Math.round(reglements), Math.round(achats-reglements)];
+  });
+  const csv=[headers,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`creances_clients_perla_${new Date().toISOString().slice(0,10)}.csv`; a.click();
+  toast('Export CSV ✓','success');
+}
+
+function printCreances(){
+  const clients=(DB.clients||[]);
+  const rows = clients.map(c=>{
+    const achats=totalAchatsClient(c.id), reglements=totalReglementsClient(c.id);
+    return {id:c.id, nom:c.nom||c.raison_sociale||'—', achats, reglements, solde:achats-reglements};
+  }).sort((a,b)=>b.solde-a.solde);
+  const totalAchats=rows.reduce((a,r)=>a+r.achats,0);
+  const totalReg=rows.reduce((a,r)=>a+r.reglements,0);
+  const totalSolde=totalAchats-totalReg;
+
+  const win=window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head>
+  <meta charset="UTF-8"><title>État des Créances Clients</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+    body{padding:18mm;color:#111;font-size:10pt}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8mm;padding-bottom:5mm;border-bottom:2px solid #b8960c}
+    .company{font-size:18pt;font-weight:700;color:#b8960c;letter-spacing:.05em}
+    .company-sub{font-size:9pt;color:#555;margin-top:2px}
+    .doc-title{font-size:13pt;font-weight:700;color:#b8960c;text-align:right}
+    .doc-date{font-size:9pt;color:#555;text-align:right;margin-top:2px}
+    table{width:100%;border-collapse:collapse;margin-bottom:6mm;font-size:9pt}
+    th{background:#b8960c;color:#fff;padding:2mm 2.5mm;text-align:left;font-size:8.5pt}
+    td{padding:1.8mm 2.5mm;border-bottom:1px solid #eee}
+    tr:nth-child(even) td{background:#fafafa}
+    .text-right{text-align:right}
+    tfoot td{font-weight:700;border-top:2px solid #b8960c;background:#fff8e6}
+    .footer{margin-top:10mm;padding-top:4mm;border-top:1px solid #ccc;font-size:8pt;color:#888;text-align:center}
+    @media print{body{padding:12mm}}
+  </style></head><body>
+  <div class="header">
+    <div><div class="company">PERLA</div><div class="company-sub">Marbrerie — Granit & Pierre Naturelle</div></div>
+    <div><div class="doc-title">ÉTAT DES CRÉANCES CLIENTS</div><div class="doc-date">Au ${new Date().toLocaleDateString('fr-FR')}</div></div>
+  </div>
+  <table>
+    <thead><tr><th>Réf.</th><th>Client</th><th class="text-right">Total Achat</th><th class="text-right">Total Règlement</th><th class="text-right">Solde</th></tr></thead>
+    <tbody>
+    ${rows.map(r=>`<tr><td>CL-${r.id}</td><td>${r.nom}</td><td class="text-right">${fmtDZD(r.achats)}</td><td class="text-right">${fmtDZD(r.reglements)}</td><td class="text-right"><strong>${fmtDZD(r.solde)}</strong></td></tr>`).join('')}
+    </tbody>
+    <tfoot>
+      <tr><td colspan="2">TOTAL</td><td class="text-right">${fmtDZD(totalAchats)}</td><td class="text-right">${fmtDZD(totalReg)}</td><td class="text-right">${fmtDZD(totalSolde)}</td></tr>
+    </tfoot>
+  </table>
+  <div class="footer">PERLA — État généré le ${new Date().toLocaleDateString('fr-FR')} — Document non contractuel</div>
+  <script>window.onload=()=>{window.print();}<\/script>
+  </body></html>`);
+  win.document.close();
+}
+
+function goToHistorique(clientId){
+  nav('etat-historique');
+  setTimeout(()=>{
+    const sel=document.getElementById('hist-client-select');
+    if(sel){ sel.value=clientId; renderHistorique(); }
+  },50);
+}
+
+function fillHistClientSelect(){
+  const sel=document.getElementById('hist-client-select');
+  if(!sel) return;
+  const cur=sel.value;
+  sel.innerHTML='<option value="">— Sélectionner un client —</option>'+
+    (DB.clients||[]).map(c=>`<option value="${c.id}" ${String(c.id)===cur?'selected':''}>${c.nom||c.raison_sociale||'—'}</option>`).join('');
+}
+
+function renderHistorique(){
+  fillHistClientSelect();
+  const clientId = document.getElementById('hist-client-select').value;
+  const content = document.getElementById('hist-content');
+  const empty = document.getElementById('hist-empty');
+  const printBtn = document.getElementById('hist-print-btn');
+  if(!clientId){
+    content.style.display='none'; empty.style.display='';
+    if(printBtn) printBtn.style.display='none';
+    return;
+  }
+  empty.style.display='none'; content.style.display='';
+  if(printBtn) printBtn.style.display='';
+
+  // Construire les opérations: achats (BL, négatif) + règlements (positif)
+  const ops = [];
+  (DB.bons_livraison||[]).filter(b=>String(b.id_client)===String(clientId)).forEach(b=>{
+    const net = (b.montant||0)-(b.remise||0);
+    ops.push({date: b.created_at||today(), type:'Achat', ref:`BL-${b.id}`, montant: -net});
+  });
+  (DB.reglements||[]).filter(r=>String(r.id_client)===String(clientId)).forEach(r=>{
+    ops.push({date: r.date||r.created_at||today(), type:'Règlement', ref: r.reference||r.type||'—', montant: r.montant||0});
+  });
+  ops.sort((a,b)=> new Date(a.date) - new Date(b.date));
+
+  let solde=0;
+  const rows = ops.map(op=>{
+    solde += op.montant;
+    return {...op, soldeCumule: solde};
+  });
+
+  const totalAchats = ops.filter(o=>o.type==='Achat').reduce((a,o)=>a+Math.abs(o.montant),0);
+  const totalReg = ops.filter(o=>o.type==='Règlement').reduce((a,o)=>a+o.montant,0);
+  document.getElementById('kpi-hist-achats').textContent = fmtDZD(totalAchats);
+  document.getElementById('kpi-hist-reg').textContent = fmtDZD(totalReg);
+  document.getElementById('kpi-hist-solde').textContent = fmtDZD(solde);
+
+  const tbody=document.getElementById('tbl-historique');
+  if(!rows.length){
+    tbody.innerHTML='<tr class="empty-row"><td colspan="5">Aucune opération pour ce client</td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.map(r=>`<tr>
+    <td style="font-size:.78rem;color:var(--text3)">${new Date(r.date).toLocaleDateString('fr-FR')}</td>
+    <td><span class="tag ${r.type==='Achat'?'tag-red':'tag-green'}">${r.type}</span></td>
+    <td style="font-size:.78rem;color:var(--text3)">${r.ref}</td>
+    <td style="text-align:right;font-weight:600;color:${r.montant<0?'var(--red)':'var(--green)'}">${r.montant<0?'- ':'+ '}${fmtDZD(Math.abs(r.montant))}</td>
+    <td style="text-align:right;font-weight:700;color:var(--gold)">${fmtDZD(r.soldeCumule)}</td>
+  </tr>`).join('');
+}
+
+function printHistorique(){
+  const clientId = document.getElementById('hist-client-select').value;
+  if(!clientId){ toast('Sélectionnez un client','error'); return; }
+  const client = (DB.clients||[]).find(c=>String(c.id)===String(clientId));
+  const clientNom = client ? (client.nom||client.raison_sociale||'—') : '—';
+
+  const ops = [];
+  (DB.bons_livraison||[]).filter(b=>String(b.id_client)===String(clientId)).forEach(b=>{
+    const net = (b.montant||0)-(b.remise||0);
+    ops.push({date: b.created_at||today(), type:'Achat', ref:`BL-${b.id}`, montant: -net});
+  });
+  (DB.reglements||[]).filter(r=>String(r.id_client)===String(clientId)).forEach(r=>{
+    ops.push({date: r.date||r.created_at||today(), type:'Règlement', ref: r.reference||r.type||'—', montant: r.montant||0});
+  });
+  ops.sort((a,b)=> new Date(a.date) - new Date(b.date));
+
+  let solde=0;
+  const rows = ops.map(op=>{ solde += op.montant; return {...op, soldeCumule: solde}; });
+  const totalAchats = ops.filter(o=>o.type==='Achat').reduce((a,o)=>a+Math.abs(o.montant),0);
+  const totalReg = ops.filter(o=>o.type==='Règlement').reduce((a,o)=>a+o.montant,0);
+
+  const win=window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head>
+  <meta charset="UTF-8"><title>Historique — ${clientNom}</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+    body{padding:18mm;color:#111;font-size:10pt}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6mm;padding-bottom:5mm;border-bottom:2px solid #b8960c}
+    .company{font-size:18pt;font-weight:700;color:#b8960c;letter-spacing:.05em}
+    .company-sub{font-size:9pt;color:#555;margin-top:2px}
+    .doc-title{font-size:13pt;font-weight:700;color:#b8960c;text-align:right}
+    .doc-date{font-size:9pt;color:#555;text-align:right;margin-top:2px}
+    .client-box{background:#f8f4e8;border:1px solid #d4af37;border-radius:4px;padding:4mm 6mm;margin-bottom:6mm}
+    .client-name{font-size:12pt;font-weight:700}
+    table{width:100%;border-collapse:collapse;margin-bottom:6mm;font-size:9.5pt}
+    th{background:#b8960c;color:#fff;padding:2mm 3mm;text-align:left;font-size:9pt}
+    td{padding:2mm 3mm;border-bottom:1px solid #eee}
+    tr:nth-child(even) td{background:#fafafa}
+    .text-right{text-align:right}
+    .totals{margin-left:auto;width:280px;margin-top:4mm}
+    .totals-row{display:flex;justify-content:space-between;padding:1.5mm 0;font-size:10pt}
+    .totals-row.net{font-size:12pt;font-weight:700;color:#b8960c;border-top:2px solid #b8960c;margin-top:2mm;padding-top:2mm}
+    .footer{margin-top:10mm;padding-top:4mm;border-top:1px solid #ccc;font-size:8pt;color:#888;text-align:center}
+    @media print{body{padding:12mm}}
+  </style></head><body>
+  <div class="header">
+    <div><div class="company">PERLA</div><div class="company-sub">Marbrerie — Granit & Pierre Naturelle</div></div>
+    <div><div class="doc-title">RELEVÉ DE COMPTE CLIENT</div><div class="doc-date">Au ${new Date().toLocaleDateString('fr-FR')}</div></div>
+  </div>
+  <div class="client-box"><div class="client-name">${clientNom}</div></div>
+  <table>
+    <thead><tr><th>Date</th><th>Opération</th><th>Référence</th><th class="text-right">Montant</th><th class="text-right">Solde Cumulé</th></tr></thead>
+    <tbody>
+    ${rows.length ? rows.map(r=>`<tr>
+      <td>${new Date(r.date).toLocaleDateString('fr-FR')}</td>
+      <td>${r.type}</td>
+      <td>${r.ref}</td>
+      <td class="text-right">${r.montant<0?'- ':'+ '}${fmtDZD(Math.abs(r.montant))}</td>
+      <td class="text-right"><strong>${fmtDZD(r.soldeCumule)}</strong></td>
+    </tr>`).join('') : '<tr><td colspan="5" style="text-align:center;color:#aaa;padding:5mm">Aucune opération</td></tr>'}
+    </tbody>
+  </table>
+  <div class="totals">
+    <div class="totals-row"><span>Total Achats</span><span>- ${fmtDZD(totalAchats)}</span></div>
+    <div class="totals-row"><span>Total Règlements</span><span>+ ${fmtDZD(totalReg)}</span></div>
+    <div class="totals-row net"><span>SOLDE FINAL</span><span>${fmtDZD(solde)}</span></div>
+  </div>
+  <div class="footer">PERLA — Relevé généré le ${new Date().toLocaleDateString('fr-FR')} — Document non contractuel</div>
+  <script>window.onload=()=>{window.print();}<\/script>
+  </body></html>`);
+  win.document.close();
 }
 
 /* ═══════════════════════════════════════════════
@@ -1339,7 +1692,10 @@ function openReglementModal(data=null){
   sel.innerHTML = '<option value="">— Sélectionner un client —</option>' +
     (DB.clients||[]).map(c=>`<option value="${c.id}" ${data&&data.id_client===c.id?'selected':''}>${c.nom||c.raison_sociale||'—'}</option>`).join('');
   document.getElementById('reg-date').value    = data ? (data.date||today()) : today();
-  document.getElementById('reg-montant').value = data ? (data.montant||0) : '';
+  const mtEl = document.getElementById('reg-montant');
+  const mtVal = data ? (data.montant||0) : 0;
+  mtEl.dataset.raw = mtVal;
+  mtEl.value = mtVal ? Number(mtVal).toLocaleString('fr-FR') : '';
   document.getElementById('reg-type').value    = data ? (data.type||'Espèce') : 'Espèce';
   document.getElementById('reg-reference').value = data ? (data.reference||'') : '';
   document.getElementById('reg-notes').value   = data ? (data.notes||'') : '';
@@ -1387,7 +1743,7 @@ function editReglement(id){
 async function saveReglement(){
   const clientId = parseInt(document.getElementById('reg-client-select').value);
   if(!clientId){ toast('Sélectionnez un client','error'); return; }
-  const montant = parseFloat(document.getElementById('reg-montant').value)||0;
+  const montant = parseFloat(document.getElementById('reg-montant').dataset.raw)||0;
   if(montant<=0){ toast('Le montant doit être supérieur à 0','error'); return; }
   const body = {
     id_client: clientId,
@@ -1497,6 +1853,13 @@ function today(){
 
 function onBLClientChange(){
   // réservé pour logique future (ex: pré-remplissage)
+}
+
+function formatMontantInput(el){
+  let digits = el.value.replace(/[^\d]/g,'');
+  digits = digits.replace(/^0+(?=\d)/,'');
+  el.dataset.raw = digits || '0';
+  el.value = digits ? Number(digits).toLocaleString('fr-FR') : '';
 }
 
 function fmtDZD(n){
