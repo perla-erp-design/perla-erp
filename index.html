@@ -180,6 +180,9 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
   <div class="nav-item" onclick="nav('stocks')" id="nav-stocks"><span class="nav-icon">📦</span> Stocks</div>
   <div class="nav-item" onclick="nav('fournisseurs')" id="nav-fournisseurs"><span class="nav-icon">🚚</span> Fournisseurs</div>
 
+  <div class="sidebar-section">Production</div>
+  <div class="nav-item" onclick="nav('production')" id="nav-production"><span class="nav-icon">🏭</span> Ordres de Production</div>
+
   <div class="sidebar-section">Finance</div>
   <div class="nav-item" onclick="nav('caisse')" id="nav-caisse"><span class="nav-icon">🏦</span> Compte Caisse</div>
   <div class="nav-item" onclick="nav('reglements')" id="nav-reglements"><span class="nav-icon">💰</span> Règlements</div>
@@ -706,6 +709,170 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
       <div class="table-toolbar"><input class="search-inp" placeholder="Rechercher…" oninput="filterTable('four',this.value)"></div>
       <table><thead><tr><th>Nom</th><th>Pays</th><th>Adresse</th><th>Personne Contact</th><th>Contact</th><th>Type</th><th>Actions</th></tr></thead>
       <tbody id="tbl-four"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCTION -->
+<div class="page" id="page-production">
+  <div class="page-header">
+    <div><div class="page-title">🏭 Ordres de Production</div><div class="page-sub">Transformation matière première → produit fini</div></div>
+    <div class="page-actions">
+      <button class="btn" onclick="exportOP()">⬇ Exporter CSV</button>
+      <button class="btn btn-primary" onclick="openOPModal()">+ Nouvel Ordre</button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="kpi-grid" id="kpi-op-grid">
+      <div class="kpi"><div class="kpi-label">Total OP</div><div class="kpi-val" id="kpi-op-total">0</div><div class="kpi-sub">ordres créés</div></div>
+      <div class="kpi"><div class="kpi-label">Matière consommée</div><div class="kpi-val" id="kpi-op-consomme" style="font-size:1.1rem">0</div><div class="kpi-sub">toutes unités</div></div>
+      <div class="kpi"><div class="kpi-label">Produit obtenu</div><div class="kpi-val" id="kpi-op-obtenu" style="font-size:1.1rem;color:var(--green)">0</div><div class="kpi-sub">toutes unités</div></div>
+      <div class="kpi"><div class="kpi-label">Perte totale</div><div class="kpi-val" id="kpi-op-perte" style="font-size:1.1rem;color:var(--red)">0</div><div class="kpi-sub">matière perdue</div></div>
+    </div>
+    <div class="table-wrap">
+      <div class="table-toolbar">
+        <input class="search-inp" id="op-search" placeholder="🔍 Rechercher par n° OP…" oninput="renderOP(this.value)">
+        <span id="op-count" style="font-size:.75rem;color:var(--text3);margin-left:auto;align-self:center"></span>
+      </div>
+      <table>
+        <thead><tr>
+          <th>N° OP</th><th>Date</th><th>Statut</th>
+          <th style="text-align:right">Matière consommée</th>
+          <th style="text-align:right">Produit obtenu</th>
+          <th style="text-align:right">Perte</th>
+          <th style="text-align:center">Actions</th>
+        </tr></thead>
+        <tbody id="tbl-op"></tbody>
+      </table>
+      <div id="op-empty" style="display:none;text-align:center;padding:3rem;color:var(--text3)">
+        <div style="font-size:2.5rem;margin-bottom:.75rem">🏭</div>
+        <div style="font-size:.9rem">Aucun ordre de production</div>
+        <div style="font-size:.78rem;margin-top:.35rem">Cliquez sur "+ Nouvel Ordre" pour commencer</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL OP — DÉTAIL TRANSFORMATION -->
+<div id="op-modal-overlay" onclick="closeOPModal(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;align-items:center;justify-content:center">
+  <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r16);width:100%;max-width:980px;max-height:92vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.6)">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.25rem;border-bottom:1px solid var(--border)">
+      <div>
+        <div id="op-modal-title" style="font-size:.95rem;font-weight:600;color:var(--gold-l)">+ Nouvel Ordre de Production</div>
+        <div id="op-modal-sub" style="font-size:.75rem;color:var(--text3);margin-top:.2rem">Renseignez les matières consommées et produits obtenus</div>
+      </div>
+      <button onclick="closeOPModal()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:1.2rem;padding:.2rem .4rem;border-radius:4px">✕</button>
+    </div>
+    <div style="padding:1.25rem">
+      <div style="margin-bottom:1rem">
+        <label class="form-label">Notes</label>
+        <textarea class="form-inp" id="op-notes" rows="2" placeholder="Description de l'ordre de production…" style="resize:vertical"></textarea>
+      </div>
+
+      <!-- SECTION MATIÈRES CONSOMMÉES -->
+      <div id="op-matieres-form" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r8);padding:1rem;margin-bottom:1rem">
+        <div style="font-size:.78rem;font-weight:600;color:var(--red);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.08em">📥 − Matières Premières Consommées</div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:.6rem;margin-bottom:.6rem">
+          <div>
+            <label class="form-label">Produit (matière) *</label>
+            <select class="form-inp" id="opm-produit" onchange="onOPMatiereInputChange()">
+              <option value="">— Produit —</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Long. (m)</label>
+            <input class="form-inp" id="opm-long" type="number" step="0.01" min="0" placeholder="0.00">
+          </div>
+          <div>
+            <label class="form-label">Larg. (m)</label>
+            <input class="form-inp" id="opm-larg" type="number" step="0.01" min="0" placeholder="0.00">
+          </div>
+          <div>
+            <label class="form-label">Ép. (m) *</label>
+            <input class="form-inp" id="opm-ep" type="number" step="0.001" min="0" placeholder="0.000" oninput="onOPMatiereInputChange()">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:.6rem;align-items:end">
+          <div>
+            <label class="form-label">Quantité *</label>
+            <input class="form-inp" id="opm-qte" type="number" step="0.01" min="0" placeholder="0.00">
+          </div>
+          <div>
+            <label class="form-label">Stock disponible</label>
+            <div class="form-inp" id="opm-stock-dispo" style="background:var(--bg4);color:var(--text2);display:flex;align-items:center">—</div>
+          </div>
+          <div>
+            <button class="btn btn-primary" onclick="addOPMatiere()" style="white-space:nowrap">+ Ajouter</button>
+          </div>
+        </div>
+        <div class="table-wrap" style="margin-top:.75rem">
+          <table>
+            <thead><tr><th>Produit</th><th>Ép.</th><th>L×l</th><th>Qté</th><th style="text-align:right">Quantité totale</th><th></th></tr></thead>
+            <tbody id="tbl-op-matieres"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SECTION PRODUITS OBTENUS -->
+      <div id="op-produits-form" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r8);padding:1rem;margin-bottom:1rem">
+        <div style="font-size:.78rem;font-weight:600;color:var(--green);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.08em">📤 + Produits Finis Obtenus</div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:.6rem;margin-bottom:.6rem">
+          <div>
+            <label class="form-label">Produit (fini) *</label>
+            <select class="form-inp" id="opp-produit">
+              <option value="">— Produit —</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Long. (m)</label>
+            <input class="form-inp" id="opp-long" type="number" step="0.01" min="0" placeholder="0.00">
+          </div>
+          <div>
+            <label class="form-label">Larg. (m)</label>
+            <input class="form-inp" id="opp-larg" type="number" step="0.01" min="0" placeholder="0.00">
+          </div>
+          <div>
+            <label class="form-label">Ép. (m) *</label>
+            <input class="form-inp" id="opp-ep" type="number" step="0.001" min="0" placeholder="0.000">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:.6rem;align-items:end">
+          <div>
+            <label class="form-label">Quantité *</label>
+            <input class="form-inp" id="opp-qte" type="number" step="0.01" min="0" placeholder="0.00">
+          </div>
+          <div>
+            <button class="btn btn-primary" onclick="addOPProduit()" style="white-space:nowrap">+ Ajouter</button>
+          </div>
+        </div>
+        <div class="table-wrap" style="margin-top:.75rem">
+          <table>
+            <thead><tr><th>Produit</th><th>Ép.</th><th>L×l</th><th>Qté</th><th style="text-align:right">Quantité totale</th><th></th></tr></thead>
+            <tbody id="tbl-op-produits"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- BILAN PERTE -->
+      <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r8);padding:1rem 1.25rem">
+        <div style="display:flex;justify-content:space-between;margin-bottom:.4rem">
+          <span style="font-size:.78rem;color:var(--text3)">Total matière consommée</span>
+          <span id="op-bilan-consomme" style="font-weight:600;color:var(--red)">0</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:.4rem">
+          <span style="font-size:.78rem;color:var(--text3)">Total produit obtenu</span>
+          <span id="op-bilan-obtenu" style="font-weight:600;color:var(--green)">0</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding-top:.5rem;border-top:1px solid var(--border)">
+          <span style="font-size:.85rem;font-weight:600;color:var(--gold-l)">Perte de matière</span>
+          <span id="op-bilan-perte" style="font-size:1.05rem;font-weight:700;color:var(--gold)">0 (0%)</span>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border)">
+      <button class="btn" id="op-cancel-btn" onclick="closeOPModal()">Annuler</button>
+      <button class="btn" id="op-print-btn" onclick="printOP(opEditId)" style="display:none">🖨 Imprimer bon de production</button>
+      <button class="btn btn-primary" id="op-save-btn" onclick="saveOP()" disabled style="opacity:.45;cursor:not-allowed" title="Ajoutez au moins une matière et un produit fini">💾 Clôturer l'ordre</button>
     </div>
   </div>
 </div>
@@ -1409,7 +1576,8 @@ const DB = {
   employes:[], departements:[], commandes:[], clients:[],
   stocks:[], fournisseurs:[], factures:[], depenses:[],
   bons_livraison:[], lignes_bon_livraison:[], reglements:[], produits:[],
-  bons_reception:[], lignes_bon_reception:[], reglements_fournisseurs:[]
+  bons_reception:[], lignes_bon_reception:[], reglements_fournisseurs:[],
+  ordres_production:[], op_matieres:[], op_produits_finis:[]
 };
 
 /* ─── LOCAL STORAGE ─── */
@@ -1448,7 +1616,7 @@ async function sbReq(method,table,body,id,compositeFilter){
   return r.status===204?[]:r.json();
 }
 async function sbSelect(table,filter=''){
-  const noIdTables=['lignes_bon_livraison','lignes_bon_reception','stocks'];
+  const noIdTables=['lignes_bon_livraison','lignes_bon_reception','stocks','op_matieres','op_produits_finis'];
   const orderPart = noIdTables.includes(table) ? '' : 'order=id.asc';
   const qs = [orderPart, filter].filter(Boolean).join('&');
   const url=`${SB_URL}/rest/v1/${table}${qs?'?'+qs:''}`;
@@ -1640,7 +1808,7 @@ function setStatus(ok){
 }
 
 async function loadAll(){
-  const tables=['employes','departements','clients','stocks','fournisseurs','factures','depenses','bons_livraison','lignes_bon_livraison','reglements','produits','bons_reception','lignes_bon_reception','reglements_fournisseurs'];
+  const tables=['employes','departements','clients','stocks','fournisseurs','factures','depenses','bons_livraison','lignes_bon_livraison','reglements','produits','bons_reception','lignes_bon_reception','reglements_fournisseurs','ordres_production','op_matieres','op_produits_finis'];
   const errors=[];
   await Promise.all(tables.map(async t=>{
     try{DB[t]=await sbSelect(t);}catch(e){DB[t]=DB[t]||[]; errors.push(t+': '+e.message);}
@@ -1779,7 +1947,7 @@ function statusTag(s){
 function refreshAll(){
   renderEmp(); renderDept(); renderBL(); renderClient();
   renderStk(); renderFour(); renderFact(); renderDep();
-  renderReglements(); renderBR(); renderReglementsFour();
+  renderReglements(); renderBR(); renderReglementsFour(); renderOP();
   renderCreances(); renderDettes(); renderCaisse();
   if(document.getElementById('hist-client-select')) renderHistorique();
   if(document.getElementById('histf-fournisseur-select')) renderHistoriqueFour();
@@ -2779,6 +2947,439 @@ function printReglement(id){
   ${r.notes?`<div style="margin-top:8mm;padding:3mm 4mm;background:#f9f9f9;border-left:3px solid #b8960c;font-size:9pt;color:#555">
     <strong>Notes :</strong> ${r.notes}</div>`:''}
   <div class="footer">PERLA — Reçu généré le ${new Date().toLocaleDateString('fr-FR')} — Document non contractuel</div>
+  <script>window.onload=()=>{window.print();}<\/script>
+  </body></html>`);
+  win.document.close();
+}
+
+/* ═══════════════════════════════════════════════
+   MODULE PRODUCTION — Transformation matière → produit fini
+═══════════════════════════════════════════════ */
+
+let opEditId = null;
+let opLocked = false;
+
+function totalQteOPMatieres(opId){
+  return (DB.op_matieres||[]).filter(l=>String(l.op_id)===String(opId))
+    .reduce((a,l)=>a+((l.long||0)*(l.larg||0)*(l.quantite||0)),0);
+}
+
+function totalQteOPProduits(opId){
+  return (DB.op_produits_finis||[]).filter(l=>String(l.op_id)===String(opId))
+    .reduce((a,l)=>a+((l.long||0)*(l.larg||0)*(l.quantite||0)),0);
+}
+
+function perteOP(opId){
+  return totalQteOPMatieres(opId) - totalQteOPProduits(opId);
+}
+
+function renderOP(q=''){
+  const search=(q||'').toLowerCase();
+  let data=(DB.ordres_production||[]).filter(o=>!search || String(o.id).includes(search) || (o.notes||'').toLowerCase().includes(search));
+  data = data.sort((a,b)=>(b.id||0)-(a.id||0));
+
+  const cnt=document.getElementById('op-count');
+  if(cnt) cnt.textContent=`${data.length} ordre${data.length!==1?'s':''}`;
+
+  const tbody=document.getElementById('tbl-op');
+  const empty=document.getElementById('op-empty');
+  if(!tbody) return;
+
+  if(!data.length){
+    tbody.innerHTML=''; if(empty) empty.style.display='';
+    updateOPKPI([]); return;
+  }
+  if(empty) empty.style.display='none';
+
+  tbody.innerHTML = data.map(o=>{
+    const consomme=totalQteOPMatieres(o.id);
+    const obtenu=totalQteOPProduits(o.id);
+    const perte=consomme-obtenu;
+    const pct = consomme>0 ? (perte/consomme*100) : 0;
+    return `<tr>
+      <td><code style="font-size:.72rem;color:var(--gold)">OP-${o.id}</code></td>
+      <td style="font-size:.75rem;color:var(--text3)">${o.created_at ? new Date(o.created_at).toLocaleDateString('fr-FR') : '—'}</td>
+      <td>${statusTag(o.statut||'Terminé')}</td>
+      <td style="text-align:right;color:var(--red)">${fmtNum(consomme)}</td>
+      <td style="text-align:right;color:var(--green)">${fmtNum(obtenu)}</td>
+      <td style="text-align:right;font-weight:700;color:var(--gold)">${fmtNum(perte)} <span style="font-size:.7rem;color:var(--text3)">(${pct.toFixed(1)}%)</span></td>
+      <td style="text-align:center"><div class="action-btns">
+        <div class="icon-btn" title="Imprimer" onclick="printOP(${o.id})">🖨</div>
+        <div class="icon-btn" title="Voir" onclick="editOP(${o.id})">✎</div>
+      </div></td>
+    </tr>`;
+  }).join('');
+
+  updateOPKPI(data);
+}
+
+function updateOPKPI(data){
+  document.getElementById('kpi-op-total').textContent = data.length;
+  const totalConsomme = data.reduce((a,o)=>a+totalQteOPMatieres(o.id),0);
+  const totalObtenu = data.reduce((a,o)=>a+totalQteOPProduits(o.id),0);
+  document.getElementById('kpi-op-consomme').textContent = fmtNum(totalConsomme);
+  document.getElementById('kpi-op-obtenu').textContent = fmtNum(totalObtenu);
+  document.getElementById('kpi-op-perte').textContent = fmtNum(totalConsomme-totalObtenu);
+}
+
+function openOPModal(data=null){
+  opEditId = data ? data.id : null;
+  const isEdit = !!data;
+  document.getElementById('op-modal-title').textContent = isEdit ? '🔒 Ordre de Production (clôturé)' : '+ Nouvel Ordre de Production';
+  document.getElementById('op-modal-sub').textContent = isEdit ? `OP N° OP-${data.id} — lecture seule` : 'Renseignez les matières consommées et produits obtenus';
+  document.getElementById('op-notes').value = data ? (data.notes||'') : '';
+
+  // Remplir les listes produits pour matières et produits finis
+  const optsHtml = (DB.produits||[]).map(p=>`<option value="${p.id}">${p.nom||p.designation||p.reference||'Produit '+p.id}</option>`).join('');
+  document.getElementById('opm-produit').innerHTML = '<option value="">— Produit —</option>'+optsHtml;
+  document.getElementById('opp-produit').innerHTML = '<option value="">— Produit —</option>'+optsHtml;
+
+  ['opm-long','opm-larg','opm-ep','opm-qte'].forEach(id=>{const el=document.getElementById(id); if(el) el.value='';});
+  ['opp-long','opp-larg','opp-ep','opp-qte'].forEach(id=>{const el=document.getElementById(id); if(el) el.value='';});
+  document.getElementById('opm-stock-dispo').textContent='—';
+
+  renderOPMatieres(isEdit);
+  renderOPProduits(isEdit);
+  updateOPBilan();
+  setOPLocked(isEdit);
+  document.getElementById('op-modal-overlay').style.display='flex';
+}
+
+function setOPLocked(locked){
+  opLocked = locked;
+  const matieresForm=document.getElementById('op-matieres-form');
+  const produitsForm=document.getElementById('op-produits-form');
+  document.getElementById('op-notes').disabled = locked;
+  document.getElementById('op-notes').style.opacity = locked ? '.6' : '1';
+  // Cacher les sous-formulaires d'ajout (mais garder les tableaux visibles)
+  ['opm-produit','opm-long','opm-larg','opm-ep','opm-qte'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.closest('div').style.display = locked ? 'none' : '';
+  });
+  ['opp-produit','opp-long','opp-larg','opp-ep','opp-qte'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.closest('div').style.display = locked ? 'none' : '';
+  });
+  const saveBtn=document.getElementById('op-save-btn');
+  const printBtn=document.getElementById('op-print-btn');
+  const cancelBtn=document.getElementById('op-cancel-btn');
+  if(saveBtn) saveBtn.style.display = locked ? 'none' : '';
+  if(printBtn) printBtn.style.display = locked ? '' : 'none';
+  if(cancelBtn) cancelBtn.textContent = locked ? 'Fermer' : 'Annuler';
+}
+
+async function closeOPModal(e){
+  if(e && e.target!==document.getElementById('op-modal-overlay')) return;
+  if(opEditId && !opLocked){ await cancelUnsavedOP(opEditId); }
+  document.getElementById('op-modal-overlay').style.display='none';
+  opEditId=null;
+}
+
+async function cancelUnsavedOP(id){
+  try{
+    if(connected){
+      const matieres=(DB.op_matieres||[]).filter(l=>l.op_id===id);
+      const produits=(DB.op_produits_finis||[]).filter(l=>l.op_id===id);
+      for(const m of matieres) try{ await sbDeleteComposite('op_matieres', m); }catch(e){}
+      for(const p of produits) try{ await sbDeleteComposite('op_produits_finis', p); }catch(e){}
+      await sbDelete('ordres_production', id);
+      await loadAll();
+      // Resynchroniser les stocks touchés
+      for(const m of matieres) await syncStockQuantite(m.produit, m.ep);
+      for(const p of produits) await syncStockQuantite(p.produit, p.ep);
+      renderStk();
+    } else {
+      const matieres=(DB.op_matieres||[]).filter(l=>l.op_id===id);
+      const produits=(DB.op_produits_finis||[]).filter(l=>l.op_id===id);
+      DB.ordres_production = DB.ordres_production.filter(o=>o.id!==id);
+      DB.op_matieres = DB.op_matieres.filter(l=>l.op_id!==id);
+      DB.op_produits_finis = DB.op_produits_finis.filter(l=>l.op_id!==id);
+      save(); refreshAll();
+      for(const m of matieres) await syncStockQuantite(m.produit, m.ep);
+      for(const p of produits) await syncStockQuantite(p.produit, p.ep);
+    }
+  }catch(e){ console.warn('Erreur annulation OP:', e.message); }
+}
+
+function editOP(id){
+  const o=(DB.ordres_production||[]).find(o=>o.id===id);
+  if(o) openOPModal(o);
+}
+
+// Sauvegarde silencieuse de l'OP (pour obtenir un id avant d'ajouter matières/produits)
+async function saveOPSilent(){
+  const body={ statut:'Terminé', notes: document.getElementById('op-notes').value.trim() };
+  try{
+    if(connected){
+      const r=await sbReq('POST','ordres_production',body);
+      opEditId=r&&r[0]?r[0].id:null;
+      await loadAll();
+    } else {
+      opEditId=Date.now();
+      DB.ordres_production.push({id:opEditId,...body,created_at:new Date().toISOString()});
+      save(); refreshAll();
+    }
+  }catch(e){ toast('Erreur création OP: '+e.message,'error'); }
+}
+
+async function ensureOPExists(){
+  if(!opEditId){ await saveOPSilent(); }
+  return !!opEditId;
+}
+
+function onOPMatiereInputChange(){
+  const produitId = document.getElementById('opm-produit').value;
+  const ep = parseFloat(document.getElementById('opm-ep').value);
+  const dispoEl = document.getElementById('opm-stock-dispo');
+  if(!produitId || isNaN(ep)){ dispoEl.textContent='—'; return; }
+  const dispo = qteActuelleProduitEp(produitId, ep);
+  dispoEl.textContent = fmtNum(dispo);
+  dispoEl.style.color = dispo<=0 ? 'var(--red)' : 'var(--text2)';
+}
+
+async function addOPMatiere(){
+  const produitId=parseInt(document.getElementById('opm-produit').value);
+  if(!produitId){ toast('Sélectionnez une matière','error'); return; }
+  const ep=parseFloat(document.getElementById('opm-ep').value);
+  if(isNaN(ep)||ep<0){ toast('Épaisseur invalide','error'); return; }
+  const long=parseFloat(document.getElementById('opm-long').value)||0;
+  const larg=parseFloat(document.getElementById('opm-larg').value)||0;
+  const qte=parseFloat(document.getElementById('opm-qte').value)||0;
+  if(qte<=0){ toast('Quantité invalide','error'); return; }
+
+  if(!await ensureOPExists()) return;
+
+  const body={ op_id:opEditId, produit:produitId, ep, long, larg, quantite:qte };
+  const dup=(DB.op_matieres||[]).some(l=>l.op_id===body.op_id && String(l.produit)===String(produitId) && Number(l.ep)===ep && l.long===long && l.larg===larg);
+  if(dup){ toast('Cette ligne matière existe déjà (même produit + dimensions)','error'); return; }
+
+  try{
+    if(connected){ await sbReq('POST','op_matieres',body); await loadAll(); }
+    else{ DB.op_matieres=DB.op_matieres||[]; DB.op_matieres.push(body); save(); }
+    ['opm-long','opm-larg','opm-ep','opm-qte'].forEach(id=>{document.getElementById(id).value='';});
+    document.getElementById('opm-produit').value='';
+    document.getElementById('opm-stock-dispo').textContent='—';
+    renderOPMatieres();
+    updateOPBilan();
+    updateOPSaveBtn();
+    await syncStockQuantite(produitId, ep);
+    renderStk();
+    toast('Matière ajoutée ✓','success');
+  }catch(e){ toast('Erreur: '+e.message,'error'); }
+}
+
+async function deleteOPMatiere(op_id, produit, ep, long, larg){
+  if(!confirm('Supprimer cette ligne de matière ?')) return;
+  try{
+    if(connected){ await sbDeleteComposite('op_matieres',{op_id,produit,ep,long,larg}); await loadAll(); }
+    else{ DB.op_matieres=DB.op_matieres.filter(l=>!(l.op_id===op_id&&String(l.produit)===String(produit)&&Number(l.ep)===Number(ep)&&l.long===long&&l.larg===larg)); save(); }
+    renderOPMatieres();
+    updateOPBilan();
+    updateOPSaveBtn();
+    await syncStockQuantite(produit, ep);
+    renderStk();
+    toast('Ligne supprimée','success');
+  }catch(e){ toast('Erreur: '+e.message,'error'); }
+}
+
+function renderOPMatieres(locked=false){
+  const lignes=(DB.op_matieres||[]).filter(l=>l.op_id===opEditId);
+  const tbody=document.getElementById('tbl-op-matieres');
+  if(!tbody) return;
+  if(!lignes.length){
+    tbody.innerHTML='<tr class="empty-row"><td colspan="6">Aucune matière ajoutée</td></tr>';
+    return;
+  }
+  tbody.innerHTML=lignes.map(l=>{
+    const totalQte=(l.long||0)*(l.larg||0)*(l.quantite||0);
+    return `<tr>
+    <td><strong>${produitNomById(l.produit)}</strong></td>
+    <td style="font-size:.78rem;color:var(--text3)">${l.ep}</td>
+    <td style="font-size:.78rem;color:var(--text3)">${l.long||0}×${l.larg||0}</td>
+    <td>${l.quantite}</td>
+    <td style="text-align:right;font-weight:700;color:var(--red)">${fmtNum(totalQte)}</td>
+    <td>${locked?'':`<div class="icon-btn del" onclick="deleteOPMatiere(${l.op_id},${l.produit},${l.ep},${l.long},${l.larg})">✕</div>`}</td>
+  </tr>`;
+  }).join('');
+}
+
+async function addOPProduit(){
+  const produitId=parseInt(document.getElementById('opp-produit').value);
+  if(!produitId){ toast('Sélectionnez un produit fini','error'); return; }
+  const ep=parseFloat(document.getElementById('opp-ep').value);
+  if(isNaN(ep)||ep<0){ toast('Épaisseur invalide','error'); return; }
+  const long=parseFloat(document.getElementById('opp-long').value)||0;
+  const larg=parseFloat(document.getElementById('opp-larg').value)||0;
+  const qte=parseFloat(document.getElementById('opp-qte').value)||0;
+  if(qte<=0){ toast('Quantité invalide','error'); return; }
+
+  if(!await ensureOPExists()) return;
+
+  const body={ op_id:opEditId, produit:produitId, ep, long, larg, quantite:qte };
+  const dup=(DB.op_produits_finis||[]).some(l=>l.op_id===body.op_id && String(l.produit)===String(produitId) && Number(l.ep)===ep && l.long===long && l.larg===larg);
+  if(dup){ toast('Cette ligne produit existe déjà (même produit + dimensions)','error'); return; }
+
+  try{
+    if(connected){ await sbReq('POST','op_produits_finis',body); await loadAll(); }
+    else{ DB.op_produits_finis=DB.op_produits_finis||[]; DB.op_produits_finis.push(body); save(); }
+    ['opp-long','opp-larg','opp-ep','opp-qte'].forEach(id=>{document.getElementById(id).value='';});
+    document.getElementById('opp-produit').value='';
+    renderOPProduits();
+    updateOPBilan();
+    updateOPSaveBtn();
+    await syncStockQuantite(produitId, ep);
+    renderStk();
+    toast('Produit fini ajouté ✓','success');
+  }catch(e){ toast('Erreur: '+e.message,'error'); }
+}
+
+async function deleteOPProduit(op_id, produit, ep, long, larg){
+  if(!confirm('Supprimer cette ligne de produit fini ?')) return;
+  try{
+    if(connected){ await sbDeleteComposite('op_produits_finis',{op_id,produit,ep,long,larg}); await loadAll(); }
+    else{ DB.op_produits_finis=DB.op_produits_finis.filter(l=>!(l.op_id===op_id&&String(l.produit)===String(produit)&&Number(l.ep)===Number(ep)&&l.long===long&&l.larg===larg)); save(); }
+    renderOPProduits();
+    updateOPBilan();
+    updateOPSaveBtn();
+    await syncStockQuantite(produit, ep);
+    renderStk();
+    toast('Ligne supprimée','success');
+  }catch(e){ toast('Erreur: '+e.message,'error'); }
+}
+
+function renderOPProduits(locked=false){
+  const lignes=(DB.op_produits_finis||[]).filter(l=>l.op_id===opEditId);
+  const tbody=document.getElementById('tbl-op-produits');
+  if(!tbody) return;
+  if(!lignes.length){
+    tbody.innerHTML='<tr class="empty-row"><td colspan="6">Aucun produit fini ajouté</td></tr>';
+    return;
+  }
+  tbody.innerHTML=lignes.map(l=>{
+    const totalQte=(l.long||0)*(l.larg||0)*(l.quantite||0);
+    return `<tr>
+    <td><strong>${produitNomById(l.produit)}</strong></td>
+    <td style="font-size:.78rem;color:var(--text3)">${l.ep}</td>
+    <td style="font-size:.78rem;color:var(--text3)">${l.long||0}×${l.larg||0}</td>
+    <td>${l.quantite}</td>
+    <td style="text-align:right;font-weight:700;color:var(--green)">${fmtNum(totalQte)}</td>
+    <td>${locked?'':`<div class="icon-btn del" onclick="deleteOPProduit(${l.op_id},${l.produit},${l.ep},${l.long},${l.larg})">✕</div>`}</td>
+  </tr>`;
+  }).join('');
+}
+
+function updateOPBilan(){
+  const consomme = totalQteOPMatieres(opEditId);
+  const obtenu = totalQteOPProduits(opEditId);
+  const perte = consomme - obtenu;
+  const pct = consomme>0 ? (perte/consomme*100) : 0;
+  document.getElementById('op-bilan-consomme').textContent = fmtNum(consomme);
+  document.getElementById('op-bilan-obtenu').textContent = fmtNum(obtenu);
+  document.getElementById('op-bilan-perte').textContent = `${fmtNum(perte)} (${pct.toFixed(1)}%)`;
+}
+
+function updateOPSaveBtn(){
+  const hasMatiere = (DB.op_matieres||[]).some(l=>l.op_id===opEditId);
+  const hasProduit = (DB.op_produits_finis||[]).some(l=>l.op_id===opEditId);
+  const btn=document.getElementById('op-save-btn');
+  if(!btn) return;
+  const ok = hasMatiere && hasProduit;
+  btn.disabled=!ok;
+  btn.style.opacity = ok ? '1' : '.45';
+  btn.style.cursor = ok ? 'pointer' : 'not-allowed';
+  btn.title = ok ? '' : 'Ajoutez au moins une matière et un produit fini';
+}
+
+async function saveOP(){
+  const body={ statut:'Terminé', notes: document.getElementById('op-notes').value.trim() };
+  const btn=document.getElementById('op-save-btn');
+  btn.textContent='⏳ …'; btn.disabled=true;
+  try{
+    if(connected){ await sbReq('PATCH','ordres_production',body,opEditId); await loadAll(); }
+    else{ const i=DB.ordres_production.findIndex(o=>o.id===opEditId); if(i>-1) DB.ordres_production[i]={...DB.ordres_production[i],...body}; save(); refreshAll(); }
+    toast('Ordre de production clôturé ✓','success');
+    document.getElementById('op-modal-title').textContent='🔒 Ordre de Production (clôturé)';
+    document.getElementById('op-modal-sub').textContent=`OP N° OP-${opEditId} — lecture seule`;
+    setOPLocked(true);
+    renderOPMatieres(true);
+    renderOPProduits(true);
+  }catch(e){ toast('Erreur: '+e.message,'error'); }
+  finally{ btn.textContent="💾 Clôturer l'ordre"; btn.disabled=false; }
+}
+
+function exportOP(){
+  const data=DB.ordres_production||[];
+  if(!data.length){toast('Aucun ordre à exporter','error');return;}
+  const headers=['N° OP','Date','Statut','Matière consommée','Produit obtenu','Perte'];
+  const rows=data.map(o=>{
+    const consomme=totalQteOPMatieres(o.id), obtenu=totalQteOPProduits(o.id);
+    return [`OP-${o.id}`, o.created_at?new Date(o.created_at).toLocaleDateString('fr-FR'):'', o.statut||'', Math.round(consomme), Math.round(obtenu), Math.round(consomme-obtenu)];
+  });
+  const csv=[headers,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`ordres_production_perla_${new Date().toISOString().slice(0,10)}.csv`; a.click();
+  toast('Export CSV ✓','success');
+}
+
+function printOP(opId){
+  const id=opId||opEditId;
+  if(!id){toast('Aucun ordre sélectionné','error');return;}
+  const o=(DB.ordres_production||[]).find(o=>o.id===id);
+  if(!o){toast('Ordre introuvable','error');return;}
+  const matieres=(DB.op_matieres||[]).filter(l=>l.op_id===id);
+  const produits=(DB.op_produits_finis||[]).filter(l=>l.op_id===id);
+  const consomme=totalQteOPMatieres(id), obtenu=totalQteOPProduits(id);
+  const perte=consomme-obtenu;
+  const pct = consomme>0 ? (perte/consomme*100) : 0;
+
+  const win=window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head>
+  <meta charset="UTF-8"><title>OP-${id}</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+    body{padding:18mm;color:#111;font-size:10pt}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6mm;padding-bottom:5mm;border-bottom:2px solid #b8960c}
+    .company{font-size:18pt;font-weight:700;color:#b8960c;letter-spacing:.05em}
+    .company-sub{font-size:9pt;color:#555;margin-top:2px}
+    .doc-title{font-size:13pt;font-weight:700;color:#b8960c;text-align:right}
+    .doc-date{font-size:9pt;color:#555;text-align:right;margin-top:2px}
+    .section-title{font-size:10pt;font-weight:700;margin:6mm 0 2mm;padding-bottom:1mm;border-bottom:1px solid #ddd}
+    .section-title.in{color:#c0392b}
+    .section-title.out{color:#27ae60}
+    table{width:100%;border-collapse:collapse;margin-bottom:4mm;font-size:9pt}
+    th{background:#b8960c;color:#fff;padding:2mm 2.5mm;text-align:left;font-size:8.5pt}
+    td{padding:1.8mm 2.5mm;border-bottom:1px solid #eee}
+    tr:nth-child(even) td{background:#fafafa}
+    .text-right{text-align:right}
+    .bilan{margin-top:6mm;background:#f8f4e8;border:1px solid #d4af37;border-radius:4px;padding:4mm 6mm}
+    .bilan-row{display:flex;justify-content:space-between;padding:1.5mm 0;font-size:10pt}
+    .bilan-row.perte{font-size:12pt;font-weight:700;color:#b8960c;border-top:1px solid #d4af37;margin-top:2mm;padding-top:2mm}
+    .footer{margin-top:10mm;padding-top:4mm;border-top:1px solid #ccc;font-size:8pt;color:#888;text-align:center}
+    @media print{body{padding:12mm}}
+  </style></head><body>
+  <div class="header">
+    <div><div class="company">PERLA</div><div class="company-sub">Marbrerie — Granit & Pierre Naturelle</div></div>
+    <div><div class="doc-title">BON DE PRODUCTION N° OP-${id}</div><div class="doc-date">Date : ${o.created_at?new Date(o.created_at).toLocaleDateString('fr-FR'):'—'}</div></div>
+  </div>
+  <div class="section-title in">− Matières Premières Consommées</div>
+  <table>
+    <thead><tr><th>Produit</th><th>Ép.</th><th>L×l</th><th class="text-right">Qté</th><th class="text-right">Quantité totale</th></tr></thead>
+    <tbody>
+    ${matieres.length?matieres.map(l=>`<tr><td>${produitNomById(l.produit)}</td><td>${l.ep}</td><td>${l.long}×${l.larg}</td><td class="text-right">${l.quantite}</td><td class="text-right"><strong>${fmtNum((l.long||0)*(l.larg||0)*(l.quantite||0))}</strong></td></tr>`).join(''):'<tr><td colspan="5" style="text-align:center;color:#aaa">Aucune</td></tr>'}
+    </tbody>
+  </table>
+  <div class="section-title out">+ Produits Finis Obtenus</div>
+  <table>
+    <thead><tr><th>Produit</th><th>Ép.</th><th>L×l</th><th class="text-right">Qté</th><th class="text-right">Quantité totale</th></tr></thead>
+    <tbody>
+    ${produits.length?produits.map(l=>`<tr><td>${produitNomById(l.produit)}</td><td>${l.ep}</td><td>${l.long}×${l.larg}</td><td class="text-right">${l.quantite}</td><td class="text-right"><strong>${fmtNum((l.long||0)*(l.larg||0)*(l.quantite||0))}</strong></td></tr>`).join(''):'<tr><td colspan="5" style="text-align:center;color:#aaa">Aucun</td></tr>'}
+    </tbody>
+  </table>
+  <div class="bilan">
+    <div class="bilan-row"><span>Total matière consommée</span><span>${fmtNum(consomme)}</span></div>
+    <div class="bilan-row"><span>Total produit obtenu</span><span>${fmtNum(obtenu)}</span></div>
+    <div class="bilan-row perte"><span>PERTE DE MATIÈRE</span><span>${fmtNum(perte)} (${pct.toFixed(1)}%)</span></div>
+  </div>
+  ${o.notes?`<div style="margin-top:6mm;padding:3mm 4mm;background:#f9f9f9;border-left:3px solid #b8960c;font-size:9pt;color:#555"><strong>Notes :</strong> ${o.notes}</div>`:''}
+  <div class="footer">PERLA — Bon de production généré le ${new Date().toLocaleDateString('fr-FR')}</div>
   <script>window.onload=()=>{window.print();}<\/script>
   </body></html>`);
   win.document.close();
@@ -4232,16 +4833,24 @@ function renderClient(q = '') {
 
 // Quantité reçue (BR) pour un (produit, ep) donné
 function qteRecueProduitEp(produitId, ep){
-  return (DB.lignes_bon_reception||[])
+  const recBR = (DB.lignes_bon_reception||[])
     .filter(l=>String(l.produit)===String(produitId) && Number(l.ep)===Number(ep))
     .reduce((a,l)=>a+((l.long||0)*(l.larg||0)*(l.quantite||0)),0);
+  const recOP = (DB.op_produits_finis||[])
+    .filter(l=>String(l.produit)===String(produitId) && Number(l.ep)===Number(ep))
+    .reduce((a,l)=>a+((l.long||0)*(l.larg||0)*(l.quantite||0)),0);
+  return recBR + recOP;
 }
 
-// Quantité livrée (BL) pour un (produit, ep) donné
+// Quantité livrée (BL) + consommée en production (OP matières) pour un (produit, ep) donné
 function qteLivreeProduitEp(produitId, ep){
-  return (DB.lignes_bon_livraison||[])
+  const livBL = (DB.lignes_bon_livraison||[])
     .filter(l=>String(l.produit)===String(produitId) && Number(l.ep)===Number(ep))
     .reduce((a,l)=>a+((l.long||0)*(l.larg||0)*(l.quantite||0)),0);
+  const consOP = (DB.op_matieres||[])
+    .filter(l=>String(l.produit)===String(produitId) && Number(l.ep)===Number(ep))
+    .reduce((a,l)=>a+((l.long||0)*(l.larg||0)*(l.quantite||0)),0);
+  return livBL + consOP;
 }
 
 function qteActuelleProduitEp(produitId, ep){
