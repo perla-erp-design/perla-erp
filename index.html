@@ -355,6 +355,7 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
       <button class="btn" id="bl-cancel-btn" onclick="closeBLModal()">Annuler</button>
       <button class="btn" id="bl-detail-btn" onclick="openBLLignesModal()">📄 Détail Lignes</button>
       <button class="btn" id="bl-print-btn" onclick="printBL()" style="display:none">🖨 Imprimer BL</button>
+      <button class="btn" id="bl-route-btn" onclick="printBonRoute(blEditId)" style="display:none">🚚 Bon de Route</button>
       <button class="btn btn-primary" id="bl-save-btn" onclick="saveBL()" disabled style="opacity:.45;cursor:not-allowed" title="Ajoutez au moins une ligne avant d'enregistrer">💾 Enregistrer</button>
     </div>
   </div>
@@ -729,6 +730,7 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
     </div>
     <div style="display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border)">
       <button class="btn" onclick="closeStockHistoModal()">Fermer</button>
+      <button class="btn btn-primary" onclick="printStockHisto()">🖨 Imprimer</button>
     </div>
   </div>
 </div>
@@ -4150,6 +4152,7 @@ function renderBL(q='') {
         <div class="action-btns">
           <div class="icon-btn" title="Détail lignes" onclick="openBLLignesModal(${b.id})">📄</div>
           <div class="icon-btn" title="Imprimer" onclick="printBL(${b.id})">🖨</div>
+          <div class="icon-btn" title="Bon de Route" onclick="printBonRoute(${b.id})">🚚</div>
           <div class="icon-btn" title="Modifier" onclick="editBL(${b.id})">✎</div>
           <div class="icon-btn del" title="Supprimer" onclick="deleteBL(${b.id})">✕</div>
         </div>
@@ -4201,6 +4204,7 @@ function openBLModal(data=null){
   calcBLNet();
   document.getElementById('bl-detail-btn').style.display = '';
   document.getElementById('bl-print-btn').style.display  = isEdit ? '' : 'none';
+  document.getElementById('bl-route-btn').style.display  = isEdit ? '' : 'none';
   updateBLSaveBtn(isEdit ? blEditId : null);
   setBLLocked(isEdit);
   document.getElementById('bl-modal-overlay').style.display='flex';
@@ -4308,6 +4312,7 @@ async function saveBL(){
     toast('BL enregistré ✓','success');
     document.getElementById('bl-detail-btn').style.display='';
     document.getElementById('bl-print-btn').style.display='';
+    document.getElementById('bl-route-btn').style.display='';
     document.getElementById('bl-modal-title').textContent='🔒 Bon de Livraison (enregistré)';
     document.getElementById('bl-modal-sub').textContent=`BL N° BL-${blEditId} — lecture seule`;
     updateBLSaveBtn(blEditId);
@@ -4610,6 +4615,86 @@ function printBL(blId){
   ${bl.notes?`<div style="margin-top:8mm;padding:3mm 4mm;background:#f9f9f9;border-left:3px solid #b8960c;font-size:9pt;color:#555">
     <strong>Notes :</strong> ${bl.notes}</div>`:''}
   <div class="footer">PERLA — Bon de livraison généré le ${new Date().toLocaleDateString('fr-FR')} — Document non contractuel</div>
+  <script>window.onload=()=>{window.print();}<\/script>
+  </body></html>`);
+  win.document.close();
+}
+
+/* ── BON DE ROUTE — dimensions, nb pièces, surface totale (sans prix) ── */
+function printBonRoute(blId){
+  const id = blId || blEditId;
+  if(!id){toast('Aucun BL sélectionné','error');return;}
+  const bl=(DB.bons_livraison||[]).find(b=>b.id===id);
+  if(!bl){toast('BL introuvable','error');return;}
+  const lignes=(DB.lignes_bon_livraison||[]).filter(l=>l.num_bon===id);
+  const clientNom = clientNomById(bl.id_client);
+
+  const nbPieces = lignes.reduce((a,l)=>a+(l.quantite||0),0);
+  const surfaceTotale = lignes.reduce((a,l)=>a+((l.long||0)*(l.larg||0)*(l.quantite||0)),0);
+
+  const win=window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head>
+  <meta charset="UTF-8"><title>Bon de Route — BL-${id}</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+    body{padding:20mm;color:#111;font-size:11pt}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8mm;padding-bottom:5mm;border-bottom:2px solid #b8960c}
+    .company{font-size:18pt;font-weight:700;color:#b8960c;letter-spacing:.05em}
+    .company-sub{font-size:9pt;color:#555;margin-top:2px}
+    .bl-info{text-align:right}
+    .bl-num{font-size:14pt;font-weight:700;color:#b8960c}
+    .bl-date{font-size:9pt;color:#555;margin-top:2px}
+    .client-box{background:#f8f4e8;border:1px solid #d4af37;border-radius:4px;padding:4mm 6mm;margin-bottom:6mm}
+    .client-label{font-size:8pt;color:#888;text-transform:uppercase;letter-spacing:.1em;margin-bottom:1mm}
+    .client-name{font-size:12pt;font-weight:700}
+    table{width:100%;border-collapse:collapse;margin-bottom:6mm;font-size:10pt}
+    th{background:#b8960c;color:#fff;padding:2.5mm 3mm;text-align:left;font-size:9.5pt}
+    td{padding:2.5mm 3mm;border-bottom:1px solid #eee}
+    tr:nth-child(even) td{background:#fafafa}
+    .text-right{text-align:right}
+    .totals{margin-left:auto;width:280px}
+    .totals-row{display:flex;justify-content:space-between;padding:2mm 0;font-size:10.5pt}
+    .totals-row.net{font-size:13pt;font-weight:700;color:#b8960c;border-top:2px solid #b8960c;margin-top:2mm;padding-top:2.5mm}
+    .footer{margin-top:14mm;padding-top:5mm;border-top:1px solid #ccc;font-size:8pt;color:#888;text-align:center}
+    .signature-box{margin-top:14mm;display:flex;justify-content:space-between;gap:10mm}
+    .signature{flex:1;text-align:center;font-size:9pt;color:#555}
+    .signature-line{border-top:1px solid #999;margin-top:14mm;padding-top:1.5mm}
+    @media print{body{padding:15mm}}
+  </style></head><body>
+  <div class="header">
+    <div><div class="company">PERLA</div><div class="company-sub">Marbrerie — Granit & Pierre Naturelle</div></div>
+    <div class="bl-info"><div class="bl-num">BON DE ROUTE — BL-${id}</div><div class="bl-date">Date : ${bl.created_at ? new Date(bl.created_at).toLocaleDateString('fr-FR') : '—'}</div></div>
+  </div>
+  <div class="client-box">
+    <div class="client-label">Destination / Client</div>
+    <div class="client-name">${clientNom||'—'}</div>
+  </div>
+  <table>
+    <thead><tr>
+      <th>Produit</th><th class="text-right">Long.</th><th class="text-right">Larg.</th><th class="text-right">Ép.</th>
+      <th>Unité</th><th class="text-right">Nb pièces</th><th class="text-right">Surface</th>
+    </tr></thead>
+    <tbody>
+    ${lignes.length ? lignes.map(l=>{
+      const surface=(l.long||0)*(l.larg||0)*(l.quantite||0);
+      return `<tr>
+      <td>${produitNomById(l.produit)}</td>
+      <td class="text-right">${l.long||0}</td><td class="text-right">${l.larg||0}</td><td class="text-right">${l.ep||0}</td>
+      <td>${l.unite_calcul||'M²'}</td>
+      <td class="text-right">${l.quantite||0}</td>
+      <td class="text-right"><strong>${fmtNum(surface)}</strong></td>
+    </tr>`;}).join('') : '<tr><td colspan="7" style="text-align:center;color:#aaa;padding:5mm">Aucune ligne</td></tr>'}
+    </tbody>
+  </table>
+  <div class="totals">
+    <div class="totals-row"><span>Nombre total de pièces</span><span>${fmtNum(nbPieces)}</span></div>
+    <div class="totals-row net"><span>SURFACE TOTALE</span><span>${fmtNum(surfaceTotale)}</span></div>
+  </div>
+  <div class="signature-box">
+    <div class="signature"><div>Chauffeur</div><div class="signature-line">Nom &amp; Signature</div></div>
+    <div class="signature"><div>Client / Réceptionnaire</div><div class="signature-line">Nom &amp; Signature</div></div>
+  </div>
+  <div class="footer">PERLA — Bon de route généré le ${new Date().toLocaleDateString('fr-FR')} — Document de transport, sans valeur commerciale</div>
   <script>window.onload=()=>{window.print();}<\/script>
   </body></html>`);
   win.document.close();
@@ -4978,6 +5063,8 @@ function updateStkKPI(rows){
 }
 
 /* ── HISTORIQUE MOUVEMENTS STOCK (Réception / Vente / Production) ── */
+let stkHistoCurrent = null; // {produitId, ep, rows}
+
 function openStockHistoModal(produitId, ep){
   document.getElementById('stk-histo-title').textContent = '📜 Historique — '+produitNomById(produitId);
   document.getElementById('stk-histo-sub').textContent = `Épaisseur : ${ep}`;
@@ -5042,6 +5129,7 @@ function openStockHistoModal(produitId, ep){
   document.getElementById('kpi-stkh-recu').textContent = fmtNum(totalRecu);
   document.getElementById('kpi-stkh-vendu').textContent = fmtNum(totalVendu);
   document.getElementById('kpi-stkh-solde').textContent = fmtNum(solde);
+  stkHistoCurrent = {produitId, ep, rows, totalRecu, totalVendu, solde};
 
   const tbody=document.getElementById('tbl-stk-histo');
   if(!rows.length){
@@ -5064,6 +5152,70 @@ function openStockHistoModal(produitId, ep){
 function closeStockHistoModal(e){
   if(e && e.target!==document.getElementById('stk-histo-overlay')) return;
   document.getElementById('stk-histo-overlay').style.display='none';
+}
+
+function printStockHisto(){
+  if(!stkHistoCurrent){ toast('Aucune donnée à imprimer','error'); return; }
+  const {produitId, ep, rows, totalRecu, totalVendu, solde} = stkHistoCurrent;
+  const nom = produitNomById(produitId);
+  const typeTagClass = {'Réception':'#27ae60','Vente (BL)':'#c0392b','Production (consommé)':'#d68910','Production (obtenu)':'#2980b9'};
+
+  const win=window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head>
+  <meta charset="UTF-8"><title>Historique — ${nom}</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+    body{padding:18mm;color:#111;font-size:10pt}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6mm;padding-bottom:5mm;border-bottom:2px solid #b8960c}
+    .company{font-size:18pt;font-weight:700;color:#b8960c;letter-spacing:.05em}
+    .company-sub{font-size:9pt;color:#555;margin-top:2px}
+    .doc-title{font-size:13pt;font-weight:700;color:#b8960c;text-align:right}
+    .doc-date{font-size:9pt;color:#555;text-align:right;margin-top:2px}
+    .product-box{background:#f8f4e8;border:1px solid #d4af37;border-radius:4px;padding:4mm 6mm;margin-bottom:6mm}
+    .product-name{font-size:12pt;font-weight:700}
+    .product-sub{font-size:9pt;color:#666;margin-top:1mm}
+    table{width:100%;border-collapse:collapse;margin-bottom:6mm;font-size:9.5pt}
+    th{background:#b8960c;color:#fff;padding:2mm 3mm;text-align:left;font-size:9pt}
+    td{padding:2mm 3mm;border-bottom:1px solid #eee}
+    tr:nth-child(even) td{background:#fafafa}
+    .text-right{text-align:right}
+    .tag{display:inline-block;padding:.5mm 2mm;border-radius:3mm;font-size:8pt;color:#fff}
+    .totals{margin-left:auto;width:280px;margin-top:4mm}
+    .totals-row{display:flex;justify-content:space-between;padding:1.5mm 0;font-size:10pt}
+    .totals-row.net{font-size:12pt;font-weight:700;color:#b8960c;border-top:2px solid #b8960c;margin-top:2mm;padding-top:2mm}
+    .footer{margin-top:10mm;padding-top:4mm;border-top:1px solid #ccc;font-size:8pt;color:#888;text-align:center}
+    @media print{body{padding:12mm}}
+  </style></head><body>
+  <div class="header">
+    <div><div class="company">PERLA</div><div class="company-sub">Marbrerie — Granit & Pierre Naturelle</div></div>
+    <div><div class="doc-title">HISTORIQUE DES MOUVEMENTS</div><div class="doc-date">Au ${new Date().toLocaleDateString('fr-FR')}</div></div>
+  </div>
+  <div class="product-box">
+    <div class="product-name">${nom}</div>
+    <div class="product-sub">Épaisseur : ${ep}</div>
+  </div>
+  <table>
+    <thead><tr><th>Date</th><th>Type</th><th>Référence</th><th class="text-right">Dimensions</th><th class="text-right">Mouvement</th><th class="text-right">Solde Cumulé</th></tr></thead>
+    <tbody>
+    ${rows.length ? [...rows].reverse().map(m=>`<tr>
+      <td>${new Date(m.date).toLocaleDateString('fr-FR')}</td>
+      <td><span class="tag" style="background:${typeTagClass[m.type]||'#888'}">${m.type}</span></td>
+      <td>${m.ref}</td>
+      <td class="text-right">${m.dims}</td>
+      <td class="text-right">${m.sens} ${fmtNum(m.qte)}</td>
+      <td class="text-right"><strong>${fmtNum(m.soldeCumule)}</strong></td>
+    </tr>`).join('') : '<tr><td colspan="6" style="text-align:center;color:#aaa;padding:5mm">Aucun mouvement</td></tr>'}
+    </tbody>
+  </table>
+  <div class="totals">
+    <div class="totals-row"><span>Total Reçu</span><span>+ ${fmtNum(totalRecu)}</span></div>
+    <div class="totals-row"><span>Total Vendu/Consommé</span><span>- ${fmtNum(totalVendu)}</span></div>
+    <div class="totals-row net"><span>SOLDE ACTUEL</span><span>${fmtNum(solde)}</span></div>
+  </div>
+  <div class="footer">PERLA — Historique généré le ${new Date().toLocaleDateString('fr-FR')}</div>
+  <script>window.onload=()=>{window.print();}<\/script>
+  </body></html>`);
+  win.document.close();
 }
 
 function openStockModal(data=null){
