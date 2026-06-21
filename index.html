@@ -2430,13 +2430,13 @@ function renderAffectations(){
 
 function loadEntrepriseForm(){
   const e = (DB.entreprise||[])[0] || {};
-  document.getElementById('ent-forme-juridique').value = e.forme_juridique||'';
-  document.getElementById('ent-nom').value = e.nom||'';
-  document.getElementById('ent-adresse').value = e.adresse||'';
+  document.getElementById('ent-forme-juridique').value = e.forme_juridique||'SARL';
+  document.getElementById('ent-nom').value = e.nom||'SARL PERLA';
+  document.getElementById('ent-adresse').value = e.adresse||'Centre Commercial El Qods 730 Chéraga, Alger';
   document.getElementById('ent-telephone').value = e.telephone||'';
   document.getElementById('ent-email').value = e.email||'';
-  document.getElementById('ent-gerant').value = e.gerant||'';
-  document.getElementById('ent-wilaya').value = e.wilaya||'';
+  document.getElementById('ent-gerant').value = e.gerant||'Mr. Mustapha Azzedine';
+  document.getElementById('ent-wilaya').value = e.wilaya||'Alger';
 }
 
 async function saveEntreprise(){
@@ -2465,7 +2465,13 @@ async function saveEntreprise(){
 }
 
 function getEntreprise(){
-  return (DB.entreprise||[])[0] || {};
+  const e = (DB.entreprise||[])[0];
+  if(e && (e.nom || e.adresse || e.gerant)) return e;
+  return {
+    forme_juridique:'SARL', nom:'SARL PERLA',
+    adresse:'Centre Commercial El Qods 730 Chéraga, Alger',
+    telephone:'', email:'', gerant:'Mr. Mustapha Azzedine', wilaya:'Alger'
+  };
 }
 
 /* ═══════════════════════════════════════════════
@@ -2757,7 +2763,7 @@ async function genererContratDocx(contratId){
   const dateDebut = c.date_debut ? new Date(c.date_debut).toLocaleDateString('fr-FR') : '—';
   const dateFin = c.date_fin ? new Date(c.date_fin).toLocaleDateString('fr-FR') : '—';
 
-  const { Document, Packer, Paragraph, TextRun, AlignmentType, HeadingLevel } = window.docx;
+  const { Document, Packer, Paragraph, TextRun, AlignmentType, HeadingLevel, Header, Footer, BorderStyle } = window.docx;
 
   function p(text, opts={}){
     return new Paragraph({ spacing:{after:200}, ...opts, children: Array.isArray(text) ? text : [new TextRun(text)] });
@@ -2838,8 +2844,27 @@ async function genererContratDocx(contratId){
     p([new TextRun(nomEmploye)], {alignment:AlignmentType.RIGHT}),
   ];
 
+  const docHeader = new Header({
+    children: [
+      new Paragraph({
+        alignment: AlignmentType.CENTER,
+        border: { bottom: { color: 'B8960C', space: 4, style: BorderStyle.SINGLE, size: 12 } },
+        children: [
+          new TextRun({ text: ent.nom || 'SARL PERLA', bold:true, size:28, color:'B8960C' }),
+        ]
+      }),
+      new Paragraph({
+        alignment: AlignmentType.CENTER,
+        spacing:{after:200},
+        children: [
+          new TextRun({ text: ent.adresse || '—', size:16, color:'555555' }),
+        ]
+      }),
+    ]
+  });
+
   const doc = new Document({
-    sections: [{ properties:{}, children }]
+    sections: [{ properties:{}, headers:{ default: docHeader }, children }]
   });
 
   const blob = await Packer.toBlob(doc);
