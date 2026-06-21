@@ -145,7 +145,7 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 .connect-title{font-size:1.1rem;font-weight:600;color:var(--gold-l);margin-bottom:.5rem}
 .connect-sub{font-size:.82rem;color:var(--text3);line-height:1.7;max-width:380px;margin-bottom:1.5rem}
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
 </head>
 <body>
 
@@ -2742,6 +2742,10 @@ async function deleteContrat(id){
 
 /* ── GÉNÉRATION DU DOCUMENT .DOCX ── */
 async function genererContratDocx(contratId){
+  if(!window.docx || !window.docx.Document){
+    toast("La librairie de génération Word n'est pas encore chargée — réessayez dans quelques secondes ou rechargez la page (Ctrl+Shift+R)",'error');
+    return;
+  }
   const c = (DB.contrats||[]).find(c=>c.id===contratId);
   if(!c){ toast('Contrat introuvable','error'); return; }
   const emp = (DB.employes||[]).find(e=>e.id===c.employe_id);
