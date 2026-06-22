@@ -149,6 +149,97 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 </head>
 <body>
 
+<!-- ÉCRAN DE CONNEXION (Supabase Auth) -->
+<div id="auth-overlay" style="position:fixed;inset:0;background:var(--bg1);z-index:5000;display:flex;align-items:center;justify-content:center;padding:1.5rem">
+  <div style="width:100%;max-width:400px">
+    <div style="text-align:center;margin-bottom:2rem">
+      <div class="brand-gem" style="margin:0 auto 1rem"></div>
+      <div style="font-size:1.4rem;font-weight:700;color:var(--gold-l);letter-spacing:.05em">PERLA</div>
+      <div style="font-size:.8rem;color:var(--text3);margin-top:.25rem">Espace de gestion ERP</div>
+    </div>
+
+    <!-- FORMULAIRE CONNEXION -->
+    <div id="auth-login-form">
+      <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r16);padding:1.75rem">
+        <div style="font-size:1rem;font-weight:600;color:var(--gold-l);margin-bottom:1.25rem">Connexion</div>
+        <div id="auth-error" style="display:none;background:var(--red-bg);border:1px solid var(--red);border-radius:var(--r8);padding:.6rem .9rem;margin-bottom:1rem;font-size:.78rem;color:#e88"></div>
+        <div style="margin-bottom:1rem">
+          <label class="form-label">Email</label>
+          <input class="form-inp" id="auth-email" type="email" placeholder="votre@email.com" autocomplete="username">
+        </div>
+        <div style="margin-bottom:.5rem">
+          <label class="form-label">Mot de passe</label>
+          <input class="form-inp" id="auth-password" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doSignIn()">
+        </div>
+        <div style="text-align:right;margin-bottom:1.25rem">
+          <a href="#" onclick="showAuthView('reset');return false" style="font-size:.74rem;color:var(--text3)">Mot de passe oublié ?</a>
+        </div>
+        <button class="btn btn-primary" onclick="doSignIn()" id="auth-signin-btn" style="width:100%">Se connecter</button>
+      </div>
+      <div style="text-align:center;margin-top:1rem;font-size:.78rem;color:var(--text3)">
+        Pas encore de compte ? <a href="#" onclick="showAuthView('signup');return false" style="color:var(--gold-l)">Créer le premier compte admin</a>
+      </div>
+    </div>
+
+    <!-- FORMULAIRE INSCRIPTION (premier admin) -->
+    <div id="auth-signup-form" style="display:none">
+      <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r16);padding:1.75rem">
+        <div style="font-size:1rem;font-weight:600;color:var(--gold-l);margin-bottom:.4rem">Créer un compte</div>
+        <div style="font-size:.76rem;color:var(--text3);margin-bottom:1.25rem">Réservé à l'administrateur initial</div>
+        <div id="auth-signup-error" style="display:none;background:var(--red-bg);border:1px solid var(--red);border-radius:var(--r8);padding:.6rem .9rem;margin-bottom:1rem;font-size:.78rem;color:#e88"></div>
+        <div id="auth-signup-success" style="display:none;background:var(--green-bg);border:1px solid var(--green);border-radius:var(--r8);padding:.6rem .9rem;margin-bottom:1rem;font-size:.78rem;color:#8e8"></div>
+        <div style="margin-bottom:1rem">
+          <label class="form-label">Nom complet</label>
+          <input class="form-inp" id="signup-nom" type="text" placeholder="Votre nom">
+        </div>
+        <div style="margin-bottom:1rem">
+          <label class="form-label">Email</label>
+          <input class="form-inp" id="signup-email" type="email" placeholder="votre@email.com" autocomplete="username">
+        </div>
+        <div style="margin-bottom:1.25rem">
+          <label class="form-label">Mot de passe</label>
+          <input class="form-inp" id="signup-password" type="password" placeholder="Minimum 6 caractères" autocomplete="new-password">
+        </div>
+        <button class="btn btn-primary" onclick="doSignUp()" id="auth-signup-btn" style="width:100%">Créer le compte</button>
+      </div>
+      <div style="text-align:center;margin-top:1rem;font-size:.78rem;color:var(--text3)">
+        <a href="#" onclick="showAuthView('login');return false" style="color:var(--gold-l)">← Retour à la connexion</a>
+      </div>
+    </div>
+
+    <!-- FORMULAIRE MOT DE PASSE OUBLIÉ -->
+    <div id="auth-reset-form" style="display:none">
+      <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r16);padding:1.75rem">
+        <div style="font-size:1rem;font-weight:600;color:var(--gold-l);margin-bottom:.4rem">Mot de passe oublié</div>
+        <div style="font-size:.76rem;color:var(--text3);margin-bottom:1.25rem">Un lien de réinitialisation sera envoyé par email</div>
+        <div id="auth-reset-error" style="display:none;background:var(--red-bg);border:1px solid var(--red);border-radius:var(--r8);padding:.6rem .9rem;margin-bottom:1rem;font-size:.78rem;color:#e88"></div>
+        <div id="auth-reset-success" style="display:none;background:var(--green-bg);border:1px solid var(--green);border-radius:var(--r8);padding:.6rem .9rem;margin-bottom:1rem;font-size:.78rem;color:#8e8"></div>
+        <div style="margin-bottom:1.25rem">
+          <label class="form-label">Email</label>
+          <input class="form-inp" id="reset-email" type="email" placeholder="votre@email.com">
+        </div>
+        <button class="btn btn-primary" onclick="doResetPassword()" id="auth-reset-btn" style="width:100%">Envoyer le lien</button>
+      </div>
+      <div style="text-align:center;margin-top:1rem;font-size:.78rem;color:var(--text3)">
+        <a href="#" onclick="showAuthView('login');return false" style="color:var(--gold-l)">← Retour à la connexion</a>
+      </div>
+    </div>
+
+    <!-- FORMULAIRE NOUVEAU MOT DE PASSE (après clic lien email) -->
+    <div id="auth-newpass-form" style="display:none">
+      <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r16);padding:1.75rem">
+        <div style="font-size:1rem;font-weight:600;color:var(--gold-l);margin-bottom:1.25rem">Nouveau mot de passe</div>
+        <div id="auth-newpass-error" style="display:none;background:var(--red-bg);border:1px solid var(--red);border-radius:var(--r8);padding:.6rem .9rem;margin-bottom:1rem;font-size:.78rem;color:#e88"></div>
+        <div style="margin-bottom:1.25rem">
+          <label class="form-label">Nouveau mot de passe</label>
+          <input class="form-inp" id="newpass-password" type="password" placeholder="Minimum 6 caractères">
+        </div>
+        <button class="btn btn-primary" onclick="doUpdatePassword()" id="auth-newpass-btn" style="width:100%">Mettre à jour</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- TOPBAR -->
 <div class="topbar">
   <div class="brand"><div class="brand-gem"></div>PERLA</div>
@@ -158,10 +249,14 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
     <div class="status-dot" id="status-dot"></div>
     <span id="status-label">Non connecté</span>
   </div>
-  <div class="topbar-user">v1.0</div>
+  <div class="topbar-user" id="topbar-user-box" style="display:flex;align-items:center;gap:.6rem;cursor:default">
+    <span id="topbar-user-name" style="font-size:.78rem;color:var(--text2)">—</span>
+    <button class="btn" onclick="doSignOut()" style="font-size:.72rem;padding:.3rem .7rem">Déconnexion</button>
+  </div>
 </div>
 
 <div class="layout">
+
 <!-- SIDEBAR -->
 <div class="sidebar">
   <div class="sidebar-section">Principal</div>
@@ -1929,9 +2024,15 @@ function load(){
     Object.keys(DB).forEach(k=>{if(d[k]) DB[k]=d[k];});
   }catch(e){}
   if(SB_URL&&SB_KEY) testConnection();
+  checkPasswordRecoveryLink();
+  checkExistingSession();
 }
 
 /* ─── SUPABASE API ─── */
+function getAuthToken(){
+  return (currentUser && currentUser.access_token) ? currentUser.access_token : SB_KEY;
+}
+
 async function sbReq(method,table,body,id,compositeFilter){
   let url=`${SB_URL}/rest/v1/${table}`;
   if(id){ url+=`?id=eq.${id}`; }
@@ -1940,7 +2041,7 @@ async function sbReq(method,table,body,id,compositeFilter){
     Object.entries(compositeFilter).forEach(([k,v])=>params.set(k,'eq.'+v));
     url+=`?${params.toString()}`;
   }
-  const opts={method,headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json','Prefer':'return=representation'}};
+  const opts={method,headers:{'apikey':SB_KEY,'Authorization':`Bearer ${getAuthToken()}`,'Content-Type':'application/json','Prefer':'return=representation'}};
   if(body) opts.body=JSON.stringify(body);
   const r=await fetch(url,opts);
   if(!r.ok) throw new Error(await r.text());
@@ -1951,13 +2052,13 @@ async function sbSelect(table,filter=''){
   const orderPart = noIdTables.includes(table) ? '' : 'order=id.asc';
   const qs = [orderPart, filter].filter(Boolean).join('&');
   const url=`${SB_URL}/rest/v1/${table}${qs?'?'+qs:''}`;
-  const r=await fetch(url,{headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`}});
+  const r=await fetch(url,{headers:{'apikey':SB_KEY,'Authorization':`Bearer ${getAuthToken()}`}});
   if(!r.ok) throw new Error(await r.text());
   return r.json();
 }
 async function sbDelete(table,id){
   const url=`${SB_URL}/rest/v1/${table}?id=eq.${id}`;
-  await fetch(url,{method:'DELETE',headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`}});
+  await fetch(url,{method:'DELETE',headers:{'apikey':SB_KEY,'Authorization':`Bearer ${getAuthToken()}`}});
 }
 
 async function connectDB(){await testConnection();}
@@ -2347,6 +2448,242 @@ function renderDept(q=''){
         <div class="icon-btn del" onclick="delRow('departements',${d.id})">✕</div>
       </div></td></tr>`;
   }));
+}
+
+/* ═══════════════════════════════════════════════
+   MODULE AUTHENTIFICATION — Supabase Auth
+═══════════════════════════════════════════════ */
+
+let currentUser = null; // {id, email, access_token}
+let currentProfil = null; // {id, user_id, nom, actif}
+
+function showAuthView(view){
+  ['login','signup','reset','newpass'].forEach(v=>{
+    const el = document.getElementById('auth-'+v+'-form');
+    if(el) el.style.display = (v===view) ? '' : 'none';
+  });
+}
+
+function showAuthError(formPrefix, message){
+  const el = document.getElementById(formPrefix+'-error');
+  if(el){ el.textContent = message; el.style.display=''; }
+}
+function hideAuthError(formPrefix){
+  const el = document.getElementById(formPrefix+'-error');
+  if(el) el.style.display='none';
+}
+
+async function doSignIn(){
+  hideAuthError('auth');
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  if(!email || !password){ showAuthError('auth','Email et mot de passe requis'); return; }
+  if(!SB_URL || !SB_KEY){ showAuthError('auth','Connexion Supabase non configurée — contactez votre administrateur'); return; }
+
+  const btn=document.getElementById('auth-signin-btn');
+  btn.textContent='⏳ Connexion…'; btn.disabled=true;
+  try{
+    const r = await fetch(`${SB_URL}/auth/v1/token?grant_type=password`,{
+      method:'POST',
+      headers:{'apikey':SB_KEY,'Content-Type':'application/json'},
+      body: JSON.stringify({email, password})
+    });
+    const data = await r.json();
+    if(!r.ok){
+      showAuthError('auth', data.error_description || data.msg || 'Email ou mot de passe incorrect');
+      return;
+    }
+    await onAuthSuccess(data);
+  }catch(e){ showAuthError('auth','Erreur de connexion: '+e.message); }
+  finally{ btn.textContent='Se connecter'; btn.disabled=false; }
+}
+
+async function doSignUp(){
+  hideAuthError('auth-signup');
+  const nom = document.getElementById('signup-nom').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value;
+  if(!nom || !email || !password){ showAuthError('auth-signup','Tous les champs sont requis'); return; }
+  if(password.length<6){ showAuthError('auth-signup','Le mot de passe doit contenir au moins 6 caractères'); return; }
+  if(!SB_URL || !SB_KEY){ showAuthError('auth-signup','Connexion Supabase non configurée'); return; }
+
+  const btn=document.getElementById('auth-signup-btn');
+  btn.textContent='⏳ Création…'; btn.disabled=true;
+  try{
+    const r = await fetch(`${SB_URL}/auth/v1/signup`,{
+      method:'POST',
+      headers:{'apikey':SB_KEY,'Content-Type':'application/json'},
+      body: JSON.stringify({email, password, data:{nom}})
+    });
+    const data = await r.json();
+    if(!r.ok){
+      showAuthError('auth-signup', data.error_description || data.msg || 'Erreur lors de la création du compte');
+      return;
+    }
+    const successEl=document.getElementById('auth-signup-success');
+    successEl.textContent = data.access_token
+      ? 'Compte créé ✓ Connexion automatique…'
+      : 'Compte créé ✓ Vérifiez votre email pour confirmer votre adresse, puis connectez-vous.';
+    successEl.style.display='';
+    if(data.access_token){
+      // Créer le profil avec droits Super Admin (premier compte)
+      await createProfilForUser(data.user.id, nom, data.access_token, true);
+      setTimeout(()=>onAuthSuccess(data), 800);
+    }
+  }catch(e){ showAuthError('auth-signup','Erreur: '+e.message); }
+  finally{ btn.textContent='Créer le compte'; btn.disabled=false; }
+}
+
+async function createProfilForUser(userId, nom, accessToken, isSuperAdmin){
+  try{
+    await fetch(`${SB_URL}/rest/v1/profils`,{
+      method:'POST',
+      headers:{'apikey':SB_KEY,'Authorization':`Bearer ${accessToken}`,'Content-Type':'application/json','Prefer':'return=representation'},
+      body: JSON.stringify({ user_id:userId, nom, actif:true, super_admin:isSuperAdmin })
+    });
+  }catch(e){ console.warn('Erreur création profil:', e.message); }
+}
+
+async function doResetPassword(){
+  hideAuthError('auth-reset');
+  const email = document.getElementById('reset-email').value.trim();
+  if(!email){ showAuthError('auth-reset','Email requis'); return; }
+  const btn=document.getElementById('auth-reset-btn');
+  btn.textContent='⏳ Envoi…'; btn.disabled=true;
+  try{
+    const r = await fetch(`${SB_URL}/auth/v1/recover`,{
+      method:'POST',
+      headers:{'apikey':SB_KEY,'Content-Type':'application/json'},
+      body: JSON.stringify({email})
+    });
+    const successEl=document.getElementById('auth-reset-success');
+    successEl.textContent='Si cet email existe, un lien de réinitialisation a été envoyé.';
+    successEl.style.display='';
+  }catch(e){ showAuthError('auth-reset','Erreur: '+e.message); }
+  finally{ btn.textContent='Envoyer le lien'; btn.disabled=false; }
+}
+
+async function doUpdatePassword(){
+  const newPassword = document.getElementById('newpass-password').value;
+  if(!newPassword || newPassword.length<6){
+    document.getElementById('auth-newpass-error').textContent='Minimum 6 caractères';
+    document.getElementById('auth-newpass-error').style.display='';
+    return;
+  }
+  const btn=document.getElementById('auth-newpass-btn');
+  btn.textContent='⏳ …'; btn.disabled=true;
+  try{
+    const accessToken = localStorage.getItem('perla_recovery_token');
+    const r = await fetch(`${SB_URL}/auth/v1/user`,{
+      method:'PUT',
+      headers:{'apikey':SB_KEY,'Authorization':`Bearer ${accessToken}`,'Content-Type':'application/json'},
+      body: JSON.stringify({password:newPassword})
+    });
+    if(!r.ok){ throw new Error('Erreur mise à jour'); }
+    toast('Mot de passe mis à jour ✓ Reconnectez-vous','success');
+    localStorage.removeItem('perla_recovery_token');
+    showAuthView('login');
+  }catch(e){
+    document.getElementById('auth-newpass-error').textContent='Erreur: '+e.message;
+    document.getElementById('auth-newpass-error').style.display='';
+  }
+  finally{ btn.textContent='Mettre à jour'; btn.disabled=false; }
+}
+
+async function onAuthSuccess(authData){
+  currentUser = { id: authData.user.id, email: authData.user.email, access_token: authData.access_token, refresh_token: authData.refresh_token };
+  localStorage.setItem('perla_auth_session', JSON.stringify(currentUser));
+  await loadCurrentProfil();
+  document.getElementById('auth-overlay').style.display='none';
+  document.getElementById('topbar-user-name').textContent = currentProfil ? currentProfil.nom : currentUser.email;
+  if(connected) loadAll(); else refreshAll();
+}
+
+async function loadCurrentProfil(){
+  if(!currentUser) return;
+  try{
+    const r = await fetch(`${SB_URL}/rest/v1/profils?user_id=eq.${currentUser.id}`,{
+      headers:{'apikey':SB_KEY,'Authorization':`Bearer ${currentUser.access_token}`}
+    });
+    const data = await r.json();
+    currentProfil = data && data[0] ? data[0] : null;
+  }catch(e){ console.warn('Erreur chargement profil:', e.message); }
+}
+
+async function doSignOut(){
+  try{
+    if(currentUser){
+      await fetch(`${SB_URL}/auth/v1/logout`,{
+        method:'POST',
+        headers:{'apikey':SB_KEY,'Authorization':`Bearer ${currentUser.access_token}`}
+      });
+    }
+  }catch(e){}
+  currentUser = null;
+  currentProfil = null;
+  localStorage.removeItem('perla_auth_session');
+  document.getElementById('auth-overlay').style.display='flex';
+  showAuthView('login');
+  document.getElementById('auth-email').value='';
+  document.getElementById('auth-password').value='';
+}
+
+// Vérifie s'il y a une session active au chargement de la page
+async function checkExistingSession(){
+  const saved = localStorage.getItem('perla_auth_session');
+  if(!saved){ document.getElementById('auth-overlay').style.display='flex'; return; }
+  try{
+    currentUser = JSON.parse(saved);
+    // Vérifier que le token est encore valide
+    const r = await fetch(`${SB_URL}/auth/v1/user`,{
+      headers:{'apikey':SB_KEY,'Authorization':`Bearer ${currentUser.access_token}`}
+    });
+    if(!r.ok){
+      // Token expiré, tenter un refresh
+      const refreshed = await tryRefreshToken();
+      if(!refreshed){
+        currentUser=null; localStorage.removeItem('perla_auth_session');
+        document.getElementById('auth-overlay').style.display='flex';
+        return;
+      }
+    }
+    await loadCurrentProfil();
+    document.getElementById('auth-overlay').style.display='none';
+    document.getElementById('topbar-user-name').textContent = currentProfil ? currentProfil.nom : currentUser.email;
+  }catch(e){
+    document.getElementById('auth-overlay').style.display='flex';
+  }
+}
+
+async function tryRefreshToken(){
+  if(!currentUser || !currentUser.refresh_token) return false;
+  try{
+    const r = await fetch(`${SB_URL}/auth/v1/token?grant_type=refresh_token`,{
+      method:'POST',
+      headers:{'apikey':SB_KEY,'Content-Type':'application/json'},
+      body: JSON.stringify({refresh_token: currentUser.refresh_token})
+    });
+    if(!r.ok) return false;
+    const data = await r.json();
+    currentUser = { id: data.user.id, email: data.user.email, access_token: data.access_token, refresh_token: data.refresh_token };
+    localStorage.setItem('perla_auth_session', JSON.stringify(currentUser));
+    return true;
+  }catch(e){ return false; }
+}
+
+// Détection du lien de réinitialisation de mot de passe (#access_token=... dans l'URL après clic email)
+function checkPasswordRecoveryLink(){
+  const hash = window.location.hash;
+  if(hash && hash.includes('type=recovery')){
+    const params = new URLSearchParams(hash.substring(1));
+    const accessToken = params.get('access_token');
+    if(accessToken){
+      localStorage.setItem('perla_recovery_token', accessToken);
+      document.getElementById('auth-overlay').style.display='flex';
+      showAuthView('newpass');
+      history.replaceState(null,'',window.location.pathname);
+    }
+  }
 }
 
 /* ═══════════════════════════════════════════════
@@ -5588,7 +5925,7 @@ async function sbDeleteComposite(table, row){
   params.set('ep', 'eq.'+row.ep);
   const r = await fetch(`${SB_URL}/rest/v1/${table}?${params.toString()}`, {
     method:'DELETE',
-    headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json'}
+    headers:{'apikey':SB_KEY,'Authorization':`Bearer ${getAuthToken()}`,'Content-Type':'application/json'}
   });
   if(!r.ok) throw new Error(await r.text());
 }
