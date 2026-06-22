@@ -2763,7 +2763,7 @@ async function genererContratDocx(contratId){
   const dateDebut = c.date_debut ? new Date(c.date_debut).toLocaleDateString('fr-FR') : '—';
   const dateFin = c.date_fin ? new Date(c.date_fin).toLocaleDateString('fr-FR') : '—';
 
-  const { Document, Packer, Paragraph, TextRun, AlignmentType, HeadingLevel, Header, Footer, BorderStyle } = window.docx;
+  const { Document, Packer, Paragraph, TextRun, AlignmentType, HeadingLevel, Header, Footer, BorderStyle, Table, TableRow, TableCell, WidthType, VerticalAlign, ShadingType } = window.docx;
 
   function p(text, opts={}){
     return new Paragraph({ spacing:{after:200}, ...opts, children: Array.isArray(text) ? text : [new TextRun(text)] });
@@ -2846,25 +2846,50 @@ async function genererContratDocx(contratId){
 
   const docHeader = new Header({
     children: [
-      new Paragraph({
-        alignment: AlignmentType.CENTER,
-        border: { bottom: { color: 'B8960C', space: 4, style: BorderStyle.SINGLE, size: 12 } },
-        children: [
-          new TextRun({ text: ent.nom || 'SARL PERLA', bold:true, size:28, color:'B8960C' }),
+      new Table({
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        rows: [
+          new TableRow({
+            children: [
+              new TableCell({
+                width: { size: 30, type: WidthType.PERCENTAGE },
+                shading: { type: ShadingType.CLEAR, fill: '943634' },
+                verticalAlign: VerticalAlign.BOTTOM,
+                borders: { bottom: { style: BorderStyle.SINGLE, size:4, color:'943634' } },
+                children: [ new Paragraph({
+                  alignment: AlignmentType.RIGHT,
+                  children: [ new TextRun({ text:'PERLA ', bold:true, color:'FFFFFF', size:32 }) ]
+                }) ]
+              }),
+              new TableCell({
+                width: { size: 70, type: WidthType.PERCENTAGE },
+                verticalAlign: VerticalAlign.BOTTOM,
+                borders: { bottom: { style: BorderStyle.SINGLE, size:4, color:'auto' } },
+                children: [ new Paragraph({
+                  children: [ new TextRun({ text:'  SARL AU CAPITAL SOCIAL DE : 30.000.000 DA', bold:true, color:'76923C', size:24 }) ]
+                }) ]
+              }),
+            ]
+          })
         ]
       }),
+    ]
+  });
+
+  const docFooter = new Footer({
+    children: [
       new Paragraph({
         alignment: AlignmentType.CENTER,
-        spacing:{after:200},
+        shading: { type: ShadingType.CLEAR, fill: '943634' },
         children: [
-          new TextRun({ text: ent.adresse || '—', size:16, color:'555555' }),
+          new TextRun({ text:'CENTRE COMMERCIAL EL-QODS N°730 CHERAGA ALGER  TEL : +213 21 34 16 96  EMAIL : perla.impexp@yahoo.fr', color:'FFFFFF', size:16 }),
         ]
       }),
     ]
   });
 
   const doc = new Document({
-    sections: [{ properties:{}, headers:{ default: docHeader }, children }]
+    sections: [{ properties:{}, headers:{ default: docHeader }, footers:{ default: docFooter }, children }]
   });
 
   const blob = await Packer.toBlob(doc);
