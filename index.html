@@ -294,6 +294,9 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
   <div class="nav-item" onclick="nav('etat-dettes')" id="nav-etat-dettes"><span class="nav-icon">📊</span> Dettes Fournisseurs</div>
   <div class="nav-item" onclick="nav('etat-historique-four')" id="nav-etat-historique-four"><span class="nav-icon">📜</span> Historique Fournisseur</div>
 
+  <div class="sidebar-section">Administration</div>
+  <div class="nav-item" onclick="nav('utilisateurs')" id="nav-utilisateurs"><span class="nav-icon">🔐</span> Utilisateurs & Droits</div>
+
   <div class="sidebar-footer">
     <button class="db-config-btn" onclick="nav('settings')">⚙ Configuration base de données</button>
   </div>
@@ -408,6 +411,65 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
     </div>
     <div style="display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border)">
       <button class="btn" onclick="closeAffectationModal()">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- UTILISATEURS & DROITS -->
+<div class="page" id="page-utilisateurs">
+  <div class="page-header">
+    <div><div class="page-title">🔐 Utilisateurs & Droits</div><div class="page-sub">Gestion des accès et autorisations</div></div>
+  </div>
+  <div class="page-body">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Nom</th><th>Email</th><th>Statut</th><th>Rôle</th><th style="text-align:center">Actions</th></tr></thead>
+        <tbody id="tbl-utilisateurs"></tbody>
+      </table>
+      <div id="users-empty" style="display:none;text-align:center;padding:3rem;color:var(--text3)">
+        <div style="font-size:2.5rem;margin-bottom:.75rem">🔐</div>
+        <div style="font-size:.9rem">Aucun utilisateur trouvé</div>
+        <div style="font-size:.78rem;margin-top:.35rem">Les comptes créés via l'écran de connexion apparaîtront ici</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PERMISSIONS -->
+<div id="perm-modal-overlay" onclick="closePermissionsModal(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;align-items:center;justify-content:center">
+  <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r16);width:100%;max-width:920px;max-height:92vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.6)">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.25rem;border-bottom:1px solid var(--border)">
+      <div>
+        <div id="perm-modal-title" style="font-size:.95rem;font-weight:600;color:var(--gold-l)">🔐 Permissions</div>
+        <div style="font-size:.75rem;color:var(--text3);margin-top:.2rem">Définissez les autorisations par module et par action</div>
+      </div>
+      <button onclick="closePermissionsModal()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:1.2rem;padding:.2rem .4rem;border-radius:4px">✕</button>
+    </div>
+    <div style="padding:1.25rem">
+      <div id="perm-superadmin-box" style="display:none;background:var(--gold-bg);border:1px solid var(--gold-d);border-radius:var(--r8);padding:.75rem 1rem;margin-bottom:1rem;font-size:.82rem;color:var(--gold-l)">
+        ⭐ Cet utilisateur est <strong>Super Admin</strong> — il a accès à tout, sans restriction.
+      </div>
+      <div style="margin-bottom:1rem;display:flex;gap:.6rem;flex-wrap:wrap">
+        <button class="btn" onclick="togglePermAllActions(true)" style="font-size:.75rem">✓ Tout cocher</button>
+        <button class="btn" onclick="togglePermAllActions(false)" style="font-size:.75rem">✕ Tout décocher</button>
+      </div>
+      <div class="table-wrap" id="perm-table-wrap">
+        <table>
+          <thead><tr>
+            <th>Module</th>
+            <th style="text-align:center">Voir</th>
+            <th style="text-align:center">Créer</th>
+            <th style="text-align:center">Modifier</th>
+            <th style="text-align:center">Supprimer</th>
+            <th style="text-align:center">Imprimer</th>
+          </tr></thead>
+          <tbody id="tbl-permissions"></tbody>
+        </table>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border)">
+      <button class="btn" onclick="closePermissionsModal()">Annuler</button>
+      <button class="btn btn-primary" id="perm-save-btn" onclick="savePermissions()">💾 Enregistrer les droits</button>
     </div>
   </div>
 </div>
@@ -2003,7 +2065,8 @@ const DB = {
   bons_livraison:[], lignes_bon_livraison:[], reglements:[], produits:[],
   bons_reception:[], lignes_bon_reception:[], reglements_fournisseurs:[],
   ordres_production:[], op_matieres:[], op_produits_finis:[],
-  employes_affectations:[], entreprise:[], contrats:[], paies:[]
+  employes_affectations:[], entreprise:[], contrats:[], paies:[],
+  profils:[], permissions:[]
 };
 
 /* ─── LOCAL STORAGE ─── */
@@ -2240,7 +2303,7 @@ function setStatus(ok){
 }
 
 async function loadAll(){
-  const tables=['employes','departements','clients','stocks','fournisseurs','factures','depenses','bons_livraison','lignes_bon_livraison','reglements','produits','bons_reception','lignes_bon_reception','reglements_fournisseurs','ordres_production','op_matieres','op_produits_finis','employes_affectations','entreprise','contrats','paies'];
+  const tables=['employes','departements','clients','stocks','fournisseurs','factures','depenses','bons_livraison','lignes_bon_livraison','reglements','produits','bons_reception','lignes_bon_reception','reglements_fournisseurs','ordres_production','op_matieres','op_produits_finis','employes_affectations','entreprise','contrats','paies','profils','permissions'];
   const errors=[];
   await Promise.all(tables.map(async t=>{
     try{DB[t]=await sbSelect(t);}catch(e){DB[t]=DB[t]||[]; errors.push(t+': '+e.message);}
@@ -2381,11 +2444,12 @@ function refreshAll(){
   renderStk(); renderFour(); renderFact(); renderDep();
   renderReglements(); renderBR(); renderReglementsFour(); renderOP();
   renderCreances(); renderDettes(); renderCaisse();
-  renderContrats(); renderPaie();
+  renderContrats(); renderPaie(); renderUtilisateurs();
   if(document.getElementById('ent-nom')) loadEntrepriseForm();
   if(document.getElementById('hist-client-select')) renderHistorique();
   if(document.getElementById('histf-fournisseur-select')) renderHistoriqueFour();
   renderDashboard(); updateDeptFilter();
+  applyPermissionsToSidebar();
 }
 
 function renderTable(tbodyId,rows,emptyMsg='Aucune donnée'){
@@ -2526,20 +2590,28 @@ async function doSignUp(){
       : 'Compte créé ✓ Vérifiez votre email pour confirmer votre adresse, puis connectez-vous.';
     successEl.style.display='';
     if(data.access_token){
-      // Créer le profil avec droits Super Admin (premier compte)
-      await createProfilForUser(data.user.id, nom, data.access_token, true);
+      // Super Admin uniquement s'il n'existe encore aucun profil dans le système
+      let isFirstUser = true;
+      try{
+        const checkR = await fetch(`${SB_URL}/rest/v1/profils?select=id&limit=1`,{
+          headers:{'apikey':SB_KEY,'Authorization':`Bearer ${data.access_token}`}
+        });
+        const checkData = await checkR.json();
+        isFirstUser = !Array.isArray(checkData) || checkData.length===0;
+      }catch(e){}
+      await createProfilForUser(data.user.id, nom, email, data.access_token, isFirstUser);
       setTimeout(()=>onAuthSuccess(data), 800);
     }
   }catch(e){ showAuthError('auth-signup','Erreur: '+e.message); }
   finally{ btn.textContent='Créer le compte'; btn.disabled=false; }
 }
 
-async function createProfilForUser(userId, nom, accessToken, isSuperAdmin){
+async function createProfilForUser(userId, nom, email, accessToken, isSuperAdmin){
   try{
     await fetch(`${SB_URL}/rest/v1/profils`,{
       method:'POST',
       headers:{'apikey':SB_KEY,'Authorization':`Bearer ${accessToken}`,'Content-Type':'application/json','Prefer':'return=representation'},
-      body: JSON.stringify({ user_id:userId, nom, actif:true, super_admin:isSuperAdmin })
+      body: JSON.stringify({ user_id:userId, nom, email, actif:true, super_admin:isSuperAdmin })
     });
   }catch(e){ console.warn('Erreur création profil:', e.message); }
 }
@@ -2684,6 +2756,185 @@ function checkPasswordRecoveryLink(){
       history.replaceState(null,'',window.location.pathname);
     }
   }
+}
+
+/* ═══════════════════════════════════════════════
+   MODULE PERMISSIONS — Utilisateurs & Droits d'accès
+═══════════════════════════════════════════════ */
+
+// Liste des modules de l'ERP (clé technique -> libellé affiché)
+const PERM_MODULES = [
+  {key:'employes', label:'👥 Employés'},
+  {key:'departements', label:'🏢 Départements'},
+  {key:'contrats', label:'📄 Contrats'},
+  {key:'paie', label:'💵 Paye'},
+  {key:'entreprise', label:'🏛 Entreprise'},
+  {key:'commandes', label:'📋 Bons de Livraison'},
+  {key:'clients', label:'🤝 Clients'},
+  {key:'reception', label:'📥 Bons de Réception'},
+  {key:'reglements-four', label:'💳 Règlements Fournisseurs'},
+  {key:'stocks', label:'📦 Stocks'},
+  {key:'fournisseurs', label:'🚚 Fournisseurs'},
+  {key:'production', label:'🏭 Ordres de Production'},
+  {key:'caisse', label:'🏦 Compte Caisse'},
+  {key:'reglements', label:'💰 Règlements'},
+  {key:'factures', label:'🧾 Factures'},
+  {key:'depenses', label:'💸 Dépenses'},
+  {key:'etat-creances', label:'📊 Créances Clients'},
+  {key:'etat-historique', label:'📜 Historique Client'},
+  {key:'etat-dettes', label:'📊 Dettes Fournisseurs'},
+  {key:'etat-historique-four', label:'📜 Historique Fournisseur'},
+];
+const PERM_ACTIONS = ['voir','creer','modifier','supprimer','imprimer'];
+
+let permEditUserId = null; // user_id (uuid) du profil en cours d'édition
+let permEditData = {}; // {moduleKey: {voir:bool, creer:bool, ...}}
+
+function renderUtilisateurs(){
+  const data = DB.profils || [];
+  const tbody = document.getElementById('tbl-utilisateurs');
+  const empty = document.getElementById('users-empty');
+  if(!tbody) return;
+
+  if(!data.length){
+    tbody.innerHTML=''; if(empty) empty.style.display='';
+    return;
+  }
+  if(empty) empty.style.display='none';
+
+  tbody.innerHTML = data.map(p=>`<tr>
+    <td><strong>${p.nom||'—'}</strong></td>
+    <td style="font-size:.78rem;color:var(--text3)">${p.email||'—'}</td>
+    <td>${statusTag(p.actif ? 'Actif' : 'Vacant')}</td>
+    <td>${p.super_admin ? '<span class="tag tag-amber">⭐ Super Admin</span>' : '<span class="tag tag-gray">Standard</span>'}</td>
+    <td style="text-align:center"><div class="action-btns">
+      <div class="icon-btn" title="Gérer les permissions" onclick="openPermissionsModal('${p.user_id}')">🔐</div>
+      <div class="icon-btn" title="${p.actif?'Désactiver':'Activer'}" onclick="toggleUserActif('${p.user_id}', ${!p.actif})">${p.actif?'⏸':'▶'}</div>
+    </div></td>
+  </tr>`).join('');
+}
+
+async function toggleUserActif(userId, newActif){
+  if(!isSuperAdmin()){ toast("Seul un Super Admin peut modifier l'état des utilisateurs",'error'); return; }
+  try{
+    const profil = (DB.profils||[]).find(p=>p.user_id===userId);
+    if(!profil) return;
+    if(connected){ await sbReq('PATCH','profils',{actif:newActif},profil.id); await loadAll(); }
+    else { profil.actif=newActif; save(); refreshAll(); }
+    toast(newActif ? 'Utilisateur activé ✓' : 'Utilisateur désactivé','success');
+  }catch(e){ toast('Erreur: '+e.message,'error'); }
+}
+
+function isSuperAdmin(){
+  return !!(currentProfil && currentProfil.super_admin);
+}
+
+async function openPermissionsModal(userId){
+  if(!isSuperAdmin()){ toast("Seul un Super Admin peut gérer les permissions",'error'); return; }
+  permEditUserId = userId;
+  const profil = (DB.profils||[]).find(p=>p.user_id===userId);
+  document.getElementById('perm-modal-title').textContent = '🔐 Permissions — '+(profil?profil.nom:'—');
+
+  const superAdminBox = document.getElementById('perm-superadmin-box');
+  const tableWrap = document.getElementById('perm-table-wrap');
+  if(profil && profil.super_admin){
+    superAdminBox.style.display='';
+    tableWrap.style.display='none';
+    document.getElementById('perm-save-btn').style.display='none';
+  } else {
+    superAdminBox.style.display='none';
+    tableWrap.style.display='';
+    document.getElementById('perm-save-btn').style.display='';
+  }
+
+  // Charger les permissions existantes pour cet utilisateur
+  const existing = (DB.permissions||[]).filter(p=>p.user_id===userId);
+  permEditData = {};
+  PERM_MODULES.forEach(m=>{
+    const row = existing.find(e=>e.module===m.key);
+    permEditData[m.key] = row ? {
+      voir: !!row.voir, creer: !!row.creer, modifier: !!row.modifier, supprimer: !!row.supprimer, imprimer: !!row.imprimer
+    } : { voir:false, creer:false, modifier:false, supprimer:false, imprimer:false };
+  });
+
+  renderPermissionsTable();
+  document.getElementById('perm-modal-overlay').style.display='flex';
+}
+
+function closePermissionsModal(e){
+  if(e && e.target!==document.getElementById('perm-modal-overlay')) return;
+  document.getElementById('perm-modal-overlay').style.display='none';
+  permEditUserId=null;
+}
+
+function renderPermissionsTable(){
+  const tbody = document.getElementById('tbl-permissions');
+  tbody.innerHTML = PERM_MODULES.map(m=>{
+    const perm = permEditData[m.key];
+    return `<tr>
+      <td>${m.label}</td>
+      ${PERM_ACTIONS.map(a=>`<td style="text-align:center">
+        <input type="checkbox" ${perm[a]?'checked':''} onchange="updatePermCheckbox('${m.key}','${a}',this.checked)" style="width:18px;height:18px;cursor:pointer">
+      </td>`).join('')}
+    </tr>`;
+  }).join('');
+}
+
+function updatePermCheckbox(moduleKey, action, checked){
+  permEditData[moduleKey][action] = checked;
+  // Cocher "voir" automatiquement si une autre action est cochée
+  if(checked && action!=='voir'){ permEditData[moduleKey].voir = true; }
+}
+
+function togglePermAllActions(value){
+  PERM_MODULES.forEach(m=>{
+    PERM_ACTIONS.forEach(a=>{ permEditData[m.key][a] = value; });
+  });
+  renderPermissionsTable();
+}
+
+async function savePermissions(){
+  if(!permEditUserId) return;
+  const btn = document.getElementById('perm-save-btn');
+  btn.textContent='⏳ …'; btn.disabled=true;
+  try{
+    for(const m of PERM_MODULES){
+      const perm = permEditData[m.key];
+      const existing = (DB.permissions||[]).find(p=>p.user_id===permEditUserId && p.module===m.key);
+      const body = { user_id: permEditUserId, module: m.key, ...perm };
+      if(connected){
+        if(existing){ await sbReq('PATCH','permissions',perm,existing.id); }
+        else{ await sbReq('POST','permissions',body); }
+      } else {
+        if(existing){ Object.assign(existing, perm); }
+        else{ DB.permissions=DB.permissions||[]; DB.permissions.push({id:Date.now()+Math.random(),...body}); }
+      }
+    }
+    if(connected){ await loadAll(); } else { save(); refreshAll(); }
+    toast('Permissions enregistrées ✓','success');
+    document.getElementById('perm-modal-overlay').style.display='none';
+  }catch(e){ toast('Erreur: '+e.message,'error'); }
+  finally{ btn.textContent='💾 Enregistrer les droits'; btn.disabled=false; }
+}
+
+/* ── VÉRIFICATION DES PERMISSIONS (utilisé partout dans l'UI) ── */
+function hasPermission(moduleKey, action){
+  if(isSuperAdmin()) return true;
+  if(!currentUser) return false;
+  const perm = (DB.permissions||[]).find(p=>p.user_id===currentUser.id && p.module===moduleKey);
+  if(!perm) return false;
+  return !!perm[action];
+}
+
+// Applique les restrictions sur la sidebar : cache les items sans accès "voir"
+function applyPermissionsToSidebar(){
+  if(isSuperAdmin() || !currentUser) return; // Super admin voit tout, ou pas encore de profil chargé
+  PERM_MODULES.forEach(m=>{
+    const navItem = document.getElementById('nav-'+m.key);
+    if(navItem){
+      navItem.style.display = hasPermission(m.key,'voir') ? '' : 'none';
+    }
+  });
 }
 
 /* ═══════════════════════════════════════════════
