@@ -250,8 +250,13 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
     <span id="status-label">Non connecté</span>
   </div>
   <div class="topbar-user" id="topbar-user-box" style="display:flex;align-items:center;gap:.6rem;cursor:default">
+    <select id="lang-selector" onchange="setLang(this.value)" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-size:.74rem;padding:.3rem .5rem;border-radius:var(--r8);cursor:pointer">
+      <option value="fr">🇫🇷 Français</option>
+      <option value="ar">🇩🇿 العربية</option>
+      <option value="en">🇬🇧 English</option>
+    </select>
     <span id="topbar-user-name" style="font-size:.78rem;color:var(--text2)">—</span>
-    <button class="btn" onclick="doSignOut()" style="font-size:.72rem;padding:.3rem .7rem">Déconnexion</button>
+    <button class="btn" onclick="doSignOut()" data-i18n="topbar.deconnexion" style="font-size:.72rem;padding:.3rem .7rem">Déconnexion</button>
   </div>
 </div>
 
@@ -259,43 +264,43 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 
 <!-- SIDEBAR -->
 <div class="sidebar">
-  <div class="sidebar-section">Principal</div>
-  <div class="nav-item active" onclick="nav('dashboard')" id="nav-dashboard"><span class="nav-icon">◈</span> Tableau de bord</div>
+  <div class="sidebar-section" data-i18n="section.principal">Principal</div>
+  <div class="nav-item active" onclick="nav('dashboard')" id="nav-dashboard" data-i18n="nav.dashboard"><span class="nav-icon">◈</span> Tableau de bord</div>
 
-  <div class="sidebar-section">RH</div>
-  <div class="nav-item" onclick="nav('employes')" id="nav-employes"><span class="nav-icon">👥</span> Employés</div>
-  <div class="nav-item" onclick="nav('departements')" id="nav-departements"><span class="nav-icon">🏢</span> Départements</div>
-  <div class="nav-item" onclick="nav('contrats')" id="nav-contrats"><span class="nav-icon">📄</span> Contrats</div>
-  <div class="nav-item" onclick="nav('paie')" id="nav-paie"><span class="nav-icon">💵</span> Paye</div>
-  <div class="nav-item" onclick="nav('entreprise')" id="nav-entreprise"><span class="nav-icon">🏛</span> Entreprise</div>
+  <div class="sidebar-section" data-i18n="section.rh">RH</div>
+  <div class="nav-item" onclick="nav('employes')" id="nav-employes" data-i18n="nav.employes"><span class="nav-icon">👥</span> Employés</div>
+  <div class="nav-item" onclick="nav('departements')" id="nav-departements" data-i18n="nav.departements"><span class="nav-icon">🏢</span> Départements</div>
+  <div class="nav-item" onclick="nav('contrats')" id="nav-contrats" data-i18n="nav.contrats"><span class="nav-icon">📄</span> Contrats</div>
+  <div class="nav-item" onclick="nav('paie')" id="nav-paie" data-i18n="nav.paie"><span class="nav-icon">💵</span> Paye</div>
+  <div class="nav-item" onclick="nav('entreprise')" id="nav-entreprise" data-i18n="nav.entreprise"><span class="nav-icon">🏛</span> Entreprise</div>
 
-  <div class="sidebar-section">Commercial</div>
-  <div class="nav-item" onclick="nav('commandes')" id="nav-commandes"><span class="nav-icon">📋</span> Bons de Livraison</div>
-  <div class="nav-item" onclick="nav('clients')" id="nav-clients"><span class="nav-icon">🤝</span> Clients</div>
+  <div class="sidebar-section" data-i18n="section.commercial">Commercial</div>
+  <div class="nav-item" onclick="nav('commandes')" id="nav-commandes" data-i18n="nav.commandes"><span class="nav-icon">📋</span> Bons de Livraison</div>
+  <div class="nav-item" onclick="nav('clients')" id="nav-clients" data-i18n="nav.clients"><span class="nav-icon">🤝</span> Clients</div>
 
-  <div class="sidebar-section">Approvisionnement</div>
-  <div class="nav-item" onclick="nav('reception')" id="nav-reception"><span class="nav-icon">📥</span> Bons de Réception</div>
-  <div class="nav-item" onclick="nav('reglements-four')" id="nav-reglements-four"><span class="nav-icon">💳</span> Règlements Fournisseurs</div>
-  <div class="nav-item" onclick="nav('stocks')" id="nav-stocks"><span class="nav-icon">📦</span> Stocks</div>
-  <div class="nav-item" onclick="nav('fournisseurs')" id="nav-fournisseurs"><span class="nav-icon">🚚</span> Fournisseurs</div>
+  <div class="sidebar-section" data-i18n="section.approvisionnement">Approvisionnement</div>
+  <div class="nav-item" onclick="nav('reception')" id="nav-reception" data-i18n="nav.reception"><span class="nav-icon">📥</span> Bons de Réception</div>
+  <div class="nav-item" onclick="nav('reglements-four')" id="nav-reglements-four" data-i18n="nav.reglements-four"><span class="nav-icon">💳</span> Règlements Fournisseurs</div>
+  <div class="nav-item" onclick="nav('stocks')" id="nav-stocks" data-i18n="nav.stocks"><span class="nav-icon">📦</span> Stocks</div>
+  <div class="nav-item" onclick="nav('fournisseurs')" id="nav-fournisseurs" data-i18n="nav.fournisseurs"><span class="nav-icon">🚚</span> Fournisseurs</div>
 
-  <div class="sidebar-section">Production</div>
-  <div class="nav-item" onclick="nav('production')" id="nav-production"><span class="nav-icon">🏭</span> Ordres de Production</div>
+  <div class="sidebar-section" data-i18n="section.production">Production</div>
+  <div class="nav-item" onclick="nav('production')" id="nav-production" data-i18n="nav.production"><span class="nav-icon">🏭</span> Ordres de Production</div>
 
-  <div class="sidebar-section">Finance</div>
-  <div class="nav-item" onclick="nav('caisse')" id="nav-caisse"><span class="nav-icon">🏦</span> Compte Caisse</div>
-  <div class="nav-item" onclick="nav('reglements')" id="nav-reglements"><span class="nav-icon">💰</span> Règlements</div>
-  <div class="nav-item" onclick="nav('factures')" id="nav-factures"><span class="nav-icon">🧾</span> Factures</div>
-  <div class="nav-item" onclick="nav('depenses')" id="nav-depenses"><span class="nav-icon">💸</span> Dépenses</div>
+  <div class="sidebar-section" data-i18n="section.finance">Finance</div>
+  <div class="nav-item" onclick="nav('caisse')" id="nav-caisse" data-i18n="nav.caisse"><span class="nav-icon">🏦</span> Compte Caisse</div>
+  <div class="nav-item" onclick="nav('reglements')" id="nav-reglements" data-i18n="nav.reglements"><span class="nav-icon">💰</span> Règlements</div>
+  <div class="nav-item" onclick="nav('factures')" id="nav-factures" data-i18n="nav.factures"><span class="nav-icon">🧾</span> Factures</div>
+  <div class="nav-item" onclick="nav('depenses')" id="nav-depenses" data-i18n="nav.depenses"><span class="nav-icon">💸</span> Dépenses</div>
 
-  <div class="sidebar-section">États</div>
-  <div class="nav-item" onclick="nav('etat-creances')" id="nav-etat-creances"><span class="nav-icon">📊</span> Créances Clients</div>
-  <div class="nav-item" onclick="nav('etat-historique')" id="nav-etat-historique"><span class="nav-icon">📜</span> Historique Client</div>
-  <div class="nav-item" onclick="nav('etat-dettes')" id="nav-etat-dettes"><span class="nav-icon">📊</span> Dettes Fournisseurs</div>
-  <div class="nav-item" onclick="nav('etat-historique-four')" id="nav-etat-historique-four"><span class="nav-icon">📜</span> Historique Fournisseur</div>
+  <div class="sidebar-section" data-i18n="section.etats">États</div>
+  <div class="nav-item" onclick="nav('etat-creances')" id="nav-etat-creances" data-i18n="nav.etat-creances"><span class="nav-icon">📊</span> Créances Clients</div>
+  <div class="nav-item" onclick="nav('etat-historique')" id="nav-etat-historique" data-i18n="nav.etat-historique"><span class="nav-icon">📜</span> Historique Client</div>
+  <div class="nav-item" onclick="nav('etat-dettes')" id="nav-etat-dettes" data-i18n="nav.etat-dettes"><span class="nav-icon">📊</span> Dettes Fournisseurs</div>
+  <div class="nav-item" onclick="nav('etat-historique-four')" id="nav-etat-historique-four" data-i18n="nav.etat-historique-four"><span class="nav-icon">📜</span> Historique Fournisseur</div>
 
-  <div class="sidebar-section">Administration</div>
-  <div class="nav-item" onclick="nav('utilisateurs')" id="nav-utilisateurs"><span class="nav-icon">🔐</span> Utilisateurs & Droits</div>
+  <div class="sidebar-section" data-i18n="section.administration">Administration</div>
+  <div class="nav-item" onclick="nav('utilisateurs')" id="nav-utilisateurs" data-i18n="nav.utilisateurs"><span class="nav-icon">🔐</span> Utilisateurs & Droits</div>
 
   <div class="sidebar-footer">
     <button class="db-config-btn" onclick="nav('settings')">⚙ Configuration base de données</button>
@@ -2497,6 +2502,7 @@ function refreshAll(){
   renderDashboard(); updateDeptFilter();
   applyPermissionsToSidebar();
   applyActionPermissions();
+  applyTranslations();
 }
 
 function renderTable(tbodyId,rows,emptyMsg='Aucune donnée'){
@@ -3101,6 +3107,110 @@ function applyPermissionsToSidebar(){
     if(navItem){
       navItem.style.display = hasPermission(m.key,'voir') ? '' : 'none';
     }
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   MODULE I18N — Multi-langue FR / AR / EN (interface uniquement)
+═══════════════════════════════════════════════ */
+
+let currentLang = localStorage.getItem('perla_lang') || 'fr';
+
+const I18N = {
+  fr: {
+    // Sidebar — sections
+    'section.principal':'Principal', 'section.rh':'RH', 'section.commercial':'Commercial',
+    'section.approvisionnement':'Approvisionnement', 'section.production':'Production',
+    'section.finance':'Finance', 'section.etats':'États', 'section.administration':'Administration',
+    // Sidebar — items
+    'nav.dashboard':'Tableau de bord', 'nav.employes':'Employés', 'nav.departements':'Départements',
+    'nav.contrats':'Contrats', 'nav.paie':'Paye', 'nav.entreprise':'Entreprise',
+    'nav.commandes':'Bons de Livraison', 'nav.clients':'Clients',
+    'nav.reception':'Bons de Réception', 'nav.reglements-four':'Règlements Fournisseurs',
+    'nav.stocks':'Stocks', 'nav.fournisseurs':'Fournisseurs',
+    'nav.production':'Ordres de Production',
+    'nav.caisse':'Compte Caisse', 'nav.reglements':'Règlements', 'nav.factures':'Factures', 'nav.depenses':'Dépenses',
+    'nav.etat-creances':'Créances Clients', 'nav.etat-historique':'Historique Client',
+    'nav.etat-dettes':'Dettes Fournisseurs', 'nav.etat-historique-four':'Historique Fournisseur',
+    'nav.utilisateurs':'Utilisateurs & Droits',
+    // Topbar
+    'topbar.deconnexion':'Déconnexion', 'topbar.connecte':'Connecté', 'topbar.non_connecte':'Non connecté',
+    // Dashboard
+    'dash.titre':'Tableau de bord', 'dash.sous_titre':"Vue d'ensemble PERLA",
+    // Boutons génériques
+    'btn.annuler':'Annuler', 'btn.fermer':'Fermer', 'btn.enregistrer':'Enregistrer',
+    'btn.modifier':'Modifier', 'btn.supprimer':'Supprimer', 'btn.imprimer':'Imprimer',
+    'btn.exporter_csv':'Exporter CSV', 'btn.rechercher':'Rechercher…',
+  },
+  ar: {
+    'section.principal':'الرئيسية', 'section.rh':'الموارد البشرية', 'section.commercial':'تجاري',
+    'section.approvisionnement':'التزويد', 'section.production':'الإنتاج',
+    'section.finance':'المالية', 'section.etats':'التقارير', 'section.administration':'الإدارة',
+    'nav.dashboard':'لوحة التحكم', 'nav.employes':'الموظفون', 'nav.departements':'الأقسام',
+    'nav.contrats':'العقود', 'nav.paie':'الرواتب', 'nav.entreprise':'الشركة',
+    'nav.commandes':'سندات التسليم', 'nav.clients':'العملاء',
+    'nav.reception':'سندات الاستلام', 'nav.reglements-four':'دفعات الموردين',
+    'nav.stocks':'المخزون', 'nav.fournisseurs':'الموردون',
+    'nav.production':'أوامر الإنتاج',
+    'nav.caisse':'حساب الصندوق', 'nav.reglements':'الدفعات', 'nav.factures':'الفواتير', 'nav.depenses':'المصاريف',
+    'nav.etat-creances':'ديون العملاء', 'nav.etat-historique':'سجل العميل',
+    'nav.etat-dettes':'ديون الموردين', 'nav.etat-historique-four':'سجل المورد',
+    'nav.utilisateurs':'المستخدمون والصلاحيات',
+    'topbar.deconnexion':'تسجيل الخروج', 'topbar.connecte':'متصل', 'topbar.non_connecte':'غير متصل',
+    'dash.titre':'لوحة التحكم', 'dash.sous_titre':'نظرة عامة على بيرلا',
+    'btn.annuler':'إلغاء', 'btn.fermer':'إغلاق', 'btn.enregistrer':'حفظ',
+    'btn.modifier':'تعديل', 'btn.supprimer':'حذف', 'btn.imprimer':'طباعة',
+    'btn.exporter_csv':'تصدير CSV', 'btn.rechercher':'بحث…',
+  },
+  en: {
+    'section.principal':'Main', 'section.rh':'HR', 'section.commercial':'Sales',
+    'section.approvisionnement':'Procurement', 'section.production':'Production',
+    'section.finance':'Finance', 'section.etats':'Reports', 'section.administration':'Administration',
+    'nav.dashboard':'Dashboard', 'nav.employes':'Employees', 'nav.departements':'Departments',
+    'nav.contrats':'Contracts', 'nav.paie':'Payroll', 'nav.entreprise':'Company',
+    'nav.commandes':'Delivery Notes', 'nav.clients':'Customers',
+    'nav.reception':'Receiving Notes', 'nav.reglements-four':'Supplier Payments',
+    'nav.stocks':'Inventory', 'nav.fournisseurs':'Suppliers',
+    'nav.production':'Production Orders',
+    'nav.caisse':'Cash Account', 'nav.reglements':'Payments', 'nav.factures':'Invoices', 'nav.depenses':'Expenses',
+    'nav.etat-creances':'Customer Receivables', 'nav.etat-historique':'Customer History',
+    'nav.etat-dettes':'Supplier Payables', 'nav.etat-historique-four':'Supplier History',
+    'nav.utilisateurs':'Users & Permissions',
+    'topbar.deconnexion':'Log out', 'topbar.connecte':'Connected', 'topbar.non_connecte':'Not connected',
+    'dash.titre':'Dashboard', 'dash.sous_titre':'PERLA Overview',
+    'btn.annuler':'Cancel', 'btn.fermer':'Close', 'btn.enregistrer':'Save',
+    'btn.modifier':'Edit', 'btn.supprimer':'Delete', 'btn.imprimer':'Print',
+    'btn.exporter_csv':'Export CSV', 'btn.rechercher':'Search…',
+  }
+};
+
+function t(key){
+  return (I18N[currentLang] && I18N[currentLang][key]) || (I18N.fr[key]) || key;
+}
+
+function setLang(lang){
+  currentLang = lang;
+  localStorage.setItem('perla_lang', lang);
+  applyTranslations();
+  const sel = document.getElementById('lang-selector');
+  if(sel) sel.value = lang;
+}
+
+// Applique les traductions à tout élément portant data-i18n="cle"
+function applyTranslations(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    const translated = t(key);
+    // Pour les éléments avec une icône <span> à l'intérieur (nav-item), ne traduire que le texte après le span
+    const iconSpan = el.querySelector('.nav-icon');
+    if(iconSpan){
+      el.innerHTML = iconSpan.outerHTML + ' ' + translated;
+    } else {
+      el.textContent = translated;
+    }
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
+    el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
   });
 }
 
@@ -7464,6 +7574,8 @@ function toast(msg,type=''){
 /* ─── INIT ─── */
 load();
 refreshAll();
+document.getElementById('lang-selector').value = currentLang;
+applyTranslations();
 
 // Keyboard: Enter pour sauvegarder le modal client
 document.addEventListener('keydown', function(e) {
