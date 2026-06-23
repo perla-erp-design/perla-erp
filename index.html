@@ -2735,7 +2735,7 @@ async function onAuthSuccess(authData){
   currentUser = { id: authData.user.id, email: authData.user.email, access_token: authData.access_token, refresh_token: authData.refresh_token };
   localStorage.setItem('perla_auth_session', JSON.stringify(currentUser));
   await loadCurrentProfil();
-  document.getElementById('auth-overlay').style.display='none';
+  document.getElementById('auth-overlay').remove();
   document.getElementById('topbar-user-name').textContent = currentProfil ? currentProfil.nom : currentUser.email;
   applyPermissionsToSidebar();
   if(connected) await loadAll(); else refreshAll();
@@ -2780,13 +2780,8 @@ async function doSignOut(){
       });
     }
   }catch(e){}
-  currentUser = null;
-  currentProfil = null;
   localStorage.removeItem('perla_auth_session');
-  document.getElementById('auth-overlay').style.display='flex';
-  showAuthView('login');
-  document.getElementById('auth-email').value='';
-  document.getElementById('auth-password').value='';
+  window.location.reload();
 }
 
 // Vérifie s'il y a une session active au chargement de la page
@@ -2809,7 +2804,7 @@ async function checkExistingSession(){
       }
     }
     await loadCurrentProfil();
-    document.getElementById('auth-overlay').style.display='none';
+    document.getElementById('auth-overlay').remove();
     document.getElementById('topbar-user-name').textContent = currentProfil ? currentProfil.nom : currentUser.email;
     applyPermissionsToSidebar();
     refreshAll();
