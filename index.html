@@ -2458,6 +2458,14 @@ CREATE TABLE IF NOT EXISTS depenses (
 
 /* ─── NAVIGATION ─── */
 function nav(page){
+  if(page==='utilisateurs' && currentUser && !isSuperAdmin()){
+    toast('Accès réservé au Super Admin','error');
+    return;
+  }
+  if(currentUser && !isSuperAdmin() && PERM_MODULES.some(m=>m.key===page) && !hasPermission(page,'voir')){
+    toast("Vous n'avez pas accès à ce module",'error');
+    return;
+  }
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
@@ -3083,7 +3091,10 @@ function hasPermission(moduleKey, action){
 
 // Applique les restrictions sur la sidebar : cache les items sans accès "voir"
 function applyPermissionsToSidebar(){
-  if(isSuperAdmin() || !currentUser) return; // Super admin voit tout, ou pas encore de profil chargé
+  if(!currentUser) return;
+  const utilisateursNav = document.getElementById('nav-utilisateurs');
+  if(utilisateursNav) utilisateursNav.style.display = isSuperAdmin() ? '' : 'none';
+  if(isSuperAdmin()) return; // Super admin voit tout le reste sans restriction
   PERM_MODULES.forEach(m=>{
     const navItem = document.getElementById('nav-'+m.key);
     if(navItem){
