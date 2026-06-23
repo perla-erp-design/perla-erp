@@ -2657,12 +2657,13 @@ async function doSignUp(){
       await createProfilForUser(data.user.id, nom, email, data.access_token, isFirstUser);
       if(invitation){
         try{
-          await fetch(`${SB_URL}/rest/v1/invitations?id=eq.${invitation.id}`,{
+          const invR = await fetch(`${SB_URL}/rest/v1/invitations?id=eq.${invitation.id}`,{
             method:'PATCH',
-            headers:{'apikey':SB_KEY,'Authorization':`Bearer ${data.access_token}`,'Content-Type':'application/json'},
+            headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json'},
             body: JSON.stringify({utilisee:true})
           });
-        }catch(e){}
+          if(!invR.ok){ console.warn('Erreur marquage invitation:', await invR.text()); }
+        }catch(e){ console.warn('Erreur marquage invitation:', e.message); }
       }
       setTimeout(()=>onAuthSuccess(data), 800);
     }
@@ -2911,9 +2912,20 @@ function renderInvitationsBox(){
     <div style="font-size:.78rem;font-weight:600;color:var(--gold-l);margin-bottom:.6rem;text-transform:uppercase;letter-spacing:.06em">📨 Invitations en attente</div>
     ${pending.map(i=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border)">
       <span style="font-size:.82rem"><strong>${i.nom||i.email}</strong> — ${i.email}</span>
-      <div class="icon-btn del" onclick="deleteInvitation(${i.id})">✕</div>
+      <div style="display:flex;gap:.4rem">
+        <div class="icon-btn" title="Marquer comme utilisée" onclick="markInvitationUsed(${i.id})">✓</div>
+        <div class="icon-btn del" title="Supprimer" onclick="deleteInvitation(${i.id})">✕</div>
+      </div>
     </div>`).join('')}
   </div>`;
+}
+
+async function markInvitationUsed(id){
+  try{
+    if(connected){ await sbReq('PATCH','invitations',{utilisee:true},id); await loadAll(); }
+    else{ const inv=DB.invitations.find(i=>i.id===id); if(inv) inv.utilisee=true; save(); refreshAll(); }
+    toast('Invitation marquée comme utilisée','success');
+  }catch(e){ toast('Erreur: '+e.message,'error'); }
 }
 
 function openInviteModal(){
