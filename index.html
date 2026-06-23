@@ -759,8 +759,8 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
   <div class="page-header">
     <div><div class="page-title">📋 Bons de Livraison</div><div class="page-sub">Gestion des bons de livraison clients</div></div>
     <div class="page-actions">
-      <button class="btn" onclick="exportBL()">⬇ Exporter CSV</button>
-      <button class="btn btn-primary" onclick="openBLModal()">+ Nouveau BL</button>
+      <button class="btn" data-perm-module="commandes" data-perm-action="imprimer" onclick="exportBL()">⬇ Exporter CSV</button>
+      <button class="btn btn-primary" data-perm-module="commandes" data-perm-action="creer" onclick="openBLModal()">+ Nouveau BL</button>
     </div>
   </div>
   <div class="page-body">
@@ -902,7 +902,7 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
             <input class="form-inp" id="ligne-montant" type="number" step="0.01" min="0" placeholder="0.00" readonly style="background:var(--bg4);color:var(--gold)">
           </div>
           <div>
-            <button class="btn btn-primary" onclick="addLigneBL()" style="white-space:nowrap">+ Ajouter</button>
+            <button class="btn btn-primary" data-perm-module="commandes" data-perm-action="creer" onclick="addLigneBL()" style="white-space:nowrap">+ Ajouter</button>
           </div>
         </div>
       </div>
@@ -935,7 +935,7 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
     </div>
     <div style="display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border)">
       <button class="btn" onclick="closeBLLignesModal()">Fermer</button>
-      <button class="btn btn-primary" id="bl-lignes-save-btn" onclick="saveLignesBL()">💾 Enregistrer les lignes</button>
+      <button class="btn btn-primary" id="bl-lignes-save-btn" data-perm-module="commandes" data-perm-action="creer" onclick="saveLignesBL()">💾 Enregistrer les lignes</button>
     </div>
   </div>
 </div>
@@ -2496,6 +2496,7 @@ function refreshAll(){
   if(document.getElementById('histf-fournisseur-select')) renderHistoriqueFour();
   renderDashboard(); updateDeptFilter();
   applyPermissionsToSidebar();
+  applyActionPermissions();
 }
 
 function renderTable(tbodyId,rows,emptyMsg='Aucune donnée'){
@@ -3099,6 +3100,24 @@ function applyPermissionsToSidebar(){
     const navItem = document.getElementById('nav-'+m.key);
     if(navItem){
       navItem.style.display = hasPermission(m.key,'voir') ? '' : 'none';
+    }
+  });
+}
+
+// Cache/désactive tous les boutons d'action sensibles selon les permissions réelles de l'utilisateur.
+// S'applique à tout élément portant data-perm-module + data-perm-action, où qu'il soit dans le DOM
+// (boutons d'en-tête, icônes de tableau, boutons de modal — y compris ceux générés dynamiquement).
+function applyActionPermissions(){
+  if(!currentUser) return;
+  if(isSuperAdmin()) return; // Super admin n'est jamais restreint
+  document.querySelectorAll('[data-perm-module]').forEach(el=>{
+    const moduleKey = el.getAttribute('data-perm-module');
+    const action = el.getAttribute('data-perm-action');
+    const allowed = hasPermission(moduleKey, action);
+    if(!allowed){
+      el.style.display = 'none';
+    } else {
+      el.style.display = '';
     }
   });
 }
@@ -5984,6 +6003,7 @@ function renderBL(q='') {
     tbody.innerHTML='';
     if(empty) empty.style.display='';
     updateBLKPI();
+    applyActionPermissions();
     return;
   }
   if(empty) empty.style.display='none';
@@ -6007,16 +6027,17 @@ function renderBL(q='') {
       <td style="text-align:center"><span class="tag tag-blue">${nbLignes} ligne${nbLignes!==1?'s':''}</span></td>
       <td>
         <div class="action-btns">
-          <div class="icon-btn" title="Détail lignes" onclick="openBLLignesModal(${b.id})">📄</div>
-          <div class="icon-btn" title="Imprimer" onclick="printBL(${b.id})">🖨</div>
-          <div class="icon-btn" title="Bon de Route" onclick="printBonRoute(${b.id})">🚚</div>
-          <div class="icon-btn" title="Modifier" onclick="editBL(${b.id})">✎</div>
-          <div class="icon-btn del" title="Supprimer" onclick="deleteBL(${b.id})">✕</div>
+          <div class="icon-btn" data-perm-module="commandes" data-perm-action="modifier" title="Détail lignes" onclick="openBLLignesModal(${b.id})">📄</div>
+          <div class="icon-btn" data-perm-module="commandes" data-perm-action="imprimer" title="Imprimer" onclick="printBL(${b.id})">🖨</div>
+          <div class="icon-btn" data-perm-module="commandes" data-perm-action="imprimer" title="Bon de Route" onclick="printBonRoute(${b.id})">🚚</div>
+          <div class="icon-btn" data-perm-module="commandes" data-perm-action="modifier" title="Modifier" onclick="editBL(${b.id})">✎</div>
+          <div class="icon-btn del" data-perm-module="commandes" data-perm-action="supprimer" title="Supprimer" onclick="deleteBL(${b.id})">✕</div>
         </div>
       </td>
     </tr>`;
   }).join('');
   updateBLKPI();
+  applyActionPermissions();
 }
 
 function clientNomById(id){
@@ -6355,6 +6376,7 @@ function renderLignesBL(locked=false){
     tbody.innerHTML='<tr class="empty-row"><td colspan="9">Aucune ligne — ajoutez des produits ci-dessus</td></tr>';
     document.getElementById('lignes-subtotal').textContent='0 DZD';
     document.getElementById('lignes-total').textContent='0 DZD';
+    applyActionPermissions();
     return;
   }
   const total=lignes.reduce((a,l)=>a+((l.long||0)*(l.larg||0)*(l.quantite||0)*(l.pu||0)),0);
@@ -6371,9 +6393,10 @@ function renderLignesBL(locked=false){
     <td style="font-weight:600">${l.quantite||0}</td>
     <td style="text-align:right">${fmtNum(l.pu)}</td>
     <td style="text-align:right;font-weight:700;color:var(--gold)">${fmtDZD(montant)}</td>
-    <td>${locked?'':`<div class="icon-btn del" onclick="deleteLigne(${l.num_bon},${l.produit},${l.long},${l.larg},${l.ep})">✕</div>`}</td>
+    <td>${locked?'':`<div class="icon-btn del" data-perm-module="commandes" data-perm-action="supprimer" onclick="deleteLigne(${l.num_bon},${l.produit},${l.long},${l.larg},${l.ep})">✕</div>`}</td>
   </tr>`;
   }).join('');
+  applyActionPermissions();
 }
 
 function updateBLSaveBtn(blId){
