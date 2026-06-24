@@ -344,20 +344,20 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 <!-- EMPLOYÉS -->
 <div class="page" id="page-employes">
   <div class="page-header">
-    <div><div class="page-title">👥 Employés</div><div class="page-sub">Gestion des ressources humaines</div></div>
+    <div><div class="page-title">👥 <span data-i18n="emp.titre">Employés</span></div><div class="page-sub" data-i18n="emp.sous_titre">Gestion des ressources humaines</div></div>
     <div class="page-actions">
-      <button class="btn btn-primary" onclick="openModal('emp')">+ Ajouter</button>
+      <button class="btn btn-primary" onclick="openModal('emp')" data-i18n="btn.ajouter">+ Ajouter</button>
     </div>
   </div>
   <div class="page-body">
     <div class="table-wrap">
       <div class="table-toolbar">
-        <input class="search-inp" placeholder="Rechercher…" oninput="filterTable('emp',this.value)">
+        <input class="search-inp" data-i18n-placeholder="btn.rechercher" placeholder="Rechercher…" oninput="filterTable('emp',this.value)">
         <select class="filter-sel" onchange="filterTable('emp','',this.value)" id="filter-emp-dept">
-          <option value="">Tous départements</option>
+          <option value="" data-i18n="emp.tous_departements">Tous départements</option>
         </select>
       </div>
-      <table><thead><tr><th>Nom</th><th>Poste</th><th>Département</th><th>Sous-dép.</th><th>Tâche</th><th>Statut</th><th>Actions</th></tr></thead>
+      <table><thead><tr><th data-i18n="th.nom">Nom</th><th data-i18n="th.poste">Poste</th><th data-i18n="th.departement">Département</th><th data-i18n="th.sous_dept">Sous-dép.</th><th data-i18n="th.tache">Tâche</th><th data-i18n="th.statut">Statut</th><th data-i18n="th.actions">Actions</th></tr></thead>
       <tbody id="tbl-emp"></tbody></table>
     </div>
   </div>
@@ -366,12 +366,12 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 <!-- DÉPARTEMENTS -->
 <div class="page" id="page-departements">
   <div class="page-header">
-    <div><div class="page-title">🏢 Départements</div><div class="page-sub">Structure organisationnelle</div></div>
-    <div class="page-actions"><button class="btn btn-primary" onclick="openModal('dept')">+ Ajouter</button></div>
+    <div><div class="page-title">🏢 <span data-i18n="dept.titre">Départements</span></div><div class="page-sub" data-i18n="dept.sous_titre">Structure organisationnelle</div></div>
+    <div class="page-actions"><button class="btn btn-primary" onclick="openModal('dept')" data-i18n="btn.ajouter">+ Ajouter</button></div>
   </div>
   <div class="page-body">
     <div class="table-wrap">
-      <table><thead><tr><th>Département</th><th>Sous-département</th><th>Effectifs</th><th>Actions</th></tr></thead>
+      <table><thead><tr><th data-i18n="th.departement">Département</th><th data-i18n="th.sous_departement">Sous-département</th><th data-i18n="th.effectifs">Effectifs</th><th data-i18n="th.actions">Actions</th></tr></thead>
       <tbody id="tbl-dept"></tbody></table>
     </div>
   </div>
@@ -3145,6 +3145,16 @@ const I18N = {
     'dash.chart.statut_commandes':'Statut des commandes',
     'dash.dernieres_commandes':'Dernières commandes',
     'th.ref':'Réf.', 'th.client':'Client', 'th.date':'Date', 'th.montant':'Montant', 'th.statut':'Statut',
+    // Employés
+    'emp.titre':'Employés', 'emp.sous_titre':'Gestion des ressources humaines',
+    'emp.tous_departements':'Tous départements',
+    'th.nom':'Nom', 'th.poste':'Poste', 'th.departement':'Département', 'th.sous_dept':'Sous-dép.',
+    'th.tache':'Tâche', 'th.actions':'Actions',
+    // Départements
+    'dept.titre':'Départements', 'dept.sous_titre':'Structure organisationnelle',
+    'th.sous_departement':'Sous-département', 'th.effectifs':'Effectifs',
+    // Boutons génériques additionnels
+    'btn.ajouter':'+ Ajouter',
     // Boutons génériques
     'btn.annuler':'Annuler', 'btn.fermer':'Fermer', 'btn.enregistrer':'Enregistrer',
     'btn.modifier':'Modifier', 'btn.supprimer':'Supprimer', 'btn.imprimer':'Imprimer',
@@ -3174,6 +3184,15 @@ const I18N = {
     'dash.chart.statut_commandes':'حالة الطلبات',
     'dash.dernieres_commandes':'آخر الطلبات',
     'th.ref':'المرجع', 'th.client':'العميل', 'th.date':'التاريخ', 'th.montant':'المبلغ', 'th.statut':'الحالة',
+    // الموظفون
+    'emp.titre':'الموظفون', 'emp.sous_titre':'إدارة الموارد البشرية',
+    'emp.tous_departements':'جميع الأقسام',
+    'th.nom':'الاسم', 'th.poste':'الوظيفة', 'th.departement':'القسم', 'th.sous_dept':'الفرع',
+    'th.tache':'المهمة', 'th.actions':'الإجراءات',
+    // الأقسام
+    'dept.titre':'الأقسام', 'dept.sous_titre':'الهيكل التنظيمي',
+    'th.sous_departement':'القسم الفرعي', 'th.effectifs':'عدد الموظفين',
+    'btn.ajouter':'+ إضافة',
     'btn.annuler':'إلغاء', 'btn.fermer':'إغلاق', 'btn.enregistrer':'حفظ',
     'btn.modifier':'تعديل', 'btn.supprimer':'حذف', 'btn.imprimer':'طباعة',
     'btn.exporter_csv':'تصدير CSV', 'btn.rechercher':'بحث…',
@@ -3202,6 +3221,15 @@ const I18N = {
     'dash.chart.statut_commandes':'Order status',
     'dash.dernieres_commandes':'Recent orders',
     'th.ref':'Ref.', 'th.client':'Customer', 'th.date':'Date', 'th.montant':'Amount', 'th.statut':'Status',
+    // Employees
+    'emp.titre':'Employees', 'emp.sous_titre':'Human resources management',
+    'emp.tous_departements':'All departments',
+    'th.nom':'Name', 'th.poste':'Position', 'th.departement':'Department', 'th.sous_dept':'Sub-dept.',
+    'th.tache':'Task', 'th.actions':'Actions',
+    // Departments
+    'dept.titre':'Departments', 'dept.sous_titre':'Organizational structure',
+    'th.sous_departement':'Sub-department', 'th.effectifs':'Staff count',
+    'btn.ajouter':'+ Add',
     'btn.annuler':'Cancel', 'btn.fermer':'Close', 'btn.enregistrer':'Save',
     'btn.modifier':'Edit', 'btn.supprimer':'Delete', 'btn.imprimer':'Print',
     'btn.exporter_csv':'Export CSV', 'btn.rechercher':'Search…',
@@ -7414,7 +7442,7 @@ function updateDeptFilter(){
   const sel=document.getElementById('filter-emp-dept');
   if(!sel) return;
   const depts=[...new Set(DB.employes.map(e=>e.departement).filter(Boolean))];
-  sel.innerHTML='<option value="">Tous départements</option>'+depts.map(d=>`<option>${d}</option>`).join('');
+  sel.innerHTML=`<option value="" data-i18n="emp.tous_departements">${t('emp.tous_departements')}</option>`+depts.map(d=>`<option>${d}</option>`).join('');
 }
 
 function renderDashboard(){
