@@ -313,29 +313,29 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 <!-- DASHBOARD -->
 <div class="page active" id="page-dashboard">
   <div class="page-header">
-    <div><div class="page-title">◈ Tableau de bord</div><div class="page-sub">Vue d'ensemble PERLA</div></div>
+    <div><div class="page-title">◈ <span data-i18n="dash.titre">Tableau de bord</span></div><div class="page-sub" data-i18n="dash.sous_titre">Vue d'ensemble PERLA</div></div>
   </div>
   <div class="page-body">
     <div class="kpi-grid" id="kpi-grid">
-      <div class="kpi"><div class="kpi-label">Employés</div><div class="kpi-val" id="kpi-emp">—</div><div class="kpi-sub">effectifs actifs</div></div>
-      <div class="kpi"><div class="kpi-label">Commandes</div><div class="kpi-val" id="kpi-cmd">—</div><div class="kpi-sub">ce mois</div></div>
-      <div class="kpi"><div class="kpi-label">Stocks</div><div class="kpi-val" id="kpi-stk">—</div><div class="kpi-sub">références</div></div>
-      <div class="kpi"><div class="kpi-label">Chiffre d'affaires</div><div class="kpi-val" id="kpi-ca">—</div><div class="kpi-sub">DZD total facturé</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="dash.kpi.employes">Employés</div><div class="kpi-val" id="kpi-emp">—</div><div class="kpi-sub" data-i18n="dash.kpi.effectifs_actifs">effectifs actifs</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="dash.kpi.commandes">Commandes</div><div class="kpi-val" id="kpi-cmd">—</div><div class="kpi-sub" data-i18n="dash.kpi.ce_mois">ce mois</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="dash.kpi.stocks">Stocks</div><div class="kpi-val" id="kpi-stk">—</div><div class="kpi-sub" data-i18n="dash.kpi.references">références</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="dash.kpi.ca">Chiffre d'affaires</div><div class="kpi-val" id="kpi-ca">—</div><div class="kpi-sub" data-i18n="dash.kpi.ca_total">DZD total facturé</div></div>
     </div>
     <div class="chart-row">
       <div class="chart-box">
-        <div class="chart-title">Effectifs par département</div>
+        <div class="chart-title" data-i18n="dash.chart.effectifs_dept">Effectifs par département</div>
         <div class="bar-chart" id="chart-dept"></div>
       </div>
       <div class="chart-box">
-        <div class="chart-title">Statut des commandes</div>
+        <div class="chart-title" data-i18n="dash.chart.statut_commandes">Statut des commandes</div>
         <canvas id="chart-commandes" width="200" height="200" style="display:block;margin:0 auto"></canvas>
         <div class="pie-legend" id="pie-legend"></div>
       </div>
     </div>
     <div class="table-wrap">
-      <div class="table-toolbar"><span style="font-size:.8rem;color:var(--text2);font-weight:500">Dernières commandes</span></div>
-      <table><thead><tr><th>Réf.</th><th>Client</th><th>Date</th><th>Montant</th><th>Statut</th></tr></thead>
+      <div class="table-toolbar"><span style="font-size:.8rem;color:var(--text2);font-weight:500" data-i18n="dash.dernieres_commandes">Dernières commandes</span></div>
+      <table><thead><tr><th data-i18n="th.ref">Réf.</th><th data-i18n="th.client">Client</th><th data-i18n="th.date">Date</th><th data-i18n="th.montant">Montant</th><th data-i18n="th.statut">Statut</th></tr></thead>
       <tbody id="dash-recent"></tbody></table>
     </div>
   </div>
@@ -3137,6 +3137,14 @@ const I18N = {
     'topbar.deconnexion':'Déconnexion', 'topbar.connecte':'Connecté', 'topbar.non_connecte':'Non connecté',
     // Dashboard
     'dash.titre':'Tableau de bord', 'dash.sous_titre':"Vue d'ensemble PERLA",
+    'dash.kpi.employes':'Employés', 'dash.kpi.effectifs_actifs':'effectifs actifs',
+    'dash.kpi.commandes':'Commandes', 'dash.kpi.ce_mois':'ce mois',
+    'dash.kpi.stocks':'Stocks', 'dash.kpi.references':'références',
+    'dash.kpi.ca':"Chiffre d'affaires", 'dash.kpi.ca_total':'DZD total facturé',
+    'dash.chart.effectifs_dept':'Effectifs par département',
+    'dash.chart.statut_commandes':'Statut des commandes',
+    'dash.dernieres_commandes':'Dernières commandes',
+    'th.ref':'Réf.', 'th.client':'Client', 'th.date':'Date', 'th.montant':'Montant', 'th.statut':'Statut',
     // Boutons génériques
     'btn.annuler':'Annuler', 'btn.fermer':'Fermer', 'btn.enregistrer':'Enregistrer',
     'btn.modifier':'Modifier', 'btn.supprimer':'Supprimer', 'btn.imprimer':'Imprimer',
@@ -3158,6 +3166,14 @@ const I18N = {
     'nav.utilisateurs':'المستخدمون والصلاحيات',
     'topbar.deconnexion':'تسجيل الخروج', 'topbar.connecte':'متصل', 'topbar.non_connecte':'غير متصل',
     'dash.titre':'لوحة التحكم', 'dash.sous_titre':'نظرة عامة على بيرلا',
+    'dash.kpi.employes':'الموظفون', 'dash.kpi.effectifs_actifs':'الموظفون النشطون',
+    'dash.kpi.commandes':'الطلبات', 'dash.kpi.ce_mois':'هذا الشهر',
+    'dash.kpi.stocks':'المخزون', 'dash.kpi.references':'مرجع',
+    'dash.kpi.ca':'رقم الأعمال', 'dash.kpi.ca_total':'إجمالي الفواتير (دج)',
+    'dash.chart.effectifs_dept':'الموظفون حسب القسم',
+    'dash.chart.statut_commandes':'حالة الطلبات',
+    'dash.dernieres_commandes':'آخر الطلبات',
+    'th.ref':'المرجع', 'th.client':'العميل', 'th.date':'التاريخ', 'th.montant':'المبلغ', 'th.statut':'الحالة',
     'btn.annuler':'إلغاء', 'btn.fermer':'إغلاق', 'btn.enregistrer':'حفظ',
     'btn.modifier':'تعديل', 'btn.supprimer':'حذف', 'btn.imprimer':'طباعة',
     'btn.exporter_csv':'تصدير CSV', 'btn.rechercher':'بحث…',
@@ -3178,6 +3194,14 @@ const I18N = {
     'nav.utilisateurs':'Users & Permissions',
     'topbar.deconnexion':'Log out', 'topbar.connecte':'Connected', 'topbar.non_connecte':'Not connected',
     'dash.titre':'Dashboard', 'dash.sous_titre':'PERLA Overview',
+    'dash.kpi.employes':'Employees', 'dash.kpi.effectifs_actifs':'active staff',
+    'dash.kpi.commandes':'Orders', 'dash.kpi.ce_mois':'this month',
+    'dash.kpi.stocks':'Inventory', 'dash.kpi.references':'references',
+    'dash.kpi.ca':'Revenue', 'dash.kpi.ca_total':'DZD total invoiced',
+    'dash.chart.effectifs_dept':'Staff by department',
+    'dash.chart.statut_commandes':'Order status',
+    'dash.dernieres_commandes':'Recent orders',
+    'th.ref':'Ref.', 'th.client':'Customer', 'th.date':'Date', 'th.montant':'Amount', 'th.statut':'Status',
     'btn.annuler':'Cancel', 'btn.fermer':'Close', 'btn.enregistrer':'Save',
     'btn.modifier':'Edit', 'btn.supprimer':'Delete', 'btn.imprimer':'Print',
     'btn.exporter_csv':'Export CSV', 'btn.rechercher':'Search…',
