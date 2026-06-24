@@ -516,43 +516,43 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 <!-- ENTREPRISE — PARAMÈTRES FIXES -->
 <div class="page" id="page-entreprise">
   <div class="page-header">
-    <div><div class="page-title">🏛 Paramètres Entreprise</div><div class="page-sub">Informations utilisées pour générer les contrats</div></div>
+    <div><div class="page-title">🏛 <span data-i18n="ent.titre">Paramètres Entreprise</span></div><div class="page-sub" data-i18n="ent.sous_titre">Informations utilisées pour générer les contrats</div></div>
   </div>
   <div class="page-body">
     <div class="table-wrap" style="padding:1.5rem;max-width:640px">
       <div style="display:grid;gap:1rem">
         <div>
-          <label class="form-label">Forme juridique</label>
+          <label class="form-label" data-i18n="ent.forme_juridique">Forme juridique</label>
           <input class="form-inp" id="ent-forme-juridique" type="text" placeholder="ex: SARL AU CAPITAL SOCIAL DE 30.000.000 DA">
         </div>
         <div>
-          <label class="form-label">Nom de l'entreprise</label>
+          <label class="form-label" data-i18n="ent.nom_entreprise">Nom de l'entreprise</label>
           <input class="form-inp" id="ent-nom" type="text" placeholder="ex: SARL PERLA">
         </div>
         <div>
-          <label class="form-label">Adresse du siège social</label>
+          <label class="form-label" data-i18n="ent.adresse_siege">Adresse du siège social</label>
           <input class="form-inp" id="ent-adresse" type="text" placeholder="ex: Centre Commercial El Qods N°730 Chéraga">
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
           <div>
-            <label class="form-label">Téléphone</label>
+            <label class="form-label" data-i18n="th.telephone">Téléphone</label>
             <input class="form-inp" id="ent-telephone" type="text" placeholder="+213 21 34 16 96">
           </div>
           <div>
-            <label class="form-label">Email</label>
+            <label class="form-label" data-i18n="th.email">Email</label>
             <input class="form-inp" id="ent-email" type="text" placeholder="contact@perla.dz">
           </div>
         </div>
         <div>
-          <label class="form-label">Nom & qualité du gérant</label>
+          <label class="form-label" data-i18n="ent.gerant">Nom & qualité du gérant</label>
           <input class="form-inp" id="ent-gerant" type="text" placeholder="ex: Mr. Mustapha Azzedine">
         </div>
         <div>
-          <label class="form-label">Wilaya (pour signature des contrats)</label>
+          <label class="form-label" data-i18n="ent.wilaya">Wilaya (pour signature des contrats)</label>
           <input class="form-inp" id="ent-wilaya" type="text" placeholder="ex: Alger">
         </div>
       </div>
-      <button class="btn btn-primary" onclick="saveEntreprise()" style="margin-top:1.25rem">💾 Enregistrer</button>
+      <button class="btn btn-primary" onclick="saveEntreprise()" data-i18n="btn.enregistrer_icon" style="margin-top:1.25rem">💾 Enregistrer</button>
     </div>
   </div>
 </div>
@@ -560,34 +560,34 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 <!-- CONTRATS -->
 <div class="page" id="page-contrats">
   <div class="page-header">
-    <div><div class="page-title">📄 Contrats de Travail</div><div class="page-sub">CDI / CDD avec génération automatique</div></div>
+    <div><div class="page-title">📄 <span data-i18n="ct.titre">Contrats de Travail</span></div><div class="page-sub" data-i18n="ct.sous_titre">CDI / CDD avec génération automatique</div></div>
     <div class="page-actions">
-      <button class="btn btn-primary" onclick="openContratModal()">+ Nouveau Contrat</button>
+      <button class="btn btn-primary" onclick="openContratModal()" data-i18n="ct.nouveau">+ Nouveau Contrat</button>
     </div>
   </div>
   <div class="page-body">
     <div class="kpi-grid" id="kpi-contrats-grid">
-      <div class="kpi"><div class="kpi-label">Total Contrats</div><div class="kpi-val" id="kpi-ct-total">0</div><div class="kpi-sub">tous statuts</div></div>
-      <div class="kpi"><div class="kpi-label">CDI Actifs</div><div class="kpi-val" id="kpi-ct-cdi" style="color:var(--green)">0</div><div class="kpi-sub">durée indéterminée</div></div>
-      <div class="kpi"><div class="kpi-label">CDD Actifs</div><div class="kpi-val" id="kpi-ct-cdd" style="color:var(--blue)">0</div><div class="kpi-sub">durée déterminée</div></div>
-      <div class="kpi"><div class="kpi-label">CDD Expirant bientôt</div><div class="kpi-val" id="kpi-ct-expirant" style="color:var(--red)">0</div><div class="kpi-sub">≤ 30 jours</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="ct.kpi.total">Total Contrats</div><div class="kpi-val" id="kpi-ct-total">0</div><div class="kpi-sub" data-i18n="ct.kpi.tous_statuts">tous statuts</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="ct.kpi.cdi_actifs">CDI Actifs</div><div class="kpi-val" id="kpi-ct-cdi" style="color:var(--green)">0</div><div class="kpi-sub" data-i18n="ct.kpi.duree_indet">durée indéterminée</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="ct.kpi.cdd_actifs">CDD Actifs</div><div class="kpi-val" id="kpi-ct-cdd" style="color:var(--blue)">0</div><div class="kpi-sub" data-i18n="ct.kpi.duree_det">durée déterminée</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="ct.kpi.cdd_expirant">CDD Expirant bientôt</div><div class="kpi-val" id="kpi-ct-expirant" style="color:var(--red)">0</div><div class="kpi-sub" data-i18n="ct.kpi.jours_30">≤ 30 jours</div></div>
     </div>
     <div id="ct-alertes-box" style="display:none;margin-bottom:1rem"></div>
     <div class="table-wrap">
       <div class="table-toolbar">
-        <input class="search-inp" id="ct-search" placeholder="🔍 Rechercher un employé…" oninput="renderContrats(this.value)">
+        <input class="search-inp" id="ct-search" data-i18n-placeholder="ct.rechercher" placeholder="🔍 Rechercher un employé…" oninput="renderContrats(this.value)">
       </div>
       <table>
         <thead><tr>
-          <th>Employé</th><th>Type</th><th>Poste</th>
-          <th>Date début</th><th>Date fin</th><th>Statut</th>
-          <th style="text-align:center">Actions</th>
+          <th data-i18n="th.employe">Employé</th><th data-i18n="th.type">Type</th><th data-i18n="th.poste">Poste</th>
+          <th data-i18n="th.date_debut">Date début</th><th data-i18n="th.date_fin">Date fin</th><th data-i18n="th.statut">Statut</th>
+          <th style="text-align:center" data-i18n="th.actions">Actions</th>
         </tr></thead>
         <tbody id="tbl-contrats"></tbody>
       </table>
       <div id="ct-empty" style="display:none;text-align:center;padding:3rem;color:var(--text3)">
         <div style="font-size:2.5rem;margin-bottom:.75rem">📄</div>
-        <div style="font-size:.9rem">Aucun contrat enregistré</div>
+        <div style="font-size:.9rem" data-i18n="ct.aucun">Aucun contrat enregistré</div>
       </div>
     </div>
   </div>
@@ -675,39 +675,39 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 <!-- PAYE -->
 <div class="page" id="page-paie">
   <div class="page-header">
-    <div><div class="page-title">💵 Paye</div><div class="page-sub">Fiches de paie mensuelles</div></div>
+    <div><div class="page-title">💵 <span data-i18n="pa.titre">Paye</span></div><div class="page-sub" data-i18n="pa.sous_titre">Fiches de paie mensuelles</div></div>
     <div class="page-actions">
-      <button class="btn" onclick="exportPaie()">⬇ Exporter CSV</button>
-      <button class="btn btn-primary" onclick="openPaieModal()">+ Nouvelle Fiche</button>
+      <button class="btn" onclick="exportPaie()" data-i18n="btn.exporter_csv">⬇ Exporter CSV</button>
+      <button class="btn btn-primary" onclick="openPaieModal()" data-i18n="pa.nouvelle_fiche">+ Nouvelle Fiche</button>
     </div>
   </div>
   <div class="page-body">
     <div class="kpi-grid" id="kpi-paie-grid">
-      <div class="kpi"><div class="kpi-label">Fiches ce mois</div><div class="kpi-val" id="kpi-pa-total">0</div></div>
-      <div class="kpi"><div class="kpi-label">Masse salariale brute</div><div class="kpi-val" id="kpi-pa-brut" style="font-size:1.05rem">0 DZD</div></div>
-      <div class="kpi"><div class="kpi-label">Total Primes/H.Sup</div><div class="kpi-val" id="kpi-pa-primes" style="font-size:1.05rem;color:var(--green)">0 DZD</div></div>
-      <div class="kpi"><div class="kpi-label">Net à payer total</div><div class="kpi-val" id="kpi-pa-net" style="font-size:1.05rem;color:var(--gold)">0 DZD</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="pa.kpi.fiches_mois">Fiches ce mois</div><div class="kpi-val" id="kpi-pa-total">0</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="pa.kpi.masse_brute">Masse salariale brute</div><div class="kpi-val" id="kpi-pa-brut" style="font-size:1.05rem">0 DZD</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="pa.kpi.primes_total">Total Primes/H.Sup</div><div class="kpi-val" id="kpi-pa-primes" style="font-size:1.05rem;color:var(--green)">0 DZD</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="pa.kpi.net_total">Net à payer total</div><div class="kpi-val" id="kpi-pa-net" style="font-size:1.05rem;color:var(--gold)">0 DZD</div></div>
     </div>
     <div class="table-wrap">
       <div class="table-toolbar" style="flex-wrap:wrap;gap:.5rem">
-        <input class="search-inp" id="pa-search" placeholder="🔍 Rechercher un employé…" oninput="renderPaie(this.value)">
+        <input class="search-inp" id="pa-search" data-i18n-placeholder="ct.rechercher" placeholder="🔍 Rechercher un employé…" oninput="renderPaie(this.value)">
         <select class="filter-sel" id="pa-filter-mois" onchange="renderPaie(document.getElementById('pa-search').value)">
-          <option value="">Tous les mois</option>
+          <option value="" data-i18n="pa.tous_mois">Tous les mois</option>
         </select>
       </div>
       <table>
         <thead><tr>
-          <th>Employé</th><th>Mois</th>
-          <th style="text-align:right">Salaire base</th>
-          <th style="text-align:right">Primes/H.Sup</th>
-          <th style="text-align:right">Net à payer</th>
-          <th style="text-align:center">Actions</th>
+          <th data-i18n="th.employe">Employé</th><th data-i18n="th.mois">Mois</th>
+          <th style="text-align:right" data-i18n="pa.salaire_base">Salaire base</th>
+          <th style="text-align:right" data-i18n="pa.primes_hsup">Primes/H.Sup</th>
+          <th style="text-align:right" data-i18n="pa.net_a_payer">Net à payer</th>
+          <th style="text-align:center" data-i18n="th.actions">Actions</th>
         </tr></thead>
         <tbody id="tbl-paie"></tbody>
       </table>
       <div id="pa-empty" style="display:none;text-align:center;padding:3rem;color:var(--text3)">
         <div style="font-size:2.5rem;margin-bottom:.75rem">💵</div>
-        <div style="font-size:.9rem">Aucune fiche de paie</div>
+        <div style="font-size:.9rem" data-i18n="pa.aucune_fiche">Aucune fiche de paie</div>
       </div>
     </div>
   </div>
@@ -3155,6 +3155,30 @@ const I18N = {
     'th.sous_departement':'Sous-département', 'th.effectifs':'Effectifs',
     // Boutons génériques additionnels
     'btn.ajouter':'+ Ajouter',
+    // Contrats
+    'ct.titre':'Contrats de Travail', 'ct.sous_titre':'CDI / CDD avec génération automatique',
+    'ct.nouveau':'+ Nouveau Contrat', 'ct.rechercher':'🔍 Rechercher un employé…',
+    'ct.aucun':'Aucun contrat enregistré',
+    'ct.kpi.total':'Total Contrats', 'ct.kpi.tous_statuts':'tous statuts',
+    'ct.kpi.cdi_actifs':'CDI Actifs', 'ct.kpi.duree_indet':'durée indéterminée',
+    'ct.kpi.cdd_actifs':'CDD Actifs', 'ct.kpi.duree_det':'durée déterminée',
+    'ct.kpi.cdd_expirant':'CDD Expirant bientôt', 'ct.kpi.jours_30':'≤ 30 jours',
+    'th.employe':'Employé', 'th.type':'Type', 'th.date_debut':'Date début', 'th.date_fin':'Date fin',
+    // Paye
+    'pa.titre':'Paye', 'pa.sous_titre':'Fiches de paie mensuelles',
+    'pa.nouvelle_fiche':'+ Nouvelle Fiche', 'pa.tous_mois':'Tous les mois',
+    'pa.aucune_fiche':'Aucune fiche de paie',
+    'pa.kpi.fiches_mois':'Fiches ce mois', 'pa.kpi.masse_brute':'Masse salariale brute',
+    'pa.kpi.primes_total':'Total Primes/H.Sup', 'pa.kpi.net_total':'Net à payer total',
+    'pa.salaire_base':'Salaire base', 'pa.primes_hsup':'Primes/H.Sup', 'pa.net_a_payer':'Net à payer',
+    'th.mois':'Mois',
+    // Entreprise
+    'ent.titre':'Paramètres Entreprise', 'ent.sous_titre':'Informations utilisées pour générer les contrats',
+    'ent.forme_juridique':'Forme juridique', 'ent.nom_entreprise':"Nom de l'entreprise",
+    'ent.adresse_siege':'Adresse du siège social', 'ent.gerant':'Nom & qualité du gérant',
+    'ent.wilaya':'Wilaya (pour signature des contrats)',
+    'th.telephone':'Téléphone', 'th.email':'Email',
+    'btn.enregistrer_icon':'💾 Enregistrer',
     // Boutons génériques
     'btn.annuler':'Annuler', 'btn.fermer':'Fermer', 'btn.enregistrer':'Enregistrer',
     'btn.modifier':'Modifier', 'btn.supprimer':'Supprimer', 'btn.imprimer':'Imprimer',
@@ -3193,6 +3217,30 @@ const I18N = {
     'dept.titre':'الأقسام', 'dept.sous_titre':'الهيكل التنظيمي',
     'th.sous_departement':'القسم الفرعي', 'th.effectifs':'عدد الموظفين',
     'btn.ajouter':'+ إضافة',
+    // العقود
+    'ct.titre':'عقود العمل', 'ct.sous_titre':'عقود محددة وغير محددة المدة مع إنشاء تلقائي',
+    'ct.nouveau':'+ عقد جديد', 'ct.rechercher':'🔍 البحث عن موظف…',
+    'ct.aucun':'لا يوجد عقد مسجل',
+    'ct.kpi.total':'إجمالي العقود', 'ct.kpi.tous_statuts':'جميع الحالات',
+    'ct.kpi.cdi_actifs':'عقود غير محددة نشطة', 'ct.kpi.duree_indet':'مدة غير محددة',
+    'ct.kpi.cdd_actifs':'عقود محددة نشطة', 'ct.kpi.duree_det':'مدة محددة',
+    'ct.kpi.cdd_expirant':'عقود تنتهي قريباً', 'ct.kpi.jours_30':'≤ 30 يوماً',
+    'th.employe':'الموظف', 'th.type':'النوع', 'th.date_debut':'تاريخ البدء', 'th.date_fin':'تاريخ الانتهاء',
+    // الرواتب
+    'pa.titre':'الرواتب', 'pa.sous_titre':'كشوف الرواتب الشهرية',
+    'pa.nouvelle_fiche':'+ كشف جديد', 'pa.tous_mois':'جميع الأشهر',
+    'pa.aucune_fiche':'لا يوجد كشف رواتب',
+    'pa.kpi.fiches_mois':'كشوف هذا الشهر', 'pa.kpi.masse_brute':'إجمالي الرواتب',
+    'pa.kpi.primes_total':'إجمالي المكافآت/الساعات الإضافية', 'pa.kpi.net_total':'إجمالي الصافي المستحق',
+    'pa.salaire_base':'الراتب الأساسي', 'pa.primes_hsup':'مكافآت/س.إضافية', 'pa.net_a_payer':'الصافي المستحق',
+    'th.mois':'الشهر',
+    // الشركة
+    'ent.titre':'معلومات الشركة', 'ent.sous_titre':'المعلومات المستخدمة لإنشاء العقود',
+    'ent.forme_juridique':'الشكل القانوني', 'ent.nom_entreprise':'اسم الشركة',
+    'ent.adresse_siege':'عنوان المقر الرئيسي', 'ent.gerant':'اسم وصفة المدير',
+    'ent.wilaya':'الولاية (لتوقيع العقود)',
+    'th.telephone':'الهاتف', 'th.email':'البريد الإلكتروني',
+    'btn.enregistrer_icon':'💾 حفظ',
     'btn.annuler':'إلغاء', 'btn.fermer':'إغلاق', 'btn.enregistrer':'حفظ',
     'btn.modifier':'تعديل', 'btn.supprimer':'حذف', 'btn.imprimer':'طباعة',
     'btn.exporter_csv':'تصدير CSV', 'btn.rechercher':'بحث…',
@@ -3230,6 +3278,30 @@ const I18N = {
     'dept.titre':'Departments', 'dept.sous_titre':'Organizational structure',
     'th.sous_departement':'Sub-department', 'th.effectifs':'Staff count',
     'btn.ajouter':'+ Add',
+    // Contracts
+    'ct.titre':'Employment Contracts', 'ct.sous_titre':'Permanent / Fixed-term with automatic generation',
+    'ct.nouveau':'+ New Contract', 'ct.rechercher':'🔍 Search an employee…',
+    'ct.aucun':'No contract recorded',
+    'ct.kpi.total':'Total Contracts', 'ct.kpi.tous_statuts':'all statuses',
+    'ct.kpi.cdi_actifs':'Active Permanent', 'ct.kpi.duree_indet':'indefinite term',
+    'ct.kpi.cdd_actifs':'Active Fixed-term', 'ct.kpi.duree_det':'fixed term',
+    'ct.kpi.cdd_expirant':'Expiring soon', 'ct.kpi.jours_30':'≤ 30 days',
+    'th.employe':'Employee', 'th.type':'Type', 'th.date_debut':'Start date', 'th.date_fin':'End date',
+    // Payroll
+    'pa.titre':'Payroll', 'pa.sous_titre':'Monthly payslips',
+    'pa.nouvelle_fiche':'+ New Payslip', 'pa.tous_mois':'All months',
+    'pa.aucune_fiche':'No payslip recorded',
+    'pa.kpi.fiches_mois':'Payslips this month', 'pa.kpi.masse_brute':'Gross payroll',
+    'pa.kpi.primes_total':'Total Bonuses/Overtime', 'pa.kpi.net_total':'Total net to pay',
+    'pa.salaire_base':'Base salary', 'pa.primes_hsup':'Bonuses/Overtime', 'pa.net_a_payer':'Net to pay',
+    'th.mois':'Month',
+    // Company
+    'ent.titre':'Company Settings', 'ent.sous_titre':'Information used to generate contracts',
+    'ent.forme_juridique':'Legal form', 'ent.nom_entreprise':'Company name',
+    'ent.adresse_siege':'Head office address', 'ent.gerant':'Manager name & title',
+    'ent.wilaya':'Province (for contract signature)',
+    'th.telephone':'Phone', 'th.email':'Email',
+    'btn.enregistrer_icon':'💾 Save',
     'btn.annuler':'Cancel', 'btn.fermer':'Close', 'btn.enregistrer':'Save',
     'btn.modifier':'Edit', 'btn.supprimer':'Delete', 'btn.imprimer':'Print',
     'btn.exporter_csv':'Export CSV', 'btn.rechercher':'Search…',
@@ -3887,7 +3959,7 @@ function renderPaie(q=''){
   if(selMois){
     const cur=selMois.value;
     const moisListe=[...new Set((DB.paies||[]).map(p=>p.mois))].sort().reverse();
-    selMois.innerHTML='<option value="">Tous les mois</option>'+
+    selMois.innerHTML=`<option value="" data-i18n="pa.tous_mois">${t('pa.tous_mois')}</option>`+
       moisListe.map(m=>`<option value="${m}" ${m===cur?'selected':''}>${formatMoisAffichage(m)}</option>`).join('');
   }
 }
