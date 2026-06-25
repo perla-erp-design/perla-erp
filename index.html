@@ -1242,38 +1242,38 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 <!-- PRODUCTION -->
 <div class="page" id="page-production">
   <div class="page-header">
-    <div><div class="page-title">🏭 Ordres de Production</div><div class="page-sub">Transformation matière première → produit fini</div></div>
+    <div><div class="page-title">🏭 <span data-i18n="op.titre">Ordres de Production</span></div><div class="page-sub" data-i18n="op.sous_titre">Transformation matière première → produit fini</div></div>
     <div class="page-actions">
-      <button class="btn" onclick="exportOP()">⬇ Exporter CSV</button>
-      <button class="btn btn-primary" onclick="openOPModal()">+ Nouvel Ordre</button>
+      <button class="btn" onclick="exportOP()" data-i18n="btn.exporter_csv">⬇ Exporter CSV</button>
+      <button class="btn btn-primary" onclick="openOPModal()" data-i18n="op.nouveau">+ Nouvel Ordre</button>
     </div>
   </div>
   <div class="page-body">
     <div class="kpi-grid" id="kpi-op-grid">
-      <div class="kpi"><div class="kpi-label">Total OP</div><div class="kpi-val" id="kpi-op-total">0</div><div class="kpi-sub">ordres créés</div></div>
-      <div class="kpi"><div class="kpi-label">Matière consommée</div><div class="kpi-val" id="kpi-op-consomme" style="font-size:1.1rem">0</div><div class="kpi-sub">toutes unités</div></div>
-      <div class="kpi"><div class="kpi-label">Produit obtenu</div><div class="kpi-val" id="kpi-op-obtenu" style="font-size:1.1rem;color:var(--green)">0</div><div class="kpi-sub">toutes unités</div></div>
-      <div class="kpi"><div class="kpi-label">Perte totale</div><div class="kpi-val" id="kpi-op-perte" style="font-size:1.1rem;color:var(--red)">0</div><div class="kpi-sub">matière perdue</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="op.kpi.total">Total OP</div><div class="kpi-val" id="kpi-op-total">0</div><div class="kpi-sub" data-i18n="op.kpi.ordres_crees">ordres créés</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="op.matiere_consommee">Matière consommée</div><div class="kpi-val" id="kpi-op-consomme" style="font-size:1.1rem">0</div><div class="kpi-sub" data-i18n="op.toutes_unites">toutes unités</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="op.produit_obtenu">Produit obtenu</div><div class="kpi-val" id="kpi-op-obtenu" style="font-size:1.1rem;color:var(--green)">0</div><div class="kpi-sub" data-i18n="op.toutes_unites">toutes unités</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="op.perte_totale">Perte totale</div><div class="kpi-val" id="kpi-op-perte" style="font-size:1.1rem;color:var(--red)">0</div><div class="kpi-sub" data-i18n="op.matiere_perdue">matière perdue</div></div>
     </div>
     <div class="table-wrap">
       <div class="table-toolbar">
-        <input class="search-inp" id="op-search" placeholder="🔍 Rechercher par n° OP…" oninput="renderOP(this.value)">
+        <input class="search-inp" id="op-search" data-i18n-placeholder="op.rechercher" placeholder="🔍 Rechercher par n° OP…" oninput="renderOP(this.value)">
         <span id="op-count" style="font-size:.75rem;color:var(--text3);margin-left:auto;align-self:center"></span>
       </div>
       <table>
         <thead><tr>
-          <th>N° OP</th><th>Date</th><th>Statut</th>
-          <th style="text-align:right">Matière consommée</th>
-          <th style="text-align:right">Produit obtenu</th>
-          <th style="text-align:right">Perte</th>
-          <th style="text-align:center">Actions</th>
+          <th data-i18n="op.num_op">N° OP</th><th data-i18n="th.date">Date</th><th data-i18n="th.statut">Statut</th>
+          <th style="text-align:right" data-i18n="op.matiere_consommee">Matière consommée</th>
+          <th style="text-align:right" data-i18n="op.produit_obtenu">Produit obtenu</th>
+          <th style="text-align:right" data-i18n="op.perte">Perte</th>
+          <th style="text-align:center" data-i18n="th.actions">Actions</th>
         </tr></thead>
         <tbody id="tbl-op"></tbody>
       </table>
       <div id="op-empty" style="display:none;text-align:center;padding:3rem;color:var(--text3)">
         <div style="font-size:2.5rem;margin-bottom:.75rem">🏭</div>
-        <div style="font-size:.9rem">Aucun ordre de production</div>
-        <div style="font-size:.78rem;margin-top:.35rem">Cliquez sur "+ Nouvel Ordre" pour commencer</div>
+        <div style="font-size:.9rem" data-i18n="op.aucun">Aucun ordre de production</div>
+        <div style="font-size:.78rem;margin-top:.35rem" data-i18n="op.cliquez_nouveau">Cliquez sur "+ Nouvel Ordre" pour commencer</div>
       </div>
     </div>
   </div>
@@ -1406,45 +1406,45 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 <!-- COMPTE CAISSE -->
 <div class="page" id="page-caisse">
   <div class="page-header">
-    <div><div class="page-title">🏦 Compte Caisse</div><div class="page-sub">Trésorerie en temps réel</div></div>
+    <div><div class="page-title">🏦 <span data-i18n="caisse.titre">Compte Caisse</span></div><div class="page-sub" data-i18n="caisse.sous_titre">Trésorerie en temps réel</div></div>
     <div class="page-actions">
-      <button class="btn" onclick="exportCaisse()">⬇ Exporter CSV</button>
-      <button class="btn btn-primary" onclick="printTicketCaisse()">🖨 Ticket de caisse du jour</button>
+      <button class="btn" onclick="exportCaisse()" data-i18n="btn.exporter_csv">⬇ Exporter CSV</button>
+      <button class="btn btn-primary" onclick="printTicketCaisse()" data-i18n="caisse.ticket_jour">🖨 Ticket de caisse du jour</button>
     </div>
   </div>
   <div class="page-body">
     <div style="background:linear-gradient(135deg,var(--bg3),var(--bg2));border:1px solid var(--border2);border-radius:var(--r16);padding:1.75rem;margin-bottom:1.25rem;text-align:center">
-      <div style="font-size:.78rem;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem">Solde Caisse Actuel</div>
+      <div style="font-size:.78rem;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem" data-i18n="caisse.solde_actuel">Solde Caisse Actuel</div>
       <div id="caisse-solde-actuel" style="font-size:2.2rem;font-weight:700;color:var(--gold)">0 DZD</div>
     </div>
     <div class="kpi-grid" id="kpi-caisse-grid">
-      <div class="kpi"><div class="kpi-label">Entrées (Règlements clients)</div><div class="kpi-val" id="kpi-caisse-entrees" style="font-size:1.1rem;color:var(--green)">0 DZD</div><div class="kpi-sub">total encaissé</div></div>
-      <div class="kpi"><div class="kpi-label">Sorties (Règlements fournisseurs)</div><div class="kpi-val" id="kpi-caisse-sorties-four" style="font-size:1.1rem;color:var(--red)">0 DZD</div><div class="kpi-sub">total décaissé</div></div>
-      <div class="kpi"><div class="kpi-label">Sorties (Dépenses)</div><div class="kpi-val" id="kpi-caisse-depenses" style="font-size:1.1rem;color:var(--red)">0 DZD</div><div class="kpi-sub">frais divers</div></div>
-      <div class="kpi"><div class="kpi-label">Mouvements aujourd'hui</div><div class="kpi-val" id="kpi-caisse-today">0</div><div class="kpi-sub">opérations du jour</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="caisse.entrees">Entrées (Règlements clients)</div><div class="kpi-val" id="kpi-caisse-entrees" style="font-size:1.1rem;color:var(--green)">0 DZD</div><div class="kpi-sub" data-i18n="caisse.total_encaisse">total encaissé</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="caisse.sorties_four">Sorties (Règlements fournisseurs)</div><div class="kpi-val" id="kpi-caisse-sorties-four" style="font-size:1.1rem;color:var(--red)">0 DZD</div><div class="kpi-sub" data-i18n="caisse.total_decaisse">total décaissé</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="caisse.sorties_dep">Sorties (Dépenses)</div><div class="kpi-val" id="kpi-caisse-depenses" style="font-size:1.1rem;color:var(--red)">0 DZD</div><div class="kpi-sub" data-i18n="caisse.frais_divers">frais divers</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="caisse.mouvements_jour">Mouvements aujourd'hui</div><div class="kpi-val" id="kpi-caisse-today">0</div><div class="kpi-sub" data-i18n="caisse.operations_jour">opérations du jour</div></div>
     </div>
     <div class="table-wrap">
       <div class="table-toolbar" style="flex-wrap:wrap;gap:.5rem">
         <select class="filter-sel" id="caisse-filter-type" onchange="renderCaisse()">
-          <option value="">Tous mouvements</option>
-          <option value="Entrée">Entrées uniquement</option>
-          <option value="Sortie">Sorties uniquement</option>
+          <option value="" data-i18n="caisse.tous_mouvements">Tous mouvements</option>
+          <option value="Entrée" data-i18n="caisse.entrees_seules">Entrées uniquement</option>
+          <option value="Sortie" data-i18n="caisse.sorties_seules">Sorties uniquement</option>
         </select>
         <input class="search-inp" id="caisse-date-filter" type="date" onchange="renderCaisse()" style="max-width:180px">
-        <button class="btn" onclick="document.getElementById('caisse-date-filter').value='';renderCaisse()">Toutes dates</button>
+        <button class="btn" onclick="document.getElementById('caisse-date-filter').value='';renderCaisse()" data-i18n="caisse.toutes_dates">Toutes dates</button>
         <span id="caisse-count" style="font-size:.75rem;color:var(--text3);margin-left:auto;align-self:center"></span>
       </div>
       <table>
         <thead><tr>
-          <th>Date</th><th>Opération</th><th>Détail</th>
-          <th style="text-align:right">Montant</th>
-          <th style="text-align:right">Solde Cumulé</th>
+          <th data-i18n="th.date">Date</th><th data-i18n="caisse.operation">Opération</th><th data-i18n="caisse.detail">Détail</th>
+          <th style="text-align:right" data-i18n="th.montant">Montant</th>
+          <th style="text-align:right" data-i18n="caisse.solde_cumule">Solde Cumulé</th>
         </tr></thead>
         <tbody id="tbl-caisse"></tbody>
       </table>
       <div id="caisse-empty" style="display:none;text-align:center;padding:3rem;color:var(--text3)">
         <div style="font-size:2.5rem;margin-bottom:.75rem">🏦</div>
-        <div style="font-size:.9rem">Aucun mouvement de caisse</div>
+        <div style="font-size:.9rem" data-i18n="caisse.aucun">Aucun mouvement de caisse</div>
       </div>
     </div>
   </div>
@@ -1453,43 +1453,43 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 <!-- RÈGLEMENTS -->
 <div class="page" id="page-reglements">
   <div class="page-header">
-    <div><div class="page-title">💰 Règlements</div><div class="page-sub">Suivi des paiements clients</div></div>
+    <div><div class="page-title">💰 <span data-i18n="reg.titre">Règlements</span></div><div class="page-sub" data-i18n="reg.sous_titre">Suivi des paiements clients</div></div>
     <div class="page-actions">
-      <button class="btn" onclick="exportReglements()">⬇ Exporter CSV</button>
-      <button class="btn btn-primary" onclick="openReglementModal()">+ Règlement</button>
+      <button class="btn" onclick="exportReglements()" data-i18n="btn.exporter_csv">⬇ Exporter CSV</button>
+      <button class="btn btn-primary" onclick="openReglementModal()" data-i18n="reg.nouveau">+ Règlement</button>
     </div>
   </div>
   <div class="page-body">
     <div class="kpi-grid" id="kpi-reg-grid">
-      <div class="kpi"><div class="kpi-label">Total Règlements</div><div class="kpi-val" id="kpi-reg-total">0</div><div class="kpi-sub">paiements reçus</div></div>
-      <div class="kpi"><div class="kpi-label">Montant Total</div><div class="kpi-val" id="kpi-reg-montant" style="font-size:1.1rem;color:var(--gold)">0 DZD</div><div class="kpi-sub">encaissé</div></div>
-      <div class="kpi"><div class="kpi-label">Espèce</div><div class="kpi-val" id="kpi-reg-espece" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub">paiements cash</div></div>
-      <div class="kpi"><div class="kpi-label">Chèque / Virement</div><div class="kpi-val" id="kpi-reg-autre" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub">paiements bancaires</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="reg.kpi.total">Total Règlements</div><div class="kpi-val" id="kpi-reg-total">0</div><div class="kpi-sub" data-i18n="reg.kpi.paiements_recus">paiements reçus</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="bl.kpi.montant_total">Montant Total</div><div class="kpi-val" id="kpi-reg-montant" style="font-size:1.1rem;color:var(--gold)">0 DZD</div><div class="kpi-sub" data-i18n="reg.encaisse">encaissé</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="reg.espece">Espèce</div><div class="kpi-val" id="kpi-reg-espece" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub" data-i18n="reg.kpi.paiements_cash">paiements cash</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="reg.cheque_virement">Chèque / Virement</div><div class="kpi-val" id="kpi-reg-autre" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub" data-i18n="reg.paiements_bancaires">paiements bancaires</div></div>
     </div>
     <div class="table-wrap">
       <div class="table-toolbar" style="flex-wrap:wrap;gap:.5rem">
-        <input class="search-inp" id="reg-search" placeholder="🔍 Rechercher par client…" oninput="renderReglements(this.value)" style="flex:1;min-width:200px">
+        <input class="search-inp" id="reg-search" data-i18n-placeholder="reg.rechercher" placeholder="🔍 Rechercher par client…" oninput="renderReglements(this.value)" style="flex:1;min-width:200px">
         <select class="filter-sel" id="reg-filter-type" onchange="renderReglements(document.getElementById('reg-search').value)">
-          <option value="">Tous types</option>
-          <option value="Chèque">Chèque</option>
-          <option value="Espèce">Espèce</option>
-          <option value="Virement">Virement</option>
+          <option value="" data-i18n="reg.tous_types">Tous types</option>
+          <option value="Chèque" data-i18n="reg.cheque">Chèque</option>
+          <option value="Espèce" data-i18n="reg.espece">Espèce</option>
+          <option value="Virement" data-i18n="reg.virement">Virement</option>
         </select>
         <span id="reg-count" style="font-size:.75rem;color:var(--text3);margin-left:auto;align-self:center"></span>
       </div>
       <table>
         <thead><tr>
-          <th>Client</th><th>Date</th><th>Type</th>
-          <th style="text-align:right">Montant</th>
-          <th>Référence</th>
-          <th style="text-align:center">Actions</th>
+          <th data-i18n="th.client">Client</th><th data-i18n="th.date">Date</th><th data-i18n="th.type">Type</th>
+          <th style="text-align:right" data-i18n="th.montant">Montant</th>
+          <th data-i18n="th.reference">Référence</th>
+          <th style="text-align:center" data-i18n="th.actions">Actions</th>
         </tr></thead>
         <tbody id="tbl-reg"></tbody>
       </table>
       <div id="reg-empty" style="display:none;text-align:center;padding:3rem;color:var(--text3)">
         <div style="font-size:2.5rem;margin-bottom:.75rem">💰</div>
-        <div style="font-size:.9rem">Aucun règlement enregistré</div>
-        <div style="font-size:.78rem;margin-top:.35rem">Cliquez sur "+ Règlement" pour commencer</div>
+        <div style="font-size:.9rem" data-i18n="reg.aucun">Aucun règlement enregistré</div>
+        <div style="font-size:.78rem;margin-top:.35rem" data-i18n="reg.cliquez_reglement">Cliquez sur "+ Règlement" pour commencer</div>
       </div>
     </div>
   </div>
@@ -1986,13 +1986,13 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 <!-- FACTURES -->
 <div class="page" id="page-factures">
   <div class="page-header">
-    <div><div class="page-title">🧾 Factures</div></div>
-    <div class="page-actions"><button class="btn btn-primary" onclick="openModal('fact')">+ Nouvelle facture</button></div>
+    <div><div class="page-title">🧾 <span data-i18n="fact.titre">Factures</span></div></div>
+    <div class="page-actions"><button class="btn btn-primary" onclick="openModal('fact')" data-i18n="fact.nouvelle">+ Nouvelle facture</button></div>
   </div>
   <div class="page-body">
     <div class="table-wrap">
-      <div class="table-toolbar"><input class="search-inp" placeholder="Rechercher…" oninput="filterTable('fact',this.value)"></div>
-      <table><thead><tr><th>N° Facture</th><th>Client</th><th>Montant (DZD)</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
+      <div class="table-toolbar"><input class="search-inp" data-i18n-placeholder="btn.rechercher" placeholder="Rechercher…" oninput="filterTable('fact',this.value)"></div>
+      <table><thead><tr><th data-i18n="fact.num_facture">N° Facture</th><th data-i18n="th.client">Client</th><th data-i18n="fact.montant_dzd">Montant (DZD)</th><th data-i18n="th.date">Date</th><th data-i18n="th.statut">Statut</th><th data-i18n="th.actions">Actions</th></tr></thead>
       <tbody id="tbl-fact"></tbody></table>
     </div>
   </div>
@@ -2001,13 +2001,13 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 <!-- DÉPENSES -->
 <div class="page" id="page-depenses">
   <div class="page-header">
-    <div><div class="page-title">💸 Dépenses</div></div>
-    <div class="page-actions"><button class="btn btn-primary" onclick="openModal('dep')">+ Ajouter</button></div>
+    <div><div class="page-title">💸 <span data-i18n="dep.titre">Dépenses</span></div></div>
+    <div class="page-actions"><button class="btn btn-primary" onclick="openModal('dep')" data-i18n="btn.ajouter">+ Ajouter</button></div>
   </div>
   <div class="page-body">
     <div class="table-wrap">
-      <div class="table-toolbar"><input class="search-inp" placeholder="Rechercher…" oninput="filterTable('dep',this.value)"></div>
-      <table><thead><tr><th>Description</th><th>Catégorie</th><th>Montant (DZD)</th><th>Date</th><th>Actions</th></tr></thead>
+      <div class="table-toolbar"><input class="search-inp" data-i18n-placeholder="btn.rechercher" placeholder="Rechercher…" oninput="filterTable('dep',this.value)"></div>
+      <table><thead><tr><th data-i18n="dep.description">Description</th><th data-i18n="dep.categorie">Catégorie</th><th data-i18n="fact.montant_dzd">Montant (DZD)</th><th data-i18n="th.date">Date</th><th data-i18n="th.actions">Actions</th></tr></thead>
       <tbody id="tbl-dep"></tbody></table>
     </div>
   </div>
@@ -3230,6 +3230,34 @@ const I18N = {
     'br.kpi.net_payer':'Net à payer', 'br.rechercher':'🔍 Rechercher par n° BR, fournisseur…',
     'br.tous_fournisseurs':'Tous les fournisseurs', 'br.num_br':'N° BR',
     'br.aucun':'Aucun bon de réception', 'br.cliquez_nouveau':'Cliquez sur "Nouveau BR" pour commencer',
+    // Production
+    'op.titre':'Ordres de Production', 'op.sous_titre':'Transformation matière première → produit fini',
+    'op.nouveau':'+ Nouvel Ordre', 'op.kpi.total':'Total OP', 'op.kpi.ordres_crees':'ordres créés',
+    'op.matiere_consommee':'Matière consommée', 'op.toutes_unites':'toutes unités',
+    'op.produit_obtenu':'Produit obtenu', 'op.perte_totale':'Perte totale', 'op.matiere_perdue':'matière perdue',
+    'op.rechercher':'🔍 Rechercher par n° OP…', 'op.num_op':'N° OP', 'op.perte':'Perte',
+    'op.aucun':'Aucun ordre de production', 'op.cliquez_nouveau':'Cliquez sur "+ Nouvel Ordre" pour commencer',
+    // Compte Caisse
+    'caisse.titre':'Compte Caisse', 'caisse.sous_titre':'Trésorerie en temps réel',
+    'caisse.ticket_jour':'🖨 Ticket de caisse du jour', 'caisse.solde_actuel':'Solde Caisse Actuel',
+    'caisse.entrees':'Entrées (Règlements clients)', 'caisse.total_encaisse':'total encaissé',
+    'caisse.sorties_four':'Sorties (Règlements fournisseurs)', 'caisse.total_decaisse':'total décaissé',
+    'caisse.sorties_dep':'Sorties (Dépenses)', 'caisse.frais_divers':'frais divers',
+    'caisse.mouvements_jour':"Mouvements aujourd'hui", 'caisse.operations_jour':'opérations du jour',
+    'caisse.tous_mouvements':'Tous mouvements', 'caisse.entrees_seules':'Entrées uniquement',
+    'caisse.sorties_seules':'Sorties uniquement', 'caisse.toutes_dates':'Toutes dates',
+    'caisse.operation':'Opération', 'caisse.detail':'Détail', 'caisse.solde_cumule':'Solde Cumulé',
+    'caisse.aucun':'Aucun mouvement de caisse',
+    // Règlements (clients)
+    'reg.titre':'Règlements', 'reg.sous_titre':'Suivi des paiements clients',
+    'reg.kpi.paiements_recus':'paiements reçus', 'reg.encaisse':'encaissé',
+    'reg.cheque_virement':'Chèque / Virement', 'reg.paiements_bancaires':'paiements bancaires',
+    'reg.rechercher':'🔍 Rechercher par client…', 'reg.cliquez_reglement':'Cliquez sur "+ Règlement" pour commencer',
+    // Factures
+    'fact.titre':'Factures', 'fact.nouvelle':'+ Nouvelle facture', 'fact.num_facture':'N° Facture',
+    'fact.montant_dzd':'Montant (DZD)',
+    // Dépenses
+    'dep.titre':'Dépenses', 'dep.description':'Description', 'dep.categorie':'Catégorie',
     // Boutons génériques
     'btn.annuler':'Annuler', 'btn.fermer':'Fermer', 'btn.enregistrer':'Enregistrer',
     'btn.modifier':'Modifier', 'btn.supprimer':'Supprimer', 'btn.imprimer':'Imprimer',
@@ -3343,6 +3371,34 @@ const I18N = {
     'br.kpi.net_payer':'الصافي المستحق', 'br.rechercher':'🔍 البحث برقم السند أو المورد…',
     'br.tous_fournisseurs':'جميع الموردين', 'br.num_br':'رقم السند',
     'br.aucun':'لا يوجد سند استلام', 'br.cliquez_nouveau':'اضغط على "سند استلام جديد" للبدء',
+    // الإنتاج
+    'op.titre':'أوامر الإنتاج', 'op.sous_titre':'تحويل المادة الخام → منتج نهائي',
+    'op.nouveau':'+ أمر جديد', 'op.kpi.total':'إجمالي الأوامر', 'op.kpi.ordres_crees':'أوامر منشأة',
+    'op.matiere_consommee':'المادة المستهلكة', 'op.toutes_unites':'جميع الوحدات',
+    'op.produit_obtenu':'المنتج المتحصل عليه', 'op.perte_totale':'إجمالي الفقد', 'op.matiere_perdue':'مادة مفقودة',
+    'op.rechercher':'🔍 البحث برقم الأمر…', 'op.num_op':'رقم الأمر', 'op.perte':'الفقد',
+    'op.aucun':'لا يوجد أمر إنتاج', 'op.cliquez_nouveau':'اضغط على "+ أمر جديد" للبدء',
+    // حساب الصندوق
+    'caisse.titre':'حساب الصندوق', 'caisse.sous_titre':'الخزينة في الوقت الفعلي',
+    'caisse.ticket_jour':'🖨 إيصال الصندوق اليومي', 'caisse.solde_actuel':'رصيد الصندوق الحالي',
+    'caisse.entrees':'إيرادات (دفعات العملاء)', 'caisse.total_encaisse':'إجمالي المقبوض',
+    'caisse.sorties_four':'مصروفات (دفعات الموردين)', 'caisse.total_decaisse':'إجمالي المصروف',
+    'caisse.sorties_dep':'مصروفات (مصاريف)', 'caisse.frais_divers':'مصاريف متنوعة',
+    'caisse.mouvements_jour':'حركات اليوم', 'caisse.operations_jour':'عمليات اليوم',
+    'caisse.tous_mouvements':'جميع الحركات', 'caisse.entrees_seules':'الإيرادات فقط',
+    'caisse.sorties_seules':'المصروفات فقط', 'caisse.toutes_dates':'جميع التواريخ',
+    'caisse.operation':'العملية', 'caisse.detail':'التفاصيل', 'caisse.solde_cumule':'الرصيد التراكمي',
+    'caisse.aucun':'لا توجد حركة في الصندوق',
+    // الدفعات
+    'reg.titre':'الدفعات', 'reg.sous_titre':'تتبع دفعات العملاء',
+    'reg.kpi.paiements_recus':'دفعات مستلمة', 'reg.encaisse':'مقبوض',
+    'reg.cheque_virement':'شيك / تحويل', 'reg.paiements_bancaires':'دفعات بنكية',
+    'reg.rechercher':'🔍 البحث عن عميل…', 'reg.cliquez_reglement':'اضغط على "+ دفعة" للبدء',
+    // الفواتير
+    'fact.titre':'الفواتير', 'fact.nouvelle':'+ فاتورة جديدة', 'fact.num_facture':'رقم الفاتورة',
+    'fact.montant_dzd':'المبلغ (دج)',
+    // المصاريف
+    'dep.titre':'المصاريف', 'dep.description':'الوصف', 'dep.categorie':'الفئة',
     'btn.annuler':'إلغاء', 'btn.fermer':'إغلاق', 'btn.enregistrer':'حفظ',
     'btn.modifier':'تعديل', 'btn.supprimer':'حذف', 'btn.imprimer':'طباعة',
     'btn.exporter_csv':'تصدير CSV', 'btn.rechercher':'بحث…',
@@ -3455,6 +3511,34 @@ const I18N = {
     'br.kpi.net_payer':'Net to pay', 'br.rechercher':'🔍 Search by note number, supplier…',
     'br.tous_fournisseurs':'All suppliers', 'br.num_br':'Note No.',
     'br.aucun':'No receiving note', 'br.cliquez_nouveau':'Click "New Receiving Note" to get started',
+    // Production
+    'op.titre':'Production Orders', 'op.sous_titre':'Raw material → finished product transformation',
+    'op.nouveau':'+ New Order', 'op.kpi.total':'Total Orders', 'op.kpi.ordres_crees':'orders created',
+    'op.matiere_consommee':'Material consumed', 'op.toutes_unites':'all units',
+    'op.produit_obtenu':'Product obtained', 'op.perte_totale':'Total loss', 'op.matiere_perdue':'material lost',
+    'op.rechercher':'🔍 Search by order number…', 'op.num_op':'Order No.', 'op.perte':'Loss',
+    'op.aucun':'No production order', 'op.cliquez_nouveau':'Click "+ New Order" to get started',
+    // Cash Account
+    'caisse.titre':'Cash Account', 'caisse.sous_titre':'Real-time treasury',
+    'caisse.ticket_jour':'🖨 Daily cash ticket', 'caisse.solde_actuel':'Current Cash Balance',
+    'caisse.entrees':'Inflows (Customer payments)', 'caisse.total_encaisse':'total collected',
+    'caisse.sorties_four':'Outflows (Supplier payments)', 'caisse.total_decaisse':'total disbursed',
+    'caisse.sorties_dep':'Outflows (Expenses)', 'caisse.frais_divers':'various fees',
+    'caisse.mouvements_jour':'Movements today', 'caisse.operations_jour':"today's transactions",
+    'caisse.tous_mouvements':'All movements', 'caisse.entrees_seules':'Inflows only',
+    'caisse.sorties_seules':'Outflows only', 'caisse.toutes_dates':'All dates',
+    'caisse.operation':'Operation', 'caisse.detail':'Detail', 'caisse.solde_cumule':'Running Balance',
+    'caisse.aucun':'No cash movement',
+    // Payments (customers)
+    'reg.titre':'Payments', 'reg.sous_titre':'Track customer payments',
+    'reg.kpi.paiements_recus':'payments received', 'reg.encaisse':'collected',
+    'reg.cheque_virement':'Cheque / Transfer', 'reg.paiements_bancaires':'bank payments',
+    'reg.rechercher':'🔍 Search by customer…', 'reg.cliquez_reglement':'Click "+ Payment" to get started',
+    // Invoices
+    'fact.titre':'Invoices', 'fact.nouvelle':'+ New invoice', 'fact.num_facture':'Invoice No.',
+    'fact.montant_dzd':'Amount (DZD)',
+    // Expenses
+    'dep.titre':'Expenses', 'dep.description':'Description', 'dep.categorie':'Category',
     'btn.annuler':'Cancel', 'btn.fermer':'Close', 'btn.enregistrer':'Save',
     'btn.modifier':'Edit', 'btn.supprimer':'Delete', 'btn.imprimer':'Print',
     'btn.exporter_csv':'Export CSV', 'btn.rechercher':'Search…',
