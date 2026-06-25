@@ -1106,36 +1106,36 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 <!-- STOCKS -->
 <div class="page" id="page-stocks">
   <div class="page-header">
-    <div><div class="page-title">📦 Stocks</div><div class="page-sub">Quantités calculées automatiquement (Réceptions − Livraisons)</div></div>
+    <div><div class="page-title">📦 <span data-i18n="stk.titre">Stocks</span></div><div class="page-sub" data-i18n="stk.sous_titre">Quantités calculées automatiquement (Réceptions − Livraisons)</div></div>
     <div class="page-actions">
-      <button class="btn" onclick="resyncAllStocks()">🔄 Resynchroniser</button>
-      <button class="btn" onclick="exportStocks()">⬇ Exporter CSV</button>
-      <button class="btn btn-primary" onclick="openStockModal()">+ Paramétrer un stock</button>
+      <button class="btn" onclick="resyncAllStocks()" data-i18n="stk.resync">🔄 Resynchroniser</button>
+      <button class="btn" onclick="exportStocks()" data-i18n="btn.exporter_csv">⬇ Exporter CSV</button>
+      <button class="btn btn-primary" onclick="openStockModal()" data-i18n="stk.parametrer">+ Paramétrer un stock</button>
     </div>
   </div>
   <div class="page-body">
     <div class="kpi-grid" id="kpi-stk-grid">
-      <div class="kpi"><div class="kpi-label">Références suivies</div><div class="kpi-val" id="kpi-stk-total">0</div><div class="kpi-sub">produit + épaisseur</div></div>
-      <div class="kpi"><div class="kpi-label">En alerte</div><div class="kpi-val" id="kpi-stk-alerte" style="color:var(--red)">0</div><div class="kpi-sub">sous le seuil</div></div>
-      <div class="kpi"><div class="kpi-label">Quantité totale</div><div class="kpi-val" id="kpi-stk-qte" style="font-size:1.1rem">0</div><div class="kpi-sub">toutes unités confondues</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="stk.kpi.references">Références suivies</div><div class="kpi-val" id="kpi-stk-total">0</div><div class="kpi-sub" data-i18n="stk.kpi.produit_ep">produit + épaisseur</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="stk.kpi.alerte">En alerte</div><div class="kpi-val" id="kpi-stk-alerte" style="color:var(--red)">0</div><div class="kpi-sub" data-i18n="stk.kpi.sous_seuil">sous le seuil</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="stk.kpi.qte_totale">Quantité totale</div><div class="kpi-val" id="kpi-stk-qte" style="font-size:1.1rem">0</div><div class="kpi-sub" data-i18n="stk.kpi.toutes_unites">toutes unités confondues</div></div>
     </div>
     <div class="table-wrap">
       <div class="table-toolbar">
-        <input class="search-inp" id="stk-search" placeholder="🔍 Rechercher un produit…" oninput="renderStk(this.value)">
+        <input class="search-inp" id="stk-search" data-i18n-placeholder="stk.rechercher" placeholder="🔍 Rechercher un produit…" oninput="renderStk(this.value)">
       </div>
       <table>
         <thead><tr>
-          <th>Produit</th><th>Épaisseur</th><th>Unité</th>
-          <th style="text-align:right">Quantité actuelle</th>
-          <th style="text-align:right">Seuil alerte</th>
-          <th>Statut</th><th style="text-align:center">Actions</th>
+          <th data-i18n="th.produit">Produit</th><th data-i18n="th.epaisseur">Épaisseur</th><th data-i18n="th.unite">Unité</th>
+          <th style="text-align:right" data-i18n="stk.qte_actuelle">Quantité actuelle</th>
+          <th style="text-align:right" data-i18n="stk.seuil_alerte">Seuil alerte</th>
+          <th data-i18n="th.statut">Statut</th><th style="text-align:center" data-i18n="th.actions">Actions</th>
         </tr></thead>
         <tbody id="tbl-stk"></tbody>
       </table>
       <div id="stk-empty" style="display:none;text-align:center;padding:3rem;color:var(--text3)">
         <div style="font-size:2.5rem;margin-bottom:.75rem">📦</div>
-        <div style="font-size:.9rem">Aucun stock paramétré</div>
-        <div style="font-size:.78rem;margin-top:.35rem">Cliquez sur "+ Paramétrer un stock" pour commencer</div>
+        <div style="font-size:.9rem" data-i18n="stk.aucun">Aucun stock paramétré</div>
+        <div style="font-size:.78rem;margin-top:.35rem" data-i18n="stk.cliquez_param">Cliquez sur "+ Paramétrer un stock" pour commencer</div>
       </div>
     </div>
   </div>
@@ -1227,13 +1227,13 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 <!-- FOURNISSEURS -->
 <div class="page" id="page-fournisseurs">
   <div class="page-header">
-    <div><div class="page-title">🚚 Fournisseurs</div></div>
-    <div class="page-actions"><button class="btn btn-primary" onclick="openModal('four')">+ Ajouter</button></div>
+    <div><div class="page-title">🚚 <span data-i18n="four.titre">Fournisseurs</span></div></div>
+    <div class="page-actions"><button class="btn btn-primary" onclick="openModal('four')" data-i18n="btn.ajouter">+ Ajouter</button></div>
   </div>
   <div class="page-body">
     <div class="table-wrap">
-      <div class="table-toolbar"><input class="search-inp" placeholder="Rechercher…" oninput="filterTable('four',this.value)"></div>
-      <table><thead><tr><th>Nom</th><th>Pays</th><th>Adresse</th><th>Personne Contact</th><th>Téléphone</th><th>Email</th><th>Type</th><th>Actions</th></tr></thead>
+      <div class="table-toolbar"><input class="search-inp" data-i18n-placeholder="btn.rechercher" placeholder="Rechercher…" oninput="filterTable('four',this.value)"></div>
+      <table><thead><tr><th data-i18n="th.nom">Nom</th><th data-i18n="th.pays">Pays</th><th data-i18n="th.adresse">Adresse</th><th data-i18n="four.personne_contact">Personne Contact</th><th data-i18n="th.telephone">Téléphone</th><th data-i18n="th.email">Email</th><th data-i18n="th.type">Type</th><th data-i18n="th.actions">Actions</th></tr></thead>
       <tbody id="tbl-four"></tbody></table>
     </div>
   </div>
@@ -1498,44 +1498,44 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 <!-- RÈGLEMENTS FOURNISSEURS -->
 <div class="page" id="page-reglements-four">
   <div class="page-header">
-    <div><div class="page-title">💳 Règlements Fournisseurs</div><div class="page-sub">Suivi des paiements effectués aux fournisseurs</div></div>
+    <div><div class="page-title">💳 <span data-i18n="regf.titre">Règlements Fournisseurs</span></div><div class="page-sub" data-i18n="regf.sous_titre">Suivi des paiements effectués aux fournisseurs</div></div>
     <div class="page-actions">
-      <button class="btn" onclick="exportReglementsFour()">⬇ Exporter CSV</button>
-      <button class="btn btn-primary" onclick="openReglementFourModal()">+ Règlement</button>
+      <button class="btn" onclick="exportReglementsFour()" data-i18n="btn.exporter_csv">⬇ Exporter CSV</button>
+      <button class="btn btn-primary" onclick="openReglementFourModal()" data-i18n="reg.nouveau">+ Règlement</button>
     </div>
   </div>
   <div class="page-body">
     <div class="kpi-grid" id="kpi-regf-grid">
-      <div class="kpi"><div class="kpi-label">Total Règlements</div><div class="kpi-val" id="kpi-regf-total">0</div><div class="kpi-sub">paiements effectués</div></div>
-      <div class="kpi"><div class="kpi-label">Montant Total</div><div class="kpi-val" id="kpi-regf-montant" style="font-size:1.1rem;color:var(--gold)">0 DZD</div><div class="kpi-sub">décaissé</div></div>
-      <div class="kpi"><div class="kpi-label">Espèce</div><div class="kpi-val" id="kpi-regf-espece" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub">paiements cash</div></div>
-      <div class="kpi"><div class="kpi-label">Service (compensation)</div><div class="kpi-val" id="kpi-regf-service" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub">marchandise échangée</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="reg.kpi.total">Total Règlements</div><div class="kpi-val" id="kpi-regf-total">0</div><div class="kpi-sub" data-i18n="regf.kpi.paiements_effectues">paiements effectués</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="bl.kpi.montant_total">Montant Total</div><div class="kpi-val" id="kpi-regf-montant" style="font-size:1.1rem;color:var(--gold)">0 DZD</div><div class="kpi-sub" data-i18n="regf.kpi.decaisse">décaissé</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="reg.espece">Espèce</div><div class="kpi-val" id="kpi-regf-espece" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub" data-i18n="reg.kpi.paiements_cash">paiements cash</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="regf.service_comp">Service (compensation)</div><div class="kpi-val" id="kpi-regf-service" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub" data-i18n="regf.marchandise_echangee">marchandise échangée</div></div>
     </div>
     <div class="table-wrap">
       <div class="table-toolbar" style="flex-wrap:wrap;gap:.5rem">
-        <input class="search-inp" id="regf-search" placeholder="🔍 Rechercher par fournisseur…" oninput="renderReglementsFour(this.value)" style="flex:1;min-width:200px">
+        <input class="search-inp" id="regf-search" data-i18n-placeholder="regf.rechercher" placeholder="🔍 Rechercher par fournisseur…" oninput="renderReglementsFour(this.value)" style="flex:1;min-width:200px">
         <select class="filter-sel" id="regf-filter-type" onchange="renderReglementsFour(document.getElementById('regf-search').value)">
-          <option value="">Tous types</option>
-          <option value="Chèque">Chèque</option>
-          <option value="Espèce">Espèce</option>
-          <option value="Virement">Virement</option>
-          <option value="Service">Service</option>
+          <option value="" data-i18n="reg.tous_types">Tous types</option>
+          <option value="Chèque" data-i18n="reg.cheque">Chèque</option>
+          <option value="Espèce" data-i18n="reg.espece">Espèce</option>
+          <option value="Virement" data-i18n="reg.virement">Virement</option>
+          <option value="Service" data-i18n="regf.service">Service</option>
         </select>
         <span id="regf-count" style="font-size:.75rem;color:var(--text3);margin-left:auto;align-self:center"></span>
       </div>
       <table>
         <thead><tr>
-          <th>Fournisseur</th><th>Date</th><th>Type</th>
-          <th style="text-align:right">Montant</th>
-          <th>Référence</th>
-          <th style="text-align:center">Actions</th>
+          <th data-i18n="th.fournisseur">Fournisseur</th><th data-i18n="th.date">Date</th><th data-i18n="th.type">Type</th>
+          <th style="text-align:right" data-i18n="th.montant">Montant</th>
+          <th data-i18n="th.reference">Référence</th>
+          <th style="text-align:center" data-i18n="th.actions">Actions</th>
         </tr></thead>
         <tbody id="tbl-regf"></tbody>
       </table>
       <div id="regf-empty" style="display:none;text-align:center;padding:3rem;color:var(--text3)">
         <div style="font-size:2.5rem;margin-bottom:.75rem">💳</div>
-        <div style="font-size:.9rem">Aucun règlement enregistré</div>
-        <div style="font-size:.78rem;margin-top:.35rem">Cliquez sur "+ Règlement" pour commencer</div>
+        <div style="font-size:.9rem" data-i18n="reg.aucun">Aucun règlement enregistré</div>
+        <div style="font-size:.78rem;margin-top:.35rem" data-i18n="regf.cliquez_reglement">Cliquez sur "+ Règlement" pour commencer</div>
       </div>
     </div>
   </div>
@@ -1649,42 +1649,42 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 <!-- BONS DE RÉCEPTION -->
 <div class="page" id="page-reception">
   <div class="page-header">
-    <div><div class="page-title">📥 Bons de Réception</div><div class="page-sub">Gestion des réceptions fournisseurs</div></div>
+    <div><div class="page-title">📥 <span data-i18n="br.titre">Bons de Réception</span></div><div class="page-sub" data-i18n="br.sous_titre">Gestion des réceptions fournisseurs</div></div>
     <div class="page-actions">
-      <button class="btn" onclick="exportBR()">⬇ Exporter CSV</button>
-      <button class="btn btn-primary" onclick="openBRModal()">+ Nouveau BR</button>
+      <button class="btn" onclick="exportBR()" data-i18n="btn.exporter_csv">⬇ Exporter CSV</button>
+      <button class="btn btn-primary" onclick="openBRModal()" data-i18n="br.nouveau">+ Nouveau BR</button>
     </div>
   </div>
   <div class="page-body">
     <div class="kpi-grid" id="kpi-br-grid">
-      <div class="kpi"><div class="kpi-label">Total BR</div><div class="kpi-val" id="kpi-br-total">0</div><div class="kpi-sub">bons reçus</div></div>
-      <div class="kpi"><div class="kpi-label">Montant Total</div><div class="kpi-val" id="kpi-br-montant" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub">avant remise</div></div>
-      <div class="kpi"><div class="kpi-label">Remises</div><div class="kpi-val" id="kpi-br-remise" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub">total accordé</div></div>
-      <div class="kpi"><div class="kpi-label">Net à payer</div><div class="kpi-val" id="kpi-br-net" style="font-size:1.1rem;color:var(--gold)">0 DZD</div><div class="kpi-sub">montant net</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="br.kpi.total">Total BR</div><div class="kpi-val" id="kpi-br-total">0</div><div class="kpi-sub" data-i18n="br.kpi.bons_recus">bons reçus</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="bl.kpi.montant_total">Montant Total</div><div class="kpi-val" id="kpi-br-montant" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub" data-i18n="bl.kpi.avant_remise">avant remise</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="th.remises">Remises</div><div class="kpi-val" id="kpi-br-remise" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub" data-i18n="bl.kpi.total_accorde">total accordé</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="br.kpi.net_payer">Net à payer</div><div class="kpi-val" id="kpi-br-net" style="font-size:1.1rem;color:var(--gold)">0 DZD</div><div class="kpi-sub" data-i18n="bl.kpi.montant_net">montant net</div></div>
     </div>
     <div class="table-wrap">
       <div class="table-toolbar" style="flex-wrap:wrap;gap:.5rem">
-        <input class="search-inp" id="br-search" placeholder="🔍 Rechercher par n° BR, fournisseur…" oninput="renderBR(this.value)" style="flex:1;min-width:200px">
+        <input class="search-inp" id="br-search" data-i18n-placeholder="br.rechercher" placeholder="🔍 Rechercher par n° BR, fournisseur…" oninput="renderBR(this.value)" style="flex:1;min-width:200px">
         <select class="filter-sel" id="br-filter-fournisseur" onchange="renderBR(document.getElementById('br-search').value)">
-          <option value="">Tous les fournisseurs</option>
+          <option value="" data-i18n="br.tous_fournisseurs">Tous les fournisseurs</option>
         </select>
         <span id="br-count" style="font-size:.75rem;color:var(--text3);margin-left:auto;align-self:center"></span>
       </div>
       <table>
         <thead><tr>
-          <th>N° BR</th><th>Fournisseur</th><th>Date</th>
-          <th style="text-align:right">Montant</th>
-          <th style="text-align:right">Remise</th>
-          <th style="text-align:right">Net</th>
-          <th>Lignes</th>
-          <th style="text-align:center">Actions</th>
+          <th data-i18n="br.num_br">N° BR</th><th data-i18n="th.fournisseur">Fournisseur</th><th data-i18n="th.date">Date</th>
+          <th style="text-align:right" data-i18n="th.montant">Montant</th>
+          <th style="text-align:right" data-i18n="th.remise">Remise</th>
+          <th style="text-align:right" data-i18n="th.net">Net</th>
+          <th data-i18n="th.lignes">Lignes</th>
+          <th style="text-align:center" data-i18n="th.actions">Actions</th>
         </tr></thead>
         <tbody id="tbl-br"></tbody>
       </table>
       <div id="br-empty" style="display:none;text-align:center;padding:3rem;color:var(--text3)">
         <div style="font-size:2.5rem;margin-bottom:.75rem">📥</div>
-        <div style="font-size:.9rem">Aucun bon de réception</div>
-        <div style="font-size:.78rem;margin-top:.35rem">Cliquez sur "Nouveau BR" pour commencer</div>
+        <div style="font-size:.9rem" data-i18n="br.aucun">Aucun bon de réception</div>
+        <div style="font-size:.78rem;margin-top:.35rem" data-i18n="br.cliquez_nouveau">Cliquez sur "Nouveau BR" pour commencer</div>
       </div>
     </div>
   </div>
@@ -3202,6 +3202,34 @@ const I18N = {
     'cl.trier_solde':'Trier : Solde ↓', 'cl.trier_recent':'Trier : Plus récents',
     'cl.nom_raison':'Nom / Raison sociale', 'cl.solde_depart':'Solde départ',
     'btn.exporter':'⬇ Exporter',
+    // Stocks
+    'stk.titre':'Stocks', 'stk.sous_titre':'Quantités calculées automatiquement (Réceptions − Livraisons)',
+    'stk.resync':'🔄 Resynchroniser', 'stk.parametrer':'+ Paramétrer un stock',
+    'stk.kpi.references':'Références suivies', 'stk.kpi.produit_ep':'produit + épaisseur',
+    'stk.kpi.alerte':'En alerte', 'stk.kpi.sous_seuil':'sous le seuil',
+    'stk.kpi.qte_totale':'Quantité totale', 'stk.kpi.toutes_unites':'toutes unités confondues',
+    'stk.rechercher':'🔍 Rechercher un produit…',
+    'stk.qte_actuelle':'Quantité actuelle', 'stk.seuil_alerte':'Seuil alerte',
+    'stk.aucun':'Aucun stock paramétré', 'stk.cliquez_param':'Cliquez sur "+ Paramétrer un stock" pour commencer',
+    'th.produit':'Produit', 'th.epaisseur':'Épaisseur', 'th.unite':'Unité',
+    // Fournisseurs
+    'four.titre':'Fournisseurs', 'four.personne_contact':'Personne Contact', 'th.pays':'Pays',
+    // Règlements Fournisseurs
+    'regf.titre':'Règlements Fournisseurs', 'regf.sous_titre':'Suivi des paiements effectués aux fournisseurs',
+    'regf.kpi.paiements_effectues':'paiements effectués', 'regf.kpi.decaisse':'décaissé',
+    'regf.service_comp':'Service (compensation)', 'regf.marchandise_echangee':'marchandise échangée',
+    'regf.rechercher':'🔍 Rechercher par fournisseur…', 'regf.service':'Service',
+    'regf.cliquez_reglement':'Cliquez sur "+ Règlement" pour commencer',
+    'reg.nouveau':'+ Règlement', 'reg.kpi.total':'Total Règlements', 'reg.espece':'Espèce',
+    'reg.kpi.paiements_cash':'paiements cash', 'reg.tous_types':'Tous types',
+    'reg.cheque':'Chèque', 'reg.virement':'Virement', 'reg.aucun':'Aucun règlement enregistré',
+    'th.fournisseur':'Fournisseur', 'th.reference':'Référence',
+    // Bons de Réception
+    'br.titre':'Bons de Réception', 'br.sous_titre':'Gestion des réceptions fournisseurs',
+    'br.nouveau':'+ Nouveau BR', 'br.kpi.total':'Total BR', 'br.kpi.bons_recus':'bons reçus',
+    'br.kpi.net_payer':'Net à payer', 'br.rechercher':'🔍 Rechercher par n° BR, fournisseur…',
+    'br.tous_fournisseurs':'Tous les fournisseurs', 'br.num_br':'N° BR',
+    'br.aucun':'Aucun bon de réception', 'br.cliquez_nouveau':'Cliquez sur "Nouveau BR" pour commencer',
     // Boutons génériques
     'btn.annuler':'Annuler', 'btn.fermer':'Fermer', 'btn.enregistrer':'Enregistrer',
     'btn.modifier':'Modifier', 'btn.supprimer':'Supprimer', 'btn.imprimer':'Imprimer',
@@ -3287,6 +3315,34 @@ const I18N = {
     'cl.trier_solde':'ترتيب: الرصيد ↓', 'cl.trier_recent':'ترتيب: الأحدث',
     'cl.nom_raison':'الاسم / التسمية الاجتماعية', 'cl.solde_depart':'الرصيد الافتتاحي',
     'btn.exporter':'⬇ تصدير',
+    // المخزون
+    'stk.titre':'المخزون', 'stk.sous_titre':'كميات محسوبة تلقائياً (الاستلام − التسليم)',
+    'stk.resync':'🔄 إعادة المزامنة', 'stk.parametrer':'+ ضبط مخزون',
+    'stk.kpi.references':'مراجع متتبعة', 'stk.kpi.produit_ep':'منتج + سماكة',
+    'stk.kpi.alerte':'تحت التنبيه', 'stk.kpi.sous_seuil':'تحت العتبة',
+    'stk.kpi.qte_totale':'الكمية الإجمالية', 'stk.kpi.toutes_unites':'جميع الوحدات',
+    'stk.rechercher':'🔍 البحث عن منتج…',
+    'stk.qte_actuelle':'الكمية الحالية', 'stk.seuil_alerte':'عتبة التنبيه',
+    'stk.aucun':'لا يوجد مخزون مضبوط', 'stk.cliquez_param':'اضغط على "+ ضبط مخزون" للبدء',
+    'th.produit':'المنتج', 'th.epaisseur':'السماكة', 'th.unite':'الوحدة',
+    // الموردون
+    'four.titre':'الموردون', 'four.personne_contact':'شخص الاتصال', 'th.pays':'البلد',
+    // دفعات الموردين
+    'regf.titre':'دفعات الموردين', 'regf.sous_titre':'تتبع المدفوعات للموردين',
+    'regf.kpi.paiements_effectues':'مدفوعات منجزة', 'regf.kpi.decaisse':'مصروف',
+    'regf.service_comp':'خدمة (مقايضة)', 'regf.marchandise_echangee':'بضائع متبادلة',
+    'regf.rechercher':'🔍 البحث عن مورد…', 'regf.service':'خدمة',
+    'regf.cliquez_reglement':'اضغط على "+ دفعة" للبدء',
+    'reg.nouveau':'+ دفعة', 'reg.kpi.total':'إجمالي الدفعات', 'reg.espece':'نقداً',
+    'reg.kpi.paiements_cash':'مدفوعات نقدية', 'reg.tous_types':'جميع الأنواع',
+    'reg.cheque':'شيك', 'reg.virement':'تحويل', 'reg.aucun':'لا توجد دفعة مسجلة',
+    'th.fournisseur':'المورد', 'th.reference':'المرجع',
+    // سندات الاستلام
+    'br.titre':'سندات الاستلام', 'br.sous_titre':'إدارة استلام الموردين',
+    'br.nouveau':'+ سند استلام جديد', 'br.kpi.total':'إجمالي السندات', 'br.kpi.bons_recus':'سندات مستلمة',
+    'br.kpi.net_payer':'الصافي المستحق', 'br.rechercher':'🔍 البحث برقم السند أو المورد…',
+    'br.tous_fournisseurs':'جميع الموردين', 'br.num_br':'رقم السند',
+    'br.aucun':'لا يوجد سند استلام', 'br.cliquez_nouveau':'اضغط على "سند استلام جديد" للبدء',
     'btn.annuler':'إلغاء', 'btn.fermer':'إغلاق', 'btn.enregistrer':'حفظ',
     'btn.modifier':'تعديل', 'btn.supprimer':'حذف', 'btn.imprimer':'طباعة',
     'btn.exporter_csv':'تصدير CSV', 'btn.rechercher':'بحث…',
@@ -3371,6 +3427,34 @@ const I18N = {
     'cl.trier_solde':'Sort: Balance ↓', 'cl.trier_recent':'Sort: Most recent',
     'cl.nom_raison':'Name / Company name', 'cl.solde_depart':'Opening balance',
     'btn.exporter':'⬇ Export',
+    // Inventory
+    'stk.titre':'Inventory', 'stk.sous_titre':'Quantities calculated automatically (Receiving − Delivery)',
+    'stk.resync':'🔄 Resync', 'stk.parametrer':'+ Set up a stock',
+    'stk.kpi.references':'Tracked references', 'stk.kpi.produit_ep':'product + thickness',
+    'stk.kpi.alerte':'On alert', 'stk.kpi.sous_seuil':'below threshold',
+    'stk.kpi.qte_totale':'Total quantity', 'stk.kpi.toutes_unites':'all units combined',
+    'stk.rechercher':'🔍 Search a product…',
+    'stk.qte_actuelle':'Current quantity', 'stk.seuil_alerte':'Alert threshold',
+    'stk.aucun':'No stock set up', 'stk.cliquez_param':'Click "+ Set up a stock" to get started',
+    'th.produit':'Product', 'th.epaisseur':'Thickness', 'th.unite':'Unit',
+    // Suppliers
+    'four.titre':'Suppliers', 'four.personne_contact':'Contact Person', 'th.pays':'Country',
+    // Supplier Payments
+    'regf.titre':'Supplier Payments', 'regf.sous_titre':'Track payments made to suppliers',
+    'regf.kpi.paiements_effectues':'payments made', 'regf.kpi.decaisse':'disbursed',
+    'regf.service_comp':'Service (compensation)', 'regf.marchandise_echangee':'goods exchanged',
+    'regf.rechercher':'🔍 Search by supplier…', 'regf.service':'Service',
+    'regf.cliquez_reglement':'Click "+ Payment" to get started',
+    'reg.nouveau':'+ Payment', 'reg.kpi.total':'Total Payments', 'reg.espece':'Cash',
+    'reg.kpi.paiements_cash':'cash payments', 'reg.tous_types':'All types',
+    'reg.cheque':'Cheque', 'reg.virement':'Bank transfer', 'reg.aucun':'No payment recorded',
+    'th.fournisseur':'Supplier', 'th.reference':'Reference',
+    // Receiving Notes
+    'br.titre':'Receiving Notes', 'br.sous_titre':'Manage supplier receipts',
+    'br.nouveau':'+ New Receiving Note', 'br.kpi.total':'Total Notes', 'br.kpi.bons_recus':'notes received',
+    'br.kpi.net_payer':'Net to pay', 'br.rechercher':'🔍 Search by note number, supplier…',
+    'br.tous_fournisseurs':'All suppliers', 'br.num_br':'Note No.',
+    'br.aucun':'No receiving note', 'br.cliquez_nouveau':'Click "New Receiving Note" to get started',
     'btn.annuler':'Cancel', 'btn.fermer':'Close', 'btn.enregistrer':'Save',
     'btn.modifier':'Edit', 'btn.supprimer':'Delete', 'btn.imprimer':'Print',
     'btn.exporter_csv':'Export CSV', 'btn.rechercher':'Search…',
@@ -4302,7 +4386,7 @@ function updateBRKPI(){
   if(sel){
     const cur = sel.value;
     const ids = [...new Set((DB.bons_reception||[]).map(b=>b.id_fournisseur))];
-    sel.innerHTML = '<option value="">Tous les fournisseurs</option>'+
+    sel.innerHTML = `<option value="" data-i18n="br.tous_fournisseurs">${t('br.tous_fournisseurs')}</option>`+
       ids.map(id=>`<option value="${id}" ${String(id)===cur?'selected':''}>${fournisseurNomById(id)||'—'}</option>`).join('');
   }
 }
