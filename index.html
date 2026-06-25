@@ -762,43 +762,43 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 <!-- COMMANDES -->
 <div class="page" id="page-commandes">
   <div class="page-header">
-    <div><div class="page-title">📋 Bons de Livraison</div><div class="page-sub">Gestion des bons de livraison clients</div></div>
+    <div><div class="page-title">📋 <span data-i18n="bl.titre">Bons de Livraison</span></div><div class="page-sub" data-i18n="bl.sous_titre">Gestion des bons de livraison clients</div></div>
     <div class="page-actions">
-      <button class="btn" data-perm-module="commandes" data-perm-action="imprimer" onclick="exportBL()">⬇ Exporter CSV</button>
-      <button class="btn btn-primary" data-perm-module="commandes" data-perm-action="creer" onclick="openBLModal()">+ Nouveau BL</button>
+      <button class="btn" data-perm-module="commandes" data-perm-action="imprimer" onclick="exportBL()" data-i18n="btn.exporter_csv">⬇ Exporter CSV</button>
+      <button class="btn btn-primary" data-perm-module="commandes" data-perm-action="creer" onclick="openBLModal()" data-i18n="bl.nouveau">+ Nouveau BL</button>
     </div>
   </div>
   <div class="page-body">
     <!-- KPIs BL -->
     <div class="kpi-grid" id="kpi-bl-grid">
-      <div class="kpi"><div class="kpi-label">Total BL</div><div class="kpi-val" id="kpi-bl-total">0</div><div class="kpi-sub">bons émis</div></div>
-      <div class="kpi"><div class="kpi-label">Montant Total</div><div class="kpi-val" id="kpi-bl-montant" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub">avant remise</div></div>
-      <div class="kpi"><div class="kpi-label">Remises</div><div class="kpi-val" id="kpi-bl-remise" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub">total accordé</div></div>
-      <div class="kpi"><div class="kpi-label">Net à percevoir</div><div class="kpi-val" id="kpi-bl-net" style="font-size:1.1rem;color:var(--gold)">0 DZD</div><div class="kpi-sub">montant net</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="bl.kpi.total">Total BL</div><div class="kpi-val" id="kpi-bl-total">0</div><div class="kpi-sub" data-i18n="bl.kpi.bons_emis">bons émis</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="bl.kpi.montant_total">Montant Total</div><div class="kpi-val" id="kpi-bl-montant" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub" data-i18n="bl.kpi.avant_remise">avant remise</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="th.remises">Remises</div><div class="kpi-val" id="kpi-bl-remise" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub" data-i18n="bl.kpi.total_accorde">total accordé</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="bl.kpi.net_percevoir">Net à percevoir</div><div class="kpi-val" id="kpi-bl-net" style="font-size:1.1rem;color:var(--gold)">0 DZD</div><div class="kpi-sub" data-i18n="bl.kpi.montant_net">montant net</div></div>
     </div>
     <div class="table-wrap">
       <div class="table-toolbar" style="flex-wrap:wrap;gap:.5rem">
-        <input class="search-inp" id="bl-search" placeholder="🔍 Rechercher par n° BL, client…" oninput="renderBL(this.value)" style="flex:1;min-width:200px">
+        <input class="search-inp" id="bl-search" data-i18n-placeholder="bl.rechercher" placeholder="🔍 Rechercher par n° BL, client…" oninput="renderBL(this.value)" style="flex:1;min-width:200px">
         <select class="filter-sel" id="bl-filter-client" onchange="renderBL(document.getElementById('bl-search').value)">
-          <option value="">Tous les clients</option>
+          <option value="" data-i18n="bl.tous_clients">Tous les clients</option>
         </select>
         <span id="bl-count" style="font-size:.75rem;color:var(--text3);margin-left:auto;align-self:center"></span>
       </div>
       <table>
         <thead><tr>
-          <th>N° BL</th><th>Client</th><th>Date</th>
-          <th style="text-align:right">Montant</th>
-          <th style="text-align:right">Remise</th>
-          <th style="text-align:right">Net</th>
-          <th>Lignes</th>
-          <th style="text-align:center">Actions</th>
+          <th data-i18n="bl.num_bl">N° BL</th><th data-i18n="th.client">Client</th><th data-i18n="th.date">Date</th>
+          <th style="text-align:right" data-i18n="th.montant">Montant</th>
+          <th style="text-align:right" data-i18n="th.remise">Remise</th>
+          <th style="text-align:right" data-i18n="th.net">Net</th>
+          <th data-i18n="th.lignes">Lignes</th>
+          <th style="text-align:center" data-i18n="th.actions">Actions</th>
         </tr></thead>
         <tbody id="tbl-bl"></tbody>
       </table>
       <div id="bl-empty" style="display:none;text-align:center;padding:3rem;color:var(--text3)">
         <div style="font-size:2.5rem;margin-bottom:.75rem">📋</div>
-        <div style="font-size:.9rem">Aucun bon de livraison</div>
-        <div style="font-size:.78rem;margin-top:.35rem">Cliquez sur "Nouveau BL" pour commencer</div>
+        <div style="font-size:.9rem" data-i18n="bl.aucun">Aucun bon de livraison</div>
+        <div style="font-size:.78rem;margin-top:.35rem" data-i18n="bl.cliquez_nouveau">Cliquez sur "Nouveau BL" pour commencer</div>
       </div>
     </div>
   </div>
@@ -949,39 +949,39 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 <div class="page" id="page-clients">
   <div class="page-header">
     <div>
-      <div class="page-title">🤝 Clients</div>
-      <div class="page-sub">Gestion complète du portefeuille clients</div>
+      <div class="page-title">🤝 <span data-i18n="cl.titre">Clients</span></div>
+      <div class="page-sub" data-i18n="cl.sous_titre">Gestion complète du portefeuille clients</div>
     </div>
     <div class="page-actions">
-      <button class="btn" onclick="exportClients()">⬇ Exporter</button>
-      <button class="btn btn-primary" onclick="openClientModal()">+ Nouveau client</button>
+      <button class="btn" onclick="exportClients()" data-i18n="btn.exporter">⬇ Exporter</button>
+      <button class="btn btn-primary" onclick="openClientModal()" data-i18n="cl.nouveau">+ Nouveau client</button>
     </div>
   </div>
   <div class="page-body">
 
     <!-- KPIs Clients -->
     <div class="kpi-grid" id="kpi-clients-grid">
-      <div class="kpi"><div class="kpi-label">Total Clients</div><div class="kpi-val" id="kpi-cl-total">0</div><div class="kpi-sub">dans la base</div></div>
-      <div class="kpi"><div class="kpi-label">Entreprises</div><div class="kpi-val" id="kpi-cl-ent">0</div><div class="kpi-sub">clients professionnels</div></div>
-      <div class="kpi"><div class="kpi-label">Créances totales</div><div class="kpi-val" id="kpi-cl-creance" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub">soldes en cours</div></div>
-      <div class="kpi"><div class="kpi-label">Nouveaux (mois)</div><div class="kpi-val" id="kpi-cl-new">0</div><div class="kpi-sub">ce mois-ci</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="cl.kpi.total">Total Clients</div><div class="kpi-val" id="kpi-cl-total">0</div><div class="kpi-sub" data-i18n="cl.kpi.dans_base">dans la base</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="cl.kpi.entreprises">Entreprises</div><div class="kpi-val" id="kpi-cl-ent">0</div><div class="kpi-sub" data-i18n="cl.kpi.clients_pro">clients professionnels</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="cl.kpi.creances">Créances totales</div><div class="kpi-val" id="kpi-cl-creance" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub" data-i18n="cl.kpi.soldes_cours">soldes en cours</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="cl.kpi.nouveaux">Nouveaux (mois)</div><div class="kpi-val" id="kpi-cl-new">0</div><div class="kpi-sub" data-i18n="cl.kpi.ce_mois_ci">ce mois-ci</div></div>
     </div>
 
     <!-- Toolbar recherche + filtre -->
     <div class="table-wrap">
       <div class="table-toolbar" style="flex-wrap:wrap;gap:.5rem">
-        <input class="search-inp" id="cl-search" placeholder="🔍 Rechercher par nom, téléphone, adresse…" oninput="renderClient(this.value)" style="flex:1;min-width:200px">
+        <input class="search-inp" id="cl-search" data-i18n-placeholder="cl.rechercher" placeholder="🔍 Rechercher par nom, téléphone, adresse…" oninput="renderClient(this.value)" style="flex:1;min-width:200px">
         <select class="filter-sel" id="cl-filter-type" onchange="renderClient(document.getElementById('cl-search').value)">
-          <option value="">Tous types</option>
-          <option value="Particulier">Particulier</option>
-          <option value="Entreprise">Entreprise</option>
-          <option value="Projet">Projet</option>
+          <option value="" data-i18n="cl.tous_types">Tous types</option>
+          <option value="Particulier" data-i18n="cl.particulier">Particulier</option>
+          <option value="Entreprise" data-i18n="cl.entreprise">Entreprise</option>
+          <option value="Projet" data-i18n="cl.projet">Projet</option>
         </select>
         <select class="filter-sel" id="cl-filter-sort" onchange="renderClient(document.getElementById('cl-search').value)">
-          <option value="nom">Trier : Nom A→Z</option>
-          <option value="nom_desc">Trier : Nom Z→A</option>
-          <option value="solde">Trier : Solde ↓</option>
-          <option value="recent">Trier : Plus récents</option>
+          <option value="nom" data-i18n="cl.trier_nom_az">Trier : Nom A→Z</option>
+          <option value="nom_desc" data-i18n="cl.trier_nom_za">Trier : Nom Z→A</option>
+          <option value="solde" data-i18n="cl.trier_solde">Trier : Solde ↓</option>
+          <option value="recent" data-i18n="cl.trier_recent">Trier : Plus récents</option>
         </select>
         <span id="cl-count" style="font-size:.75rem;color:var(--text3);margin-left:auto;align-self:center"></span>
       </div>
@@ -990,13 +990,13 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
         <thead>
           <tr>
             <th style="width:40px">#</th>
-            <th>Nom / Raison sociale</th>
-            <th>Téléphone</th>
-            <th>Email</th>
-            <th>Adresse</th>
-            <th>Type</th>
-            <th style="text-align:right">Solde départ</th>
-            <th style="text-align:center">Actions</th>
+            <th data-i18n="cl.nom_raison">Nom / Raison sociale</th>
+            <th data-i18n="th.telephone">Téléphone</th>
+            <th data-i18n="th.email">Email</th>
+            <th data-i18n="th.adresse">Adresse</th>
+            <th data-i18n="th.type">Type</th>
+            <th style="text-align:right" data-i18n="cl.solde_depart">Solde départ</th>
+            <th style="text-align:center" data-i18n="th.actions">Actions</th>
           </tr>
         </thead>
         <tbody id="tbl-client"></tbody>
@@ -1004,8 +1004,8 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 
       <div id="cl-empty" style="display:none;text-align:center;padding:3rem;color:var(--text3)">
         <div style="font-size:2.5rem;margin-bottom:.75rem">🤝</div>
-        <div style="font-size:.9rem">Aucun client trouvé</div>
-        <div style="font-size:.78rem;margin-top:.35rem">Cliquez sur "Nouveau client" pour commencer</div>
+        <div style="font-size:.9rem" data-i18n="cl.aucun">Aucun client trouvé</div>
+        <div style="font-size:.78rem;margin-top:.35rem" data-i18n="cl.cliquez_nouveau">Cliquez sur "Nouveau client" pour commencer</div>
       </div>
     </div>
   </div>
@@ -3179,6 +3179,29 @@ const I18N = {
     'ent.wilaya':'Wilaya (pour signature des contrats)',
     'th.telephone':'Téléphone', 'th.email':'Email',
     'btn.enregistrer_icon':'💾 Enregistrer',
+    // Bons de Livraison
+    'bl.titre':'Bons de Livraison', 'bl.sous_titre':'Gestion des bons de livraison clients',
+    'bl.nouveau':'+ Nouveau BL', 'bl.rechercher':'🔍 Rechercher par n° BL, client…',
+    'bl.tous_clients':'Tous les clients', 'bl.num_bl':'N° BL',
+    'bl.aucun':'Aucun bon de livraison', 'bl.cliquez_nouveau':'Cliquez sur "Nouveau BL" pour commencer',
+    'bl.kpi.total':'Total BL', 'bl.kpi.bons_emis':'bons émis',
+    'bl.kpi.montant_total':'Montant Total', 'bl.kpi.avant_remise':'avant remise',
+    'bl.kpi.total_accorde':'total accordé',
+    'bl.kpi.net_percevoir':'Net à percevoir', 'bl.kpi.montant_net':'montant net',
+    'th.remises':'Remises', 'th.remise':'Remise', 'th.net':'Net', 'th.lignes':'Lignes', 'th.adresse':'Adresse',
+    // Clients
+    'cl.titre':'Clients', 'cl.sous_titre':'Gestion complète du portefeuille clients',
+    'cl.nouveau':'+ Nouveau client', 'cl.rechercher':'🔍 Rechercher par nom, téléphone, adresse…',
+    'cl.aucun':'Aucun client trouvé', 'cl.cliquez_nouveau':'Cliquez sur "Nouveau client" pour commencer',
+    'cl.kpi.total':'Total Clients', 'cl.kpi.dans_base':'dans la base',
+    'cl.kpi.entreprises':'Entreprises', 'cl.kpi.clients_pro':'clients professionnels',
+    'cl.kpi.creances':'Créances totales', 'cl.kpi.soldes_cours':'soldes en cours',
+    'cl.kpi.nouveaux':'Nouveaux (mois)', 'cl.kpi.ce_mois_ci':'ce mois-ci',
+    'cl.tous_types':'Tous types', 'cl.particulier':'Particulier', 'cl.entreprise':'Entreprise', 'cl.projet':'Projet',
+    'cl.trier_nom_az':'Trier : Nom A→Z', 'cl.trier_nom_za':'Trier : Nom Z→A',
+    'cl.trier_solde':'Trier : Solde ↓', 'cl.trier_recent':'Trier : Plus récents',
+    'cl.nom_raison':'Nom / Raison sociale', 'cl.solde_depart':'Solde départ',
+    'btn.exporter':'⬇ Exporter',
     // Boutons génériques
     'btn.annuler':'Annuler', 'btn.fermer':'Fermer', 'btn.enregistrer':'Enregistrer',
     'btn.modifier':'Modifier', 'btn.supprimer':'Supprimer', 'btn.imprimer':'Imprimer',
@@ -3241,6 +3264,29 @@ const I18N = {
     'ent.wilaya':'الولاية (لتوقيع العقود)',
     'th.telephone':'الهاتف', 'th.email':'البريد الإلكتروني',
     'btn.enregistrer_icon':'💾 حفظ',
+    // سندات التسليم
+    'bl.titre':'سندات التسليم', 'bl.sous_titre':'إدارة سندات تسليم العملاء',
+    'bl.nouveau':'+ سند جديد', 'bl.rechercher':'🔍 البحث برقم السند أو العميل…',
+    'bl.tous_clients':'جميع العملاء', 'bl.num_bl':'رقم السند',
+    'bl.aucun':'لا يوجد سند تسليم', 'bl.cliquez_nouveau':'اضغط على "سند جديد" للبدء',
+    'bl.kpi.total':'إجمالي السندات', 'bl.kpi.bons_emis':'سندات صادرة',
+    'bl.kpi.montant_total':'المبلغ الإجمالي', 'bl.kpi.avant_remise':'قبل الخصم',
+    'bl.kpi.total_accorde':'إجمالي الممنوح',
+    'bl.kpi.net_percevoir':'الصافي المستحق', 'bl.kpi.montant_net':'المبلغ الصافي',
+    'th.remises':'الخصومات', 'th.remise':'الخصم', 'th.net':'الصافي', 'th.lignes':'البنود', 'th.adresse':'العنوان',
+    // العملاء
+    'cl.titre':'العملاء', 'cl.sous_titre':'إدارة كاملة لمحفظة العملاء',
+    'cl.nouveau':'+ عميل جديد', 'cl.rechercher':'🔍 البحث بالاسم، الهاتف، العنوان…',
+    'cl.aucun':'لا يوجد عميل', 'cl.cliquez_nouveau':'اضغط على "عميل جديد" للبدء',
+    'cl.kpi.total':'إجمالي العملاء', 'cl.kpi.dans_base':'في القاعدة',
+    'cl.kpi.entreprises':'الشركات', 'cl.kpi.clients_pro':'عملاء محترفون',
+    'cl.kpi.creances':'إجمالي الديون', 'cl.kpi.soldes_cours':'أرصدة جارية',
+    'cl.kpi.nouveaux':'جديد (الشهر)', 'cl.kpi.ce_mois_ci':'هذا الشهر',
+    'cl.tous_types':'جميع الأنواع', 'cl.particulier':'فرد', 'cl.entreprise':'شركة', 'cl.projet':'مشروع',
+    'cl.trier_nom_az':'ترتيب: الاسم أ→ي', 'cl.trier_nom_za':'ترتيب: الاسم ي→أ',
+    'cl.trier_solde':'ترتيب: الرصيد ↓', 'cl.trier_recent':'ترتيب: الأحدث',
+    'cl.nom_raison':'الاسم / التسمية الاجتماعية', 'cl.solde_depart':'الرصيد الافتتاحي',
+    'btn.exporter':'⬇ تصدير',
     'btn.annuler':'إلغاء', 'btn.fermer':'إغلاق', 'btn.enregistrer':'حفظ',
     'btn.modifier':'تعديل', 'btn.supprimer':'حذف', 'btn.imprimer':'طباعة',
     'btn.exporter_csv':'تصدير CSV', 'btn.rechercher':'بحث…',
@@ -3302,6 +3348,29 @@ const I18N = {
     'ent.wilaya':'Province (for contract signature)',
     'th.telephone':'Phone', 'th.email':'Email',
     'btn.enregistrer_icon':'💾 Save',
+    // Delivery Notes
+    'bl.titre':'Delivery Notes', 'bl.sous_titre':'Manage customer delivery notes',
+    'bl.nouveau':'+ New Delivery Note', 'bl.rechercher':'🔍 Search by note number, customer…',
+    'bl.tous_clients':'All customers', 'bl.num_bl':'Note No.',
+    'bl.aucun':'No delivery note', 'bl.cliquez_nouveau':'Click "New Delivery Note" to get started',
+    'bl.kpi.total':'Total Notes', 'bl.kpi.bons_emis':'notes issued',
+    'bl.kpi.montant_total':'Total Amount', 'bl.kpi.avant_remise':'before discount',
+    'bl.kpi.total_accorde':'total granted',
+    'bl.kpi.net_percevoir':'Net to collect', 'bl.kpi.montant_net':'net amount',
+    'th.remises':'Discounts', 'th.remise':'Discount', 'th.net':'Net', 'th.lignes':'Lines', 'th.adresse':'Address',
+    // Customers
+    'cl.titre':'Customers', 'cl.sous_titre':'Full customer portfolio management',
+    'cl.nouveau':'+ New customer', 'cl.rechercher':'🔍 Search by name, phone, address…',
+    'cl.aucun':'No customer found', 'cl.cliquez_nouveau':'Click "New customer" to get started',
+    'cl.kpi.total':'Total Customers', 'cl.kpi.dans_base':'in the database',
+    'cl.kpi.entreprises':'Companies', 'cl.kpi.clients_pro':'business customers',
+    'cl.kpi.creances':'Total receivables', 'cl.kpi.soldes_cours':'current balances',
+    'cl.kpi.nouveaux':'New (month)', 'cl.kpi.ce_mois_ci':'this month',
+    'cl.tous_types':'All types', 'cl.particulier':'Individual', 'cl.entreprise':'Company', 'cl.projet':'Project',
+    'cl.trier_nom_az':'Sort: Name A→Z', 'cl.trier_nom_za':'Sort: Name Z→A',
+    'cl.trier_solde':'Sort: Balance ↓', 'cl.trier_recent':'Sort: Most recent',
+    'cl.nom_raison':'Name / Company name', 'cl.solde_depart':'Opening balance',
+    'btn.exporter':'⬇ Export',
     'btn.annuler':'Cancel', 'btn.fermer':'Close', 'btn.enregistrer':'Save',
     'btn.modifier':'Edit', 'btn.supprimer':'Delete', 'btn.imprimer':'Print',
     'btn.exporter_csv':'Export CSV', 'btn.rechercher':'Search…',
@@ -6297,7 +6366,7 @@ function updateBLKPI(){
   if(sel){
     const cur = sel.value;
     const ids = [...new Set((DB.bons_livraison||[]).map(b=>b.id_client))];
-    sel.innerHTML = '<option value="">Tous les clients</option>' +
+    sel.innerHTML = `<option value="" data-i18n="bl.tous_clients">${t('bl.tous_clients')}</option>` +
       ids.map(id=>`<option value="${id}" ${String(id)===cur?'selected':''}>${clientNomById(id)||'—'}</option>`).join('');
   }
 }
