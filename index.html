@@ -1830,36 +1830,36 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 <!-- ÉTAT — CRÉANCES CLIENTS -->
 <div class="page" id="page-etat-creances">
   <div class="page-header">
-    <div><div class="page-title">📊 État des Créances Clients</div><div class="page-sub">Synthèse achats / règlements / solde par client</div></div>
+    <div><div class="page-title">📊 <span data-i18n="cr.titre">État des Créances Clients</span></div><div class="page-sub" data-i18n="cr.sous_titre">Synthèse achats / règlements / solde par client</div></div>
     <div class="page-actions">
-      <button class="btn" onclick="exportCreances()">⬇ Exporter CSV</button>
-      <button class="btn btn-primary" onclick="printCreances()">🖨 Imprimer l'état</button>
+      <button class="btn" onclick="exportCreances()" data-i18n="btn.exporter_csv">⬇ Exporter CSV</button>
+      <button class="btn btn-primary" onclick="printCreances()" data-i18n="etat.imprimer">🖨 Imprimer l'état</button>
     </div>
   </div>
   <div class="page-body">
     <div class="kpi-grid" id="kpi-creances-grid">
-      <div class="kpi"><div class="kpi-label">Total Achats</div><div class="kpi-val" id="kpi-cr-achats" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub">tous BL confondus</div></div>
-      <div class="kpi"><div class="kpi-label">Total Règlements</div><div class="kpi-val" id="kpi-cr-reg" style="font-size:1.1rem;color:var(--green)">0 DZD</div><div class="kpi-sub">encaissé</div></div>
-      <div class="kpi"><div class="kpi-label">Solde Créances</div><div class="kpi-val" id="kpi-cr-solde" style="font-size:1.1rem;color:var(--gold)">0 DZD</div><div class="kpi-sub">reste à percevoir</div></div>
-      <div class="kpi"><div class="kpi-label">Clients débiteurs</div><div class="kpi-val" id="kpi-cr-nb">0</div><div class="kpi-sub">soldes positifs</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="etat.total_achats">Total Achats</div><div class="kpi-val" id="kpi-cr-achats" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub" data-i18n="cr.tous_bl">tous BL confondus</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="etat.total_reglements">Total Règlements</div><div class="kpi-val" id="kpi-cr-reg" style="font-size:1.1rem;color:var(--green)">0 DZD</div><div class="kpi-sub" data-i18n="reg.encaisse">encaissé</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="cr.solde_creances">Solde Créances</div><div class="kpi-val" id="kpi-cr-solde" style="font-size:1.1rem;color:var(--gold)">0 DZD</div><div class="kpi-sub" data-i18n="cr.reste_percevoir">reste à percevoir</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="cr.clients_debiteurs">Clients débiteurs</div><div class="kpi-val" id="kpi-cr-nb">0</div><div class="kpi-sub" data-i18n="etat.soldes_positifs">soldes positifs</div></div>
     </div>
     <div class="table-wrap">
       <div class="table-toolbar">
-        <input class="search-inp" id="cr-search" placeholder="🔍 Rechercher un client…" oninput="renderCreances(this.value)">
+        <input class="search-inp" id="cr-search" data-i18n-placeholder="cr.rechercher" placeholder="🔍 Rechercher un client…" oninput="renderCreances(this.value)">
       </div>
       <table>
         <thead><tr>
-          <th>Réf. Client</th><th>Nom Client</th>
-          <th style="text-align:right">Total Achat</th>
-          <th style="text-align:right">Total Règlement</th>
-          <th style="text-align:right">Solde</th>
-          <th style="text-align:center">Actions</th>
+          <th data-i18n="etat.ref_client">Réf. Client</th><th data-i18n="etat.nom_client">Nom Client</th>
+          <th style="text-align:right" data-i18n="etat.total_achat">Total Achat</th>
+          <th style="text-align:right" data-i18n="etat.total_reglement">Total Règlement</th>
+          <th style="text-align:right" data-i18n="etat.solde">Solde</th>
+          <th style="text-align:center" data-i18n="th.actions">Actions</th>
         </tr></thead>
         <tbody id="tbl-creances"></tbody>
       </table>
       <div id="creances-empty" style="display:none;text-align:center;padding:3rem;color:var(--text3)">
         <div style="font-size:2.5rem;margin-bottom:.75rem">📊</div>
-        <div style="font-size:.9rem">Aucune donnée client</div>
+        <div style="font-size:.9rem" data-i18n="cr.aucune_donnee">Aucune donnée client</div>
       </div>
     </div>
   </div>
@@ -1868,31 +1868,31 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 <!-- ÉTAT — HISTORIQUE CLIENT -->
 <div class="page" id="page-etat-historique">
   <div class="page-header">
-    <div><div class="page-title">📜 Historique Client</div><div class="page-sub">Relevé chronologique des opérations</div></div>
+    <div><div class="page-title">📜 <span data-i18n="hist.titre">Historique Client</span></div><div class="page-sub" data-i18n="hist.sous_titre">Relevé chronologique des opérations</div></div>
     <div class="page-actions">
-      <button class="btn btn-primary" id="hist-print-btn" onclick="printHistorique()" style="display:none">🖨 Imprimer le relevé</button>
+      <button class="btn btn-primary" id="hist-print-btn" onclick="printHistorique()" style="display:none" data-i18n="hist.imprimer_releve">🖨 Imprimer le relevé</button>
     </div>
   </div>
   <div class="page-body">
     <div class="table-wrap" style="margin-bottom:1rem">
       <div class="table-toolbar">
         <select class="filter-sel" id="hist-client-select" onchange="renderHistorique()" style="flex:1">
-          <option value="">— Sélectionner un client —</option>
+          <option value="" data-i18n="hist.selectionner_client">— Sélectionner un client —</option>
         </select>
       </div>
     </div>
     <div id="hist-content" style="display:none">
       <div class="kpi-grid" id="kpi-hist-grid" style="margin-bottom:1rem">
-        <div class="kpi"><div class="kpi-label">Total Achats</div><div class="kpi-val" id="kpi-hist-achats" style="font-size:1.1rem;color:var(--red)">0 DZD</div></div>
-        <div class="kpi"><div class="kpi-label">Total Règlements</div><div class="kpi-val" id="kpi-hist-reg" style="font-size:1.1rem;color:var(--green)">0 DZD</div></div>
-        <div class="kpi"><div class="kpi-label">Solde Final</div><div class="kpi-val" id="kpi-hist-solde" style="font-size:1.1rem;color:var(--gold)">0 DZD</div></div>
+        <div class="kpi"><div class="kpi-label" data-i18n="etat.total_achats">Total Achats</div><div class="kpi-val" id="kpi-hist-achats" style="font-size:1.1rem;color:var(--red)">0 DZD</div></div>
+        <div class="kpi"><div class="kpi-label" data-i18n="etat.total_reglements">Total Règlements</div><div class="kpi-val" id="kpi-hist-reg" style="font-size:1.1rem;color:var(--green)">0 DZD</div></div>
+        <div class="kpi"><div class="kpi-label" data-i18n="hist.solde_final">Solde Final</div><div class="kpi-val" id="kpi-hist-solde" style="font-size:1.1rem;color:var(--gold)">0 DZD</div></div>
       </div>
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>Date</th><th>Opération</th><th>Référence</th>
-            <th style="text-align:right">Montant</th>
-            <th style="text-align:right">Solde Cumulé</th>
+            <th data-i18n="th.date">Date</th><th data-i18n="caisse.operation">Opération</th><th data-i18n="th.reference">Référence</th>
+            <th style="text-align:right" data-i18n="th.montant">Montant</th>
+            <th style="text-align:right" data-i18n="caisse.solde_cumule">Solde Cumulé</th>
           </tr></thead>
           <tbody id="tbl-historique"></tbody>
         </table>
@@ -1900,7 +1900,7 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
     </div>
     <div id="hist-empty" style="text-align:center;padding:3rem;color:var(--text3)">
       <div style="font-size:2.5rem;margin-bottom:.75rem">📜</div>
-      <div style="font-size:.9rem">Sélectionnez un client pour voir son historique</div>
+      <div style="font-size:.9rem" data-i18n="hist.selectionnez_client">Sélectionnez un client pour voir son historique</div>
     </div>
   </div>
 </div>
@@ -1908,36 +1908,36 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 <!-- ÉTAT — DETTES FOURNISSEURS -->
 <div class="page" id="page-etat-dettes">
   <div class="page-header">
-    <div><div class="page-title">📊 État des Dettes Fournisseurs</div><div class="page-sub">Synthèse achats / règlements / solde par fournisseur</div></div>
+    <div><div class="page-title">📊 <span data-i18n="dt.titre">État des Dettes Fournisseurs</span></div><div class="page-sub" data-i18n="dt.sous_titre">Synthèse achats / règlements / solde par fournisseur</div></div>
     <div class="page-actions">
-      <button class="btn" onclick="exportDettes()">⬇ Exporter CSV</button>
-      <button class="btn btn-primary" onclick="printDettes()">🖨 Imprimer l'état</button>
+      <button class="btn" onclick="exportDettes()" data-i18n="btn.exporter_csv">⬇ Exporter CSV</button>
+      <button class="btn btn-primary" onclick="printDettes()" data-i18n="etat.imprimer">🖨 Imprimer l'état</button>
     </div>
   </div>
   <div class="page-body">
     <div class="kpi-grid" id="kpi-dettes-grid">
-      <div class="kpi"><div class="kpi-label">Total Achats</div><div class="kpi-val" id="kpi-dt-achats" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub">tous BR confondus</div></div>
-      <div class="kpi"><div class="kpi-label">Total Règlements</div><div class="kpi-val" id="kpi-dt-reg" style="font-size:1.1rem;color:var(--green)">0 DZD</div><div class="kpi-sub">décaissé</div></div>
-      <div class="kpi"><div class="kpi-label">Solde Dettes</div><div class="kpi-val" id="kpi-dt-solde" style="font-size:1.1rem;color:var(--gold)">0 DZD</div><div class="kpi-sub">reste à payer</div></div>
-      <div class="kpi"><div class="kpi-label">Fournisseurs créditeurs</div><div class="kpi-val" id="kpi-dt-nb">0</div><div class="kpi-sub">soldes positifs</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="etat.total_achats">Total Achats</div><div class="kpi-val" id="kpi-dt-achats" style="font-size:1.1rem">0 DZD</div><div class="kpi-sub" data-i18n="dt.tous_br">tous BR confondus</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="etat.total_reglements">Total Règlements</div><div class="kpi-val" id="kpi-dt-reg" style="font-size:1.1rem;color:var(--green)">0 DZD</div><div class="kpi-sub" data-i18n="regf.kpi.decaisse">décaissé</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="dt.solde_dettes">Solde Dettes</div><div class="kpi-val" id="kpi-dt-solde" style="font-size:1.1rem;color:var(--gold)">0 DZD</div><div class="kpi-sub" data-i18n="dt.reste_payer">reste à payer</div></div>
+      <div class="kpi"><div class="kpi-label" data-i18n="dt.fournisseurs_crediteurs">Fournisseurs créditeurs</div><div class="kpi-val" id="kpi-dt-nb">0</div><div class="kpi-sub" data-i18n="etat.soldes_positifs">soldes positifs</div></div>
     </div>
     <div class="table-wrap">
       <div class="table-toolbar">
-        <input class="search-inp" id="dt-search" placeholder="🔍 Rechercher un fournisseur…" oninput="renderDettes(this.value)">
+        <input class="search-inp" id="dt-search" data-i18n-placeholder="dt.rechercher" placeholder="🔍 Rechercher un fournisseur…" oninput="renderDettes(this.value)">
       </div>
       <table>
         <thead><tr>
-          <th>Réf. Fournisseur</th><th>Nom Fournisseur</th>
-          <th style="text-align:right">Total Achat</th>
-          <th style="text-align:right">Total Règlement</th>
-          <th style="text-align:right">Solde</th>
-          <th style="text-align:center">Actions</th>
+          <th data-i18n="dt.ref_fournisseur">Réf. Fournisseur</th><th data-i18n="dt.nom_fournisseur">Nom Fournisseur</th>
+          <th style="text-align:right" data-i18n="etat.total_achat">Total Achat</th>
+          <th style="text-align:right" data-i18n="etat.total_reglement">Total Règlement</th>
+          <th style="text-align:right" data-i18n="etat.solde">Solde</th>
+          <th style="text-align:center" data-i18n="th.actions">Actions</th>
         </tr></thead>
         <tbody id="tbl-dettes"></tbody>
       </table>
       <div id="dettes-empty" style="display:none;text-align:center;padding:3rem;color:var(--text3)">
         <div style="font-size:2.5rem;margin-bottom:.75rem">📊</div>
-        <div style="font-size:.9rem">Aucune donnée fournisseur</div>
+        <div style="font-size:.9rem" data-i18n="dt.aucune_donnee">Aucune donnée fournisseur</div>
       </div>
     </div>
   </div>
@@ -1946,31 +1946,31 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 <!-- ÉTAT — HISTORIQUE FOURNISSEUR -->
 <div class="page" id="page-etat-historique-four">
   <div class="page-header">
-    <div><div class="page-title">📜 Historique Fournisseur</div><div class="page-sub">Relevé chronologique des opérations</div></div>
+    <div><div class="page-title">📜 <span data-i18n="histf.titre">Historique Fournisseur</span></div><div class="page-sub" data-i18n="hist.sous_titre">Relevé chronologique des opérations</div></div>
     <div class="page-actions">
-      <button class="btn btn-primary" id="histf-print-btn" onclick="printHistoriqueFour()" style="display:none">🖨 Imprimer le relevé</button>
+      <button class="btn btn-primary" id="histf-print-btn" onclick="printHistoriqueFour()" style="display:none" data-i18n="hist.imprimer_releve">🖨 Imprimer le relevé</button>
     </div>
   </div>
   <div class="page-body">
     <div class="table-wrap" style="margin-bottom:1rem">
       <div class="table-toolbar">
         <select class="filter-sel" id="histf-fournisseur-select" onchange="renderHistoriqueFour()" style="flex:1">
-          <option value="">— Sélectionner un fournisseur —</option>
+          <option value="" data-i18n="histf.selectionner_fournisseur">— Sélectionner un fournisseur —</option>
         </select>
       </div>
     </div>
     <div id="histf-content" style="display:none">
       <div class="kpi-grid" id="kpi-histf-grid" style="margin-bottom:1rem">
-        <div class="kpi"><div class="kpi-label">Total Achats</div><div class="kpi-val" id="kpi-histf-achats" style="font-size:1.1rem;color:var(--red)">0 DZD</div></div>
-        <div class="kpi"><div class="kpi-label">Total Règlements</div><div class="kpi-val" id="kpi-histf-reg" style="font-size:1.1rem;color:var(--green)">0 DZD</div></div>
-        <div class="kpi"><div class="kpi-label">Solde Final</div><div class="kpi-val" id="kpi-histf-solde" style="font-size:1.1rem;color:var(--gold)">0 DZD</div></div>
+        <div class="kpi"><div class="kpi-label" data-i18n="etat.total_achats">Total Achats</div><div class="kpi-val" id="kpi-histf-achats" style="font-size:1.1rem;color:var(--red)">0 DZD</div></div>
+        <div class="kpi"><div class="kpi-label" data-i18n="etat.total_reglements">Total Règlements</div><div class="kpi-val" id="kpi-histf-reg" style="font-size:1.1rem;color:var(--green)">0 DZD</div></div>
+        <div class="kpi"><div class="kpi-label" data-i18n="hist.solde_final">Solde Final</div><div class="kpi-val" id="kpi-histf-solde" style="font-size:1.1rem;color:var(--gold)">0 DZD</div></div>
       </div>
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>Date</th><th>Opération</th><th>Référence</th>
-            <th style="text-align:right">Montant</th>
-            <th style="text-align:right">Solde Cumulé</th>
+            <th data-i18n="th.date">Date</th><th data-i18n="caisse.operation">Opération</th><th data-i18n="th.reference">Référence</th>
+            <th style="text-align:right" data-i18n="th.montant">Montant</th>
+            <th style="text-align:right" data-i18n="caisse.solde_cumule">Solde Cumulé</th>
           </tr></thead>
           <tbody id="tbl-historique-four"></tbody>
         </table>
@@ -1978,7 +1978,7 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
     </div>
     <div id="histf-empty" style="text-align:center;padding:3rem;color:var(--text3)">
       <div style="font-size:2.5rem;margin-bottom:.75rem">📜</div>
-      <div style="font-size:.9rem">Sélectionnez un fournisseur pour voir son historique</div>
+      <div style="font-size:.9rem" data-i18n="histf.selectionnez_fournisseur">Sélectionnez un fournisseur pour voir son historique</div>
     </div>
   </div>
 </div>
@@ -3258,6 +3258,27 @@ const I18N = {
     'fact.montant_dzd':'Montant (DZD)',
     // Dépenses
     'dep.titre':'Dépenses', 'dep.description':'Description', 'dep.categorie':'Catégorie',
+    // États — Créances Clients
+    'cr.titre':'État des Créances Clients', 'cr.sous_titre':'Synthèse achats / règlements / solde par client',
+    'cr.tous_bl':'tous BL confondus', 'cr.solde_creances':'Solde Créances', 'cr.reste_percevoir':'reste à percevoir',
+    'cr.clients_debiteurs':'Clients débiteurs', 'cr.rechercher':'🔍 Rechercher un client…',
+    'cr.aucune_donnee':'Aucune donnée client',
+    'etat.imprimer':"🖨 Imprimer l'état", 'etat.total_achats':'Total Achats', 'etat.total_reglements':'Total Règlements',
+    'etat.soldes_positifs':'soldes positifs', 'etat.ref_client':'Réf. Client', 'etat.nom_client':'Nom Client',
+    'etat.total_achat':'Total Achat', 'etat.total_reglement':'Total Règlement', 'etat.solde':'Solde',
+    // États — Historique Client
+    'hist.titre':'Historique Client', 'hist.sous_titre':'Relevé chronologique des opérations',
+    'hist.imprimer_releve':'🖨 Imprimer le relevé', 'hist.selectionner_client':'— Sélectionner un client —',
+    'hist.solde_final':'Solde Final', 'hist.selectionnez_client':'Sélectionnez un client pour voir son historique',
+    // États — Dettes Fournisseurs
+    'dt.titre':'État des Dettes Fournisseurs', 'dt.sous_titre':'Synthèse achats / règlements / solde par fournisseur',
+    'dt.tous_br':'tous BR confondus', 'dt.solde_dettes':'Solde Dettes', 'dt.reste_payer':'reste à payer',
+    'dt.fournisseurs_crediteurs':'Fournisseurs créditeurs', 'dt.rechercher':'🔍 Rechercher un fournisseur…',
+    'dt.ref_fournisseur':'Réf. Fournisseur', 'dt.nom_fournisseur':'Nom Fournisseur',
+    'dt.aucune_donnee':'Aucune donnée fournisseur',
+    // États — Historique Fournisseur
+    'histf.titre':'Historique Fournisseur', 'histf.selectionner_fournisseur':'— Sélectionner un fournisseur —',
+    'histf.selectionnez_fournisseur':'Sélectionnez un fournisseur pour voir son historique',
     // Boutons génériques
     'btn.annuler':'Annuler', 'btn.fermer':'Fermer', 'btn.enregistrer':'Enregistrer',
     'btn.modifier':'Modifier', 'btn.supprimer':'Supprimer', 'btn.imprimer':'Imprimer',
@@ -3399,6 +3420,27 @@ const I18N = {
     'fact.montant_dzd':'المبلغ (دج)',
     // المصاريف
     'dep.titre':'المصاريف', 'dep.description':'الوصف', 'dep.categorie':'الفئة',
+    // ديون العملاء
+    'cr.titre':'حالة ديون العملاء', 'cr.sous_titre':'ملخص المشتريات / الدفعات / الرصيد حسب العميل',
+    'cr.tous_bl':'جميع سندات التسليم', 'cr.solde_creances':'رصيد الديون', 'cr.reste_percevoir':'المتبقي للتحصيل',
+    'cr.clients_debiteurs':'عملاء مدينون', 'cr.rechercher':'🔍 البحث عن عميل…',
+    'cr.aucune_donnee':'لا توجد بيانات عميل',
+    'etat.imprimer':'🖨 طباعة الحالة', 'etat.total_achats':'إجمالي المشتريات', 'etat.total_reglements':'إجمالي الدفعات',
+    'etat.soldes_positifs':'أرصدة موجبة', 'etat.ref_client':'مرجع العميل', 'etat.nom_client':'اسم العميل',
+    'etat.total_achat':'إجمالي الشراء', 'etat.total_reglement':'إجمالي الدفع', 'etat.solde':'الرصيد',
+    // سجل العميل
+    'hist.titre':'سجل العميل', 'hist.sous_titre':'سجل زمني للعمليات',
+    'hist.imprimer_releve':'🖨 طباعة كشف الحساب', 'hist.selectionner_client':'— اختر عميلاً —',
+    'hist.solde_final':'الرصيد النهائي', 'hist.selectionnez_client':'اختر عميلاً لعرض سجله',
+    // ديون الموردين
+    'dt.titre':'حالة ديون الموردين', 'dt.sous_titre':'ملخص المشتريات / الدفعات / الرصيد حسب المورد',
+    'dt.tous_br':'جميع سندات الاستلام', 'dt.solde_dettes':'رصيد الديون', 'dt.reste_payer':'المتبقي للدفع',
+    'dt.fournisseurs_crediteurs':'موردون دائنون', 'dt.rechercher':'🔍 البحث عن مورد…',
+    'dt.ref_fournisseur':'مرجع المورد', 'dt.nom_fournisseur':'اسم المورد',
+    'dt.aucune_donnee':'لا توجد بيانات مورد',
+    // سجل المورد
+    'histf.titre':'سجل المورد', 'histf.selectionner_fournisseur':'— اختر مورداً —',
+    'histf.selectionnez_fournisseur':'اختر مورداً لعرض سجله',
     'btn.annuler':'إلغاء', 'btn.fermer':'إغلاق', 'btn.enregistrer':'حفظ',
     'btn.modifier':'تعديل', 'btn.supprimer':'حذف', 'btn.imprimer':'طباعة',
     'btn.exporter_csv':'تصدير CSV', 'btn.rechercher':'بحث…',
@@ -3539,6 +3581,27 @@ const I18N = {
     'fact.montant_dzd':'Amount (DZD)',
     // Expenses
     'dep.titre':'Expenses', 'dep.description':'Description', 'dep.categorie':'Category',
+    // Customer Receivables
+    'cr.titre':'Customer Receivables Statement', 'cr.sous_titre':'Purchase / payment / balance summary by customer',
+    'cr.tous_bl':'all delivery notes combined', 'cr.solde_creances':'Receivables Balance', 'cr.reste_percevoir':'remaining to collect',
+    'cr.clients_debiteurs':'Debtor customers', 'cr.rechercher':'🔍 Search a customer…',
+    'cr.aucune_donnee':'No customer data',
+    'etat.imprimer':'🖨 Print statement', 'etat.total_achats':'Total Purchases', 'etat.total_reglements':'Total Payments',
+    'etat.soldes_positifs':'positive balances', 'etat.ref_client':'Customer Ref.', 'etat.nom_client':'Customer Name',
+    'etat.total_achat':'Total Purchase', 'etat.total_reglement':'Total Payment', 'etat.solde':'Balance',
+    // Customer History
+    'hist.titre':'Customer History', 'hist.sous_titre':'Chronological statement of transactions',
+    'hist.imprimer_releve':'🖨 Print statement', 'hist.selectionner_client':'— Select a customer —',
+    'hist.solde_final':'Final Balance', 'hist.selectionnez_client':'Select a customer to view their history',
+    // Supplier Payables
+    'dt.titre':'Supplier Payables Statement', 'dt.sous_titre':'Purchase / payment / balance summary by supplier',
+    'dt.tous_br':'all receiving notes combined', 'dt.solde_dettes':'Payables Balance', 'dt.reste_payer':'remaining to pay',
+    'dt.fournisseurs_crediteurs':'Creditor suppliers', 'dt.rechercher':'🔍 Search a supplier…',
+    'dt.ref_fournisseur':'Supplier Ref.', 'dt.nom_fournisseur':'Supplier Name',
+    'dt.aucune_donnee':'No supplier data',
+    // Supplier History
+    'histf.titre':'Supplier History', 'histf.selectionner_fournisseur':'— Select a supplier —',
+    'histf.selectionnez_fournisseur':'Select a supplier to view their history',
     'btn.annuler':'Cancel', 'btn.fermer':'Close', 'btn.enregistrer':'Save',
     'btn.modifier':'Edit', 'btn.supprimer':'Delete', 'btn.imprimer':'Print',
     'btn.exporter_csv':'Export CSV', 'btn.rechercher':'Search…',
@@ -4990,7 +5053,7 @@ function fillHistClientSelect(){
   const sel=document.getElementById('hist-client-select');
   if(!sel) return;
   const cur=sel.value;
-  sel.innerHTML='<option value="">— Sélectionner un client —</option>'+
+  sel.innerHTML=`<option value="" data-i18n="hist.selectionner_client">${t('hist.selectionner_client')}</option>`+
     (DB.clients||[]).map(c=>`<option value="${c.id}" ${String(c.id)===cur?'selected':''}>${c.nom||c.raison_sociale||'—'}</option>`).join('');
 }
 
@@ -6292,7 +6355,7 @@ function fillHistFourSelect(){
   const sel=document.getElementById('histf-fournisseur-select');
   if(!sel) return;
   const cur=sel.value;
-  sel.innerHTML='<option value="">— Sélectionner un fournisseur —</option>'+
+  sel.innerHTML=`<option value="" data-i18n="histf.selectionner_fournisseur">${t('histf.selectionner_fournisseur')}</option>`+
     (DB.fournisseurs||[]).map(f=>`<option value="${f.id}" ${String(f.id)===cur?'selected':''}>${f.nom||'—'}</option>`).join('');
 }
 
