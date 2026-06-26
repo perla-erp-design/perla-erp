@@ -1030,15 +1030,15 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
       <!-- Ligne 1: Nom + Type -->
       <div style="display:grid;grid-template-columns:1fr 150px;gap:.75rem">
         <div class="form-group">
-          <label class="form-label">Nom / Raison sociale <span style="color:var(--red)">*</span></label>
+          <label class="form-label" data-i18n="cl.nom_raison_req">Nom / Raison sociale <span style="color:var(--red)">*</span></label>
           <input class="form-inp" id="cl-nom" type="text" placeholder="Ex: HAMMADI Karim, EURL BATIMEX…">
         </div>
         <div class="form-group">
-          <label class="form-label">Type</label>
+          <label class="form-label" data-i18n="th.type">Type</label>
           <select class="form-inp" id="cl-type">
-            <option>Particulier</option>
-            <option>Entreprise</option>
-            <option>Projet</option>
+            <option value="Particulier" data-i18n="cl.particulier">Particulier</option>
+            <option value="Entreprise" data-i18n="cl.entreprise">Entreprise</option>
+            <option value="Projet" data-i18n="cl.projet">Projet</option>
           </select>
         </div>
       </div>
@@ -1046,31 +1046,31 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
       <!-- Ligne 2: Téléphone + N° client -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
         <div class="form-group">
-          <label class="form-label">Téléphone</label>
+          <label class="form-label" data-i18n="th.telephone">Téléphone</label>
           <input class="form-inp" id="cl-telephone" type="tel" placeholder="0550 000 000">
         </div>
         <div class="form-group">
-          <label class="form-label">N° client (optionnel)</label>
-          <input class="form-inp" id="cl-numero" type="text" placeholder="Auto si vide">
+          <label class="form-label" data-i18n="cl.numero_client">N° client (optionnel)</label>
+          <input class="form-inp" id="cl-numero" type="text" data-i18n-placeholder="cl.auto_si_vide" placeholder="Auto si vide">
         </div>
       </div>
 
       <!-- Adresse -->
       <div class="form-group">
-        <label class="form-label">Adresse complète</label>
+        <label class="form-label" data-i18n="cl.adresse_complete">Adresse complète</label>
         <input class="form-inp" id="cl-adresse" type="text" placeholder="Rue, cité, wilaya…">
       </div>
 
       <!-- Solde départ -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
         <div class="form-group">
-          <label class="form-label">Solde de départ (DZD)</label>
+          <label class="form-label" data-i18n="cl.solde_depart_dzd">Solde de départ (DZD)</label>
           <input class="form-inp" id="cl-solde" type="number" placeholder="0" min="0" step="100">
-          <div style="font-size:.7rem;color:var(--text3);margin-top:.3rem">Solde initial importé ou créance de départ</div>
+          <div style="font-size:.7rem;color:var(--text3);margin-top:.3rem" data-i18n="cl.solde_initial_help">Solde initial importé ou créance de départ</div>
         </div>
         <div class="form-group">
-          <label class="form-label">Notes internes</label>
-          <input class="form-inp" id="cl-notes" type="text" placeholder="Remarques…">
+          <label class="form-label" data-i18n="cl.notes_internes">Notes internes</label>
+          <input class="form-inp" id="cl-notes" type="text" data-i18n-placeholder="cl.remarques" placeholder="Remarques…">
         </div>
       </div>
 
@@ -1078,8 +1078,8 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 
     <!-- Footer modal -->
     <div style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;gap:.6rem;justify-content:flex-end">
-      <button class="btn" onclick="closeClientModal()">Annuler</button>
-      <button class="btn btn-primary" id="cl-save-btn" onclick="saveClient()">💾 Enregistrer</button>
+      <button class="btn" onclick="closeClientModal()" data-i18n="btn.annuler">Annuler</button>
+      <button class="btn btn-primary" id="cl-save-btn" onclick="saveClient()" data-i18n="btn.enregistrer_icon">💾 Enregistrer</button>
     </div>
   </div>
 </div>
@@ -3197,6 +3197,11 @@ const I18N = {
     'ligne.qte_short':'Qté', 'ligne.pu_short':'P.U (DZD)',
     'ligne.sous_total':'Sous-total lignes', 'ligne.total':'Total',
     'ligne.enregistrer_lignes':'💾 Enregistrer les lignes',
+    // Modal Client
+    'cl.nom_raison_req':'Nom / Raison sociale *', 'cl.numero_client':'N° client (optionnel)',
+    'cl.auto_si_vide':'Auto si vide', 'cl.adresse_complete':'Adresse complète',
+    'cl.solde_depart_dzd':'Solde de départ (DZD)', 'cl.solde_initial_help':'Solde initial importé ou créance de départ',
+    'cl.notes_internes':'Notes internes', 'cl.remarques':'Remarques…',
     'bl.kpi.total':'Total BL', 'bl.kpi.bons_emis':'bons émis',
     'bl.kpi.montant_total':'Montant Total', 'bl.kpi.avant_remise':'avant remise',
     'bl.kpi.total_accorde':'total accordé',
@@ -3376,6 +3381,11 @@ const I18N = {
     'ligne.qte_short':'الكمية', 'ligne.pu_short':'سعر الوحدة (دج)',
     'ligne.sous_total':'إجمالي البنود', 'ligne.total':'الإجمالي',
     'ligne.enregistrer_lignes':'💾 حفظ البنود',
+    // نافذة العميل
+    'cl.nom_raison_req':'الاسم / التسمية الاجتماعية *', 'cl.numero_client':'رقم العميل (اختياري)',
+    'cl.auto_si_vide':'تلقائي إذا فارغ', 'cl.adresse_complete':'العنوان الكامل',
+    'cl.solde_depart_dzd':'الرصيد الافتتاحي (دج)', 'cl.solde_initial_help':'رصيد مستورد أو دين سابق',
+    'cl.notes_internes':'ملاحظات داخلية', 'cl.remarques':'ملاحظات…',
     'bl.kpi.total':'إجمالي السندات', 'bl.kpi.bons_emis':'سندات صادرة',
     'bl.kpi.montant_total':'المبلغ الإجمالي', 'bl.kpi.avant_remise':'قبل الخصم',
     'bl.kpi.total_accorde':'إجمالي الممنوح',
@@ -3554,6 +3564,11 @@ const I18N = {
     'ligne.qte_short':'Qty', 'ligne.pu_short':'Unit Price (DZD)',
     'ligne.sous_total':'Lines subtotal', 'ligne.total':'Total',
     'ligne.enregistrer_lignes':'💾 Save lines',
+    // Client modal
+    'cl.nom_raison_req':'Name / Company name *', 'cl.numero_client':'Customer No. (optional)',
+    'cl.auto_si_vide':'Auto if empty', 'cl.adresse_complete':'Full address',
+    'cl.solde_depart_dzd':'Opening balance (DZD)', 'cl.solde_initial_help':'Imported opening balance or initial debt',
+    'cl.notes_internes':'Internal notes', 'cl.remarques':'Notes…',
     'bl.kpi.total':'Total Notes', 'bl.kpi.bons_emis':'notes issued',
     'bl.kpi.montant_total':'Total Amount', 'bl.kpi.avant_remise':'before discount',
     'bl.kpi.total_accorde':'total granted',
