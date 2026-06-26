@@ -3202,6 +3202,17 @@ const I18N = {
     'cl.auto_si_vide':'Auto si vide', 'cl.adresse_complete':'Adresse complète',
     'cl.solde_depart_dzd':'Solde de départ (DZD)', 'cl.solde_initial_help':'Solde initial importé ou créance de départ',
     'cl.notes_internes':'Notes internes', 'cl.remarques':'Remarques…',
+    // Formulaires génériques (Employés, Départements, Commandes, Factures, Dépenses, Fournisseurs)
+    'form.employe':'Employé', 'form.nom_complet':'Nom complet',
+    'form.actif':'Actif', 'form.vacant':'Vacant', 'form.conge':'Congé',
+    'form.date_naissance':'Date de naissance', 'form.lieu_naissance':'Lieu de naissance',
+    'form.departement':'Département', 'form.commande':'Commande', 'form.reference':'Référence',
+    'form.produit_description':'Produit / Description', 'form.quantite':'Quantité',
+    'form.en_attente':'En attente', 'form.en_cours':'En cours', 'form.terminee':'Terminée',
+    'form.livree':'Livrée', 'form.annulee':'Annulée', 'form.payee':'Payée', 'form.impayee':'Impayée',
+    'cl.titre_singulier':'Client', 'cl.solde_depart':'Solde départ',
+    'four.titre_singulier':'Fournisseur', 'four.local':'Local', 'four.import':'Import', 'four.les_deux':'Les deux',
+    'fact.titre_singulier':'Facture', 'dep.titre_singulier':'Dépense',
     'bl.kpi.total':'Total BL', 'bl.kpi.bons_emis':'bons émis',
     'bl.kpi.montant_total':'Montant Total', 'bl.kpi.avant_remise':'avant remise',
     'bl.kpi.total_accorde':'total accordé',
@@ -3386,6 +3397,17 @@ const I18N = {
     'cl.auto_si_vide':'تلقائي إذا فارغ', 'cl.adresse_complete':'العنوان الكامل',
     'cl.solde_depart_dzd':'الرصيد الافتتاحي (دج)', 'cl.solde_initial_help':'رصيد مستورد أو دين سابق',
     'cl.notes_internes':'ملاحظات داخلية', 'cl.remarques':'ملاحظات…',
+    // نماذج عامة (الموظفون، الأقسام، الطلبات، الفواتير، المصاريف، الموردون)
+    'form.employe':'موظف', 'form.nom_complet':'الاسم الكامل',
+    'form.actif':'نشط', 'form.vacant':'شاغر', 'form.conge':'في عطلة',
+    'form.date_naissance':'تاريخ الميلاد', 'form.lieu_naissance':'مكان الميلاد',
+    'form.departement':'قسم', 'form.commande':'طلب', 'form.reference':'المرجع',
+    'form.produit_description':'المنتج / الوصف', 'form.quantite':'الكمية',
+    'form.en_attente':'قيد الانتظار', 'form.en_cours':'قيد التنفيذ', 'form.terminee':'منتهية',
+    'form.livree':'تم التسليم', 'form.annulee':'ملغاة', 'form.payee':'مدفوعة', 'form.impayee':'غير مدفوعة',
+    'cl.titre_singulier':'عميل', 'cl.solde_depart':'الرصيد الافتتاحي',
+    'four.titre_singulier':'مورد', 'four.local':'محلي', 'four.import':'استيراد', 'four.les_deux':'كلاهما',
+    'fact.titre_singulier':'فاتورة', 'dep.titre_singulier':'مصروف',
     'bl.kpi.total':'إجمالي السندات', 'bl.kpi.bons_emis':'سندات صادرة',
     'bl.kpi.montant_total':'المبلغ الإجمالي', 'bl.kpi.avant_remise':'قبل الخصم',
     'bl.kpi.total_accorde':'إجمالي الممنوح',
@@ -3569,6 +3591,17 @@ const I18N = {
     'cl.auto_si_vide':'Auto if empty', 'cl.adresse_complete':'Full address',
     'cl.solde_depart_dzd':'Opening balance (DZD)', 'cl.solde_initial_help':'Imported opening balance or initial debt',
     'cl.notes_internes':'Internal notes', 'cl.remarques':'Notes…',
+    // Generic forms (Employees, Departments, Orders, Invoices, Expenses, Suppliers)
+    'form.employe':'Employee', 'form.nom_complet':'Full name',
+    'form.actif':'Active', 'form.vacant':'Vacant', 'form.conge':'On leave',
+    'form.date_naissance':'Date of birth', 'form.lieu_naissance':'Place of birth',
+    'form.departement':'Department', 'form.commande':'Order', 'form.reference':'Reference',
+    'form.produit_description':'Product / Description', 'form.quantite':'Quantity',
+    'form.en_attente':'Pending', 'form.en_cours':'In progress', 'form.terminee':'Completed',
+    'form.livree':'Delivered', 'form.annulee':'Cancelled', 'form.payee':'Paid', 'form.impayee':'Unpaid',
+    'cl.titre_singulier':'Customer', 'cl.solde_depart':'Opening balance',
+    'four.titre_singulier':'Supplier', 'four.local':'Local', 'four.import':'Import', 'four.les_deux':'Both',
+    'fact.titre_singulier':'Invoice', 'dep.titre_singulier':'Expense',
     'bl.kpi.total':'Total Notes', 'bl.kpi.bons_emis':'notes issued',
     'bl.kpi.montant_total':'Total Amount', 'bl.kpi.avant_remise':'before discount',
     'bl.kpi.total_accorde':'total granted',
@@ -7939,43 +7972,43 @@ function renderDashboard(){
 
 /* ─── MODAL FORMS ─── */
 const FORMS={
-  emp:{title:'Employé',table:'employes',fields:[
-    {k:'nom',l:'Nom complet',t:'text'},{k:'poste',l:'Poste',t:'text'},
-    {k:'departement',l:'Département',t:'text'},{k:'sous_departement',l:'Sous-département',t:'text'},
-    {k:'tache',l:'Tâche',t:'text'},{k:'statut',l:'Statut',t:'select',opts:['Actif','Vacant','Congé']},
-    {k:'date_naissance',l:'Date de naissance',t:'date'},{k:'lieu_naissance',l:'Lieu de naissance',t:'text'},
-    {k:'adresse',l:'Adresse',t:'text'},{k:'telephone',l:'Téléphone',t:'text'}
+  emp:{titleKey:'form.employe',title:'Employé',table:'employes',fields:[
+    {k:'nom',l:'Nom complet',lkey:'form.nom_complet',t:'text'},{k:'poste',l:'Poste',lkey:'th.poste',t:'text'},
+    {k:'departement',l:'Département',lkey:'th.departement',t:'text'},{k:'sous_departement',l:'Sous-département',lkey:'th.sous_departement',t:'text'},
+    {k:'tache',l:'Tâche',lkey:'th.tache',t:'text'},{k:'statut',l:'Statut',lkey:'th.statut',t:'select',opts:['Actif','Vacant','Congé'],optsKeys:['form.actif','form.vacant','form.conge']},
+    {k:'date_naissance',l:'Date de naissance',lkey:'form.date_naissance',t:'date'},{k:'lieu_naissance',l:'Lieu de naissance',lkey:'form.lieu_naissance',t:'text'},
+    {k:'adresse',l:'Adresse',lkey:'th.adresse',t:'text'},{k:'telephone',l:'Téléphone',lkey:'th.telephone',t:'text'}
   ]},
-  dept:{title:'Département',table:'departements',fields:[
-    {k:'nom',l:'Département',t:'text'},{k:'sous_departement',l:'Sous-département',t:'text'}
+  dept:{titleKey:'form.departement',title:'Département',table:'departements',fields:[
+    {k:'nom',l:'Département',lkey:'th.departement',t:'text'},{k:'sous_departement',l:'Sous-département',lkey:'th.sous_departement',t:'text'}
   ]},
-  cmd:{title:'Commande',table:'commandes',fields:[
-    {k:'reference',l:'Référence',t:'text'},{k:'client',l:'Client',t:'text'},
-    {k:'produit',l:'Produit / Description',t:'text'},
-    {k:'quantite',l:'Quantité',t:'number'},{k:'montant',l:'Montant (DZD)',t:'number'},
-    {k:'date_commande',l:'Date',t:'date'},
-    {k:'statut',l:'Statut',t:'select',opts:['En attente','En cours','Terminée','Livrée','Annulée']}
+  cmd:{titleKey:'form.commande',title:'Commande',table:'commandes',fields:[
+    {k:'reference',l:'Référence',lkey:'form.reference',t:'text'},{k:'client',l:'Client',lkey:'th.client',t:'text'},
+    {k:'produit',l:'Produit / Description',lkey:'form.produit_description',t:'text'},
+    {k:'quantite',l:'Quantité',lkey:'form.quantite',t:'number'},{k:'montant',l:'Montant (DZD)',lkey:'fact.montant_dzd',t:'number'},
+    {k:'date_commande',l:'Date',lkey:'th.date',t:'date'},
+    {k:'statut',l:'Statut',lkey:'th.statut',t:'select',opts:['En attente','En cours','Terminée','Livrée','Annulée'],optsKeys:['form.en_attente','form.en_cours','form.terminee','form.livree','form.annulee']}
   ]},
-  client:{title:'Client',table:'clients',fields:[
-    {k:'nom',l:'Nom',t:'text'},{k:'telephone',l:'Téléphone',t:'text'},{k:'email',l:'Email',t:'text'},
-    {k:'adresse',l:'Adresse',t:'text'},
-    {k:'solde_depart',l:'Solde départ',t:'number'},
-    {k:'type',l:'Type',t:'select',opts:['Particulier','Entreprise','Projet']}
+  client:{titleKey:'cl.titre_singulier',title:'Client',table:'clients',fields:[
+    {k:'nom',l:'Nom',lkey:'th.nom',t:'text'},{k:'telephone',l:'Téléphone',lkey:'th.telephone',t:'text'},{k:'email',l:'Email',lkey:'th.email',t:'text'},
+    {k:'adresse',l:'Adresse',lkey:'th.adresse',t:'text'},
+    {k:'solde_depart',l:'Solde départ',lkey:'cl.solde_depart',t:'number'},
+    {k:'type',l:'Type',lkey:'th.type',t:'select',opts:['Particulier','Entreprise','Projet'],optsKeys:['cl.particulier','cl.entreprise','cl.projet']}
   ]},
-  four:{title:'Fournisseur',table:'fournisseurs',fields:[
-    {k:'nom',l:'Nom',t:'text'},{k:'pays',l:'Pays',t:'text'},
-    {k:'adresse',l:'Adresse',t:'text'},{k:'personne_contact',l:'Personne à contacter',t:'text'},
-    {k:'telephone',l:'Téléphone',t:'text'},{k:'email',l:'Email',t:'text'},
-    {k:'type',l:'Type',t:'select',opts:['Local','Import','Les deux']}
+  four:{titleKey:'four.titre_singulier',title:'Fournisseur',table:'fournisseurs',fields:[
+    {k:'nom',l:'Nom',lkey:'th.nom',t:'text'},{k:'pays',l:'Pays',lkey:'th.pays',t:'text'},
+    {k:'adresse',l:'Adresse',lkey:'th.adresse',t:'text'},{k:'personne_contact',l:'Personne à contacter',lkey:'four.personne_contact',t:'text'},
+    {k:'telephone',l:'Téléphone',lkey:'th.telephone',t:'text'},{k:'email',l:'Email',lkey:'th.email',t:'text'},
+    {k:'type',l:'Type',lkey:'th.type',t:'select',opts:['Local','Import','Les deux'],optsKeys:['four.local','four.import','four.les_deux']}
   ]},
-  fact:{title:'Facture',table:'factures',fields:[
-    {k:'numero',l:'N° Facture',t:'text'},{k:'client',l:'Client',t:'text'},
-    {k:'montant',l:'Montant (DZD)',t:'number'},{k:'date_facture',l:'Date',t:'date'},
-    {k:'statut',l:'Statut',t:'select',opts:['En attente','Payée','Impayée','Annulée']}
+  fact:{titleKey:'fact.titre_singulier',title:'Facture',table:'factures',fields:[
+    {k:'numero',l:'N° Facture',lkey:'fact.num_facture',t:'text'},{k:'client',l:'Client',lkey:'th.client',t:'text'},
+    {k:'montant',l:'Montant (DZD)',lkey:'fact.montant_dzd',t:'number'},{k:'date_facture',l:'Date',lkey:'th.date',t:'date'},
+    {k:'statut',l:'Statut',lkey:'th.statut',t:'select',opts:['En attente','Payée','Impayée','Annulée'],optsKeys:['form.en_attente','form.payee','form.impayee','form.annulee']}
   ]},
-  dep:{title:'Dépense',table:'depenses',fields:[
-    {k:'description',l:'Description',t:'text'},{k:'categorie',l:'Catégorie',t:'text'},
-    {k:'montant',l:'Montant (DZD)',t:'number'},{k:'date_depense',l:'Date',t:'date'}
+  dep:{titleKey:'dep.titre_singulier',title:'Dépense',table:'depenses',fields:[
+    {k:'description',l:'Description',lkey:'dep.description',t:'text'},{k:'categorie',l:'Catégorie',lkey:'dep.categorie',t:'text'},
+    {k:'montant',l:'Montant (DZD)',lkey:'fact.montant_dzd',t:'number'},{k:'date_depense',l:'Date',lkey:'th.date',t:'date'}
   ]}
 };
 
@@ -7983,18 +8016,24 @@ let currentForm=null;
 function openModal(key,data=null){
   const f=FORMS[key]; if(!f) return;
   currentForm=key; editId=data?data.id:null;
-  document.getElementById('modal-title').textContent=(data?'Modifier ':'Ajouter ')+f.title;
+  const titleText = f.titleKey ? t(f.titleKey) : f.title;
+  document.getElementById('modal-title').textContent=(data?t('btn.modifier')+' ':t('btn.ajouter_simple')+' ')+titleText;
   const pairs=[];
   for(let i=0;i<f.fields.length;i+=2) pairs.push(f.fields.slice(i,i+2));
   document.getElementById('modal-body').innerHTML=pairs.map(pair=>`
-    <div class="form-row">${pair.map(fi=>`
+    <div class="form-row">${pair.map(fi=>{
+      const labelText = fi.lkey ? t(fi.lkey) : fi.l;
+      return `
       <div class="form-group">
-        <label class="form-label">${fi.l}</label>
+        <label class="form-label">${labelText}</label>
         ${fi.t==='select'
-          ?`<select class="form-inp" id="fi-${fi.k}">${fi.opts.map(o=>`<option${data&&data[fi.k]===o?' selected':''}>${o}</option>`).join('')}</select>`
-          :`<input class="form-inp" type="${fi.t}" id="fi-${fi.k}" placeholder="${fi.l}" value="${data?data[fi.k]||'':''}">`
+          ?`<select class="form-inp" id="fi-${fi.k}">${fi.opts.map((o,idx)=>{
+              const optLabel = fi.optsKeys ? t(fi.optsKeys[idx]) : o;
+              return `<option value="${o}"${data&&data[fi.k]===o?' selected':''}>${optLabel}</option>`;
+            }).join('')}</select>`
+          :`<input class="form-inp" type="${fi.t}" id="fi-${fi.k}" placeholder="${labelText}" value="${data?data[fi.k]||'':''}">`
         }
-      </div>`).join('')}
+      </div>`;}).join('')}
     </div>`).join('');
   document.getElementById('modal-overlay').classList.add('open');
 }
