@@ -1702,35 +1702,35 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
     </div>
     <div style="padding:1.25rem;display:grid;gap:.9rem">
       <div>
-        <label class="form-label">Fournisseur *</label>
+        <label class="form-label" data-i18n="th.fournisseur">Fournisseur *</label>
         <select class="form-inp" id="br-fournisseur-select">
-          <option value="">— Sélectionner un fournisseur —</option>
+          <option value="" data-i18n="br.selectionner_fournisseur">— Sélectionner un fournisseur —</option>
         </select>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
         <div>
-          <label class="form-label">Montant Total (DZD)</label>
+          <label class="form-label" data-i18n="bl.montant_total">Montant Total (DZD)</label>
           <div class="form-inp" id="br-montant" style="background:var(--bg4);color:var(--text2);display:flex;align-items:center" title="Calculé automatiquement à partir des lignes" data-raw="0">0 DZD</div>
         </div>
         <div>
-          <label class="form-label">Remise (DZD)</label>
+          <label class="form-label" data-i18n="bl.remise_dzd">Remise (DZD)</label>
           <input class="form-inp" id="br-remise" type="number" min="0" step="0.01" placeholder="0.00" oninput="calcBRNet()">
         </div>
       </div>
       <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r8);padding:.75rem 1rem;display:flex;justify-content:space-between;align-items:center">
-        <span style="font-size:.8rem;color:var(--text3)">Net à payer</span>
+        <span style="font-size:.8rem;color:var(--text3)" data-i18n="br.kpi.net_payer">Net à payer</span>
         <span id="br-net-display" style="font-size:1.1rem;font-weight:700;color:var(--gold)">0 DZD</span>
       </div>
       <div>
-        <label class="form-label">Notes</label>
+        <label class="form-label" data-i18n="th.notes">Notes</label>
         <textarea class="form-inp" id="br-notes" rows="2" placeholder="Remarques éventuelles…" style="resize:vertical"></textarea>
       </div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border);flex-wrap:wrap">
       <button class="btn" id="br-cancel-btn" onclick="closeBRModal()">Annuler</button>
-      <button class="btn" id="br-detail-btn" onclick="openBRLignesModal()">📄 Détail Lignes</button>
-      <button class="btn" id="br-print-btn" onclick="printBR()" style="display:none">🖨 Imprimer BR</button>
-      <button class="btn btn-primary" id="br-save-btn" onclick="saveBR()" disabled style="opacity:.45;cursor:not-allowed" title="Ajoutez au moins une ligne avant d'enregistrer">💾 Enregistrer</button>
+      <button class="btn" id="br-detail-btn" onclick="openBRLignesModal()" data-i18n="bl.detail_lignes">📄 Détail Lignes</button>
+      <button class="btn" id="br-print-btn" onclick="printBR()" style="display:none" data-i18n="br.imprimer_br">🖨 Imprimer BR</button>
+      <button class="btn btn-primary" id="br-save-btn" onclick="saveBR()" disabled style="opacity:.45;cursor:not-allowed" title="Ajoutez au moins une ligne avant d'enregistrer" data-i18n="btn.enregistrer_icon">💾 Enregistrer</button>
     </div>
   </div>
 </div>
@@ -1747,61 +1747,61 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
     </div>
     <div style="padding:1.25rem">
       <div id="br-ligne-form-ajout" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r8);padding:1rem;margin-bottom:1rem">
-        <div style="font-size:.75rem;font-weight:600;color:var(--gold-l);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.08em">+ Ajouter une ligne</div>
+        <div style="font-size:.75rem;font-weight:600;color:var(--gold-l);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.08em" data-i18n="ligne.ajouter">+ Ajouter une ligne</div>
         <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:.6rem;margin-bottom:.6rem">
           <div>
-            <label class="form-label">Produit *</label>
+            <label class="form-label" data-i18n="ligne.produit">Produit *</label>
             <select class="form-inp" id="br-ligne-produit">
-              <option value="">— Produit —</option>
+              <option value="" data-i18n="ligne.produit_placeholder">— Produit —</option>
             </select>
           </div>
           <div>
-            <label class="form-label">Long. (m)</label>
+            <label class="form-label" data-i18n="ligne.long">Long. (m)</label>
             <input class="form-inp" id="br-ligne-long" type="number" step="0.01" min="0" placeholder="0.00" oninput="calcBRLigneMontant()">
           </div>
           <div>
-            <label class="form-label">Larg. (m)</label>
+            <label class="form-label" data-i18n="ligne.larg">Larg. (m)</label>
             <input class="form-inp" id="br-ligne-larg" type="number" step="0.01" min="0" placeholder="0.00" oninput="calcBRLigneMontant()">
           </div>
           <div>
-            <label class="form-label">Ép. (m)</label>
+            <label class="form-label" data-i18n="ligne.ep">Ép. (m)</label>
             <input class="form-inp" id="br-ligne-ep" type="number" step="0.001" min="0" placeholder="0.000">
           </div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:.6rem;align-items:end">
           <div>
-            <label class="form-label">Unité calc.</label>
+            <label class="form-label" data-i18n="ligne.unite_calc">Unité calc.</label>
             <select class="form-inp" id="br-ligne-unite">
               <option value="M²">M²</option>
               <option value="M³">M³</option>
               <option value="ML">ML</option>
-              <option value="U">Unité</option>
+              <option value="U" data-i18n="ligne.unite_u">Unité</option>
             </select>
           </div>
           <div>
-            <label class="form-label">Quantité *</label>
+            <label class="form-label" data-i18n="ligne.quantite">Quantité *</label>
             <input class="form-inp" id="br-ligne-qte" type="number" step="0.01" min="0" placeholder="0.00" oninput="calcBRLigneMontant()">
           </div>
           <div>
-            <label class="form-label">Prix Unit. (DZD)</label>
+            <label class="form-label" data-i18n="ligne.pu_dzd">Prix Unit. (DZD)</label>
             <input class="form-inp" id="br-ligne-pu" type="number" step="0.01" min="0" placeholder="0.00" oninput="calcBRLigneMontant()">
           </div>
           <div>
-            <label class="form-label">Montant</label>
+            <label class="form-label" data-i18n="th.montant">Montant</label>
             <input class="form-inp" id="br-ligne-montant" type="number" step="0.01" min="0" placeholder="0.00" readonly style="background:var(--bg4);color:var(--gold)">
           </div>
           <div>
-            <button class="btn btn-primary" onclick="addLigneBR()" style="white-space:nowrap">+ Ajouter</button>
+            <button class="btn btn-primary" onclick="addLigneBR()" style="white-space:nowrap" data-i18n="btn.ajouter_simple">+ Ajouter</button>
           </div>
         </div>
       </div>
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>Produit</th><th>Long.</th><th>Larg.</th><th>Ép.</th>
-            <th>Unité</th><th>Qté</th>
-            <th style="text-align:right">P.U (DZD)</th>
-            <th style="text-align:right">Montant</th>
+            <th data-i18n="th.produit">Produit</th><th data-i18n="ligne.long_short">Long.</th><th data-i18n="ligne.larg_short">Larg.</th><th data-i18n="th.epaisseur_short">Ép.</th>
+            <th data-i18n="th.unite">Unité</th><th data-i18n="ligne.qte_short">Qté</th>
+            <th style="text-align:right" data-i18n="ligne.pu_short">P.U (DZD)</th>
+            <th style="text-align:right" data-i18n="th.montant">Montant</th>
             <th></th>
           </tr></thead>
           <tbody id="tbl-lignes-br"></tbody>
@@ -1810,19 +1810,19 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
       <div style="display:flex;justify-content:flex-end;margin-top:1rem">
         <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r8);padding:.75rem 1.25rem;min-width:280px">
           <div style="display:flex;justify-content:space-between;margin-bottom:.35rem">
-            <span style="font-size:.78rem;color:var(--text3)">Sous-total lignes</span>
+            <span style="font-size:.78rem;color:var(--text3)" data-i18n="ligne.sous_total">Sous-total lignes</span>
             <span id="br-lignes-subtotal" style="font-weight:600">0 DZD</span>
           </div>
           <div style="display:flex;justify-content:space-between;padding-top:.35rem;border-top:1px solid var(--border)">
-            <span style="font-size:.85rem;font-weight:600;color:var(--gold-l)">Total</span>
+            <span style="font-size:.85rem;font-weight:600;color:var(--gold-l)" data-i18n="ligne.total">Total</span>
             <span id="br-lignes-total" style="font-size:1rem;font-weight:700;color:var(--gold)">0 DZD</span>
           </div>
         </div>
       </div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border)">
-      <button class="btn" onclick="closeBRLignesModal()">Fermer</button>
-      <button class="btn btn-primary" id="br-lignes-save-btn" onclick="saveLignesBR()">💾 Enregistrer les lignes</button>
+      <button class="btn" onclick="closeBRLignesModal()" data-i18n="btn.fermer">Fermer</button>
+      <button class="btn btn-primary" id="br-lignes-save-btn" onclick="saveLignesBR()" data-i18n="ligne.enregistrer_lignes">💾 Enregistrer les lignes</button>
     </div>
   </div>
 </div>
@@ -3213,6 +3213,7 @@ const I18N = {
     'cl.titre_singulier':'Client', 'cl.solde_depart':'Solde départ',
     'four.titre_singulier':'Fournisseur', 'four.local':'Local', 'four.import':'Import', 'four.les_deux':'Les deux',
     'fact.titre_singulier':'Facture', 'dep.titre_singulier':'Dépense',
+    'br.selectionner_fournisseur':'— Sélectionner un fournisseur —', 'br.imprimer_br':'🖨 Imprimer BR',
     'bl.kpi.total':'Total BL', 'bl.kpi.bons_emis':'bons émis',
     'bl.kpi.montant_total':'Montant Total', 'bl.kpi.avant_remise':'avant remise',
     'bl.kpi.total_accorde':'total accordé',
@@ -3408,6 +3409,7 @@ const I18N = {
     'cl.titre_singulier':'عميل', 'cl.solde_depart':'الرصيد الافتتاحي',
     'four.titre_singulier':'مورد', 'four.local':'محلي', 'four.import':'استيراد', 'four.les_deux':'كلاهما',
     'fact.titre_singulier':'فاتورة', 'dep.titre_singulier':'مصروف',
+    'br.selectionner_fournisseur':'— اختر مورداً —', 'br.imprimer_br':'🖨 طباعة سند الاستلام',
     'bl.kpi.total':'إجمالي السندات', 'bl.kpi.bons_emis':'سندات صادرة',
     'bl.kpi.montant_total':'المبلغ الإجمالي', 'bl.kpi.avant_remise':'قبل الخصم',
     'bl.kpi.total_accorde':'إجمالي الممنوح',
@@ -3602,6 +3604,7 @@ const I18N = {
     'cl.titre_singulier':'Customer', 'cl.solde_depart':'Opening balance',
     'four.titre_singulier':'Supplier', 'four.local':'Local', 'four.import':'Import', 'four.les_deux':'Both',
     'fact.titre_singulier':'Invoice', 'dep.titre_singulier':'Expense',
+    'br.selectionner_fournisseur':'— Select a supplier —', 'br.imprimer_br':'🖨 Print Receiving Note',
     'bl.kpi.total':'Total Notes', 'bl.kpi.bons_emis':'notes issued',
     'bl.kpi.montant_total':'Total Amount', 'bl.kpi.avant_remise':'before discount',
     'bl.kpi.total_accorde':'total granted',
