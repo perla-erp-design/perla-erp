@@ -1553,28 +1553,28 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
     </div>
     <div style="padding:1.25rem;display:grid;gap:.9rem">
       <div>
-        <label class="form-label">Fournisseur *</label>
+        <label class="form-label" data-i18n="th.fournisseur">Fournisseur *</label>
         <select class="form-inp" id="regf-fournisseur-select">
-          <option value="">— Sélectionner un fournisseur —</option>
+          <option value="" data-i18n="br.selectionner_fournisseur">— Sélectionner un fournisseur —</option>
         </select>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
         <div>
-          <label class="form-label">Date *</label>
+          <label class="form-label" data-i18n="reg.date_req">Date *</label>
           <input class="form-inp" id="regf-date" type="date">
         </div>
         <div>
-          <label class="form-label">Montant (DZD) *</label>
+          <label class="form-label" data-i18n="reg.montant_dzd_req">Montant (DZD) *</label>
           <input class="form-inp" id="regf-montant" type="text" inputmode="numeric" placeholder="0" oninput="formatMontantInput(this)">
         </div>
       </div>
       <div>
-        <label class="form-label">Type de paiement *</label>
+        <label class="form-label" data-i18n="reg.type_paiement_req">Type de paiement *</label>
         <select class="form-inp" id="regf-type" onchange="onRegFTypeChange()">
-          <option value="Espèce">Espèce</option>
-          <option value="Chèque">Chèque</option>
-          <option value="Virement">Virement</option>
-          <option value="Service">Service (marchandise échangée)</option>
+          <option value="Espèce" data-i18n="reg.espece">Espèce</option>
+          <option value="Chèque" data-i18n="reg.cheque">Chèque</option>
+          <option value="Virement" data-i18n="reg.virement">Virement</option>
+          <option value="Service" data-i18n="regf.service_echange">Service (marchandise échangée)</option>
         </select>
       </div>
       <div id="regf-ref-wrap" style="display:none">
@@ -1582,14 +1582,14 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
         <input class="form-inp" id="regf-reference" type="text" placeholder="ex: 0012345">
       </div>
       <div>
-        <label class="form-label">Notes</label>
+        <label class="form-label" data-i18n="th.notes">Notes</label>
         <textarea class="form-inp" id="regf-notes" rows="2" placeholder="Remarques éventuelles…" style="resize:vertical"></textarea>
       </div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border)">
       <button class="btn" id="regf-cancel-btn" onclick="closeReglementFourModal()">Annuler</button>
-      <button class="btn" id="regf-print-btn" onclick="printReglementFour(regfEditId)" style="display:none">🖨 Imprimer</button>
-      <button class="btn btn-primary" id="regf-save-btn" onclick="saveReglementFour()">💾 Enregistrer</button>
+      <button class="btn" id="regf-print-btn" onclick="printReglementFour(regfEditId)" style="display:none" data-i18n="reg.imprimer">🖨 Imprimer</button>
+      <button class="btn btn-primary" id="regf-save-btn" onclick="saveReglementFour()" data-i18n="btn.enregistrer_icon">💾 Enregistrer</button>
     </div>
   </div>
 </div>
@@ -1606,27 +1606,27 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
     </div>
     <div style="padding:1.25rem;display:grid;gap:.9rem">
       <div>
-        <label class="form-label">Client *</label>
+        <label class="form-label" data-i18n="th.client">Client *</label>
         <select class="form-inp" id="reg-client-select">
-          <option value="">— Sélectionner un client —</option>
+          <option value="" data-i18n="bl.selectionner_client">— Sélectionner un client —</option>
         </select>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
         <div>
-          <label class="form-label">Date *</label>
+          <label class="form-label" data-i18n="reg.date_req">Date *</label>
           <input class="form-inp" id="reg-date" type="date">
         </div>
         <div>
-          <label class="form-label">Montant (DZD) *</label>
+          <label class="form-label" data-i18n="reg.montant_dzd_req">Montant (DZD) *</label>
           <input class="form-inp" id="reg-montant" type="text" inputmode="numeric" placeholder="0" oninput="formatMontantInput(this)">
         </div>
       </div>
       <div>
-        <label class="form-label">Type de paiement *</label>
+        <label class="form-label" data-i18n="reg.type_paiement_req">Type de paiement *</label>
         <select class="form-inp" id="reg-type" onchange="onRegTypeChange()">
-          <option value="Espèce">Espèce</option>
-          <option value="Chèque">Chèque</option>
-          <option value="Virement">Virement</option>
+          <option value="Espèce" data-i18n="reg.espece">Espèce</option>
+          <option value="Chèque" data-i18n="reg.cheque">Chèque</option>
+          <option value="Virement" data-i18n="reg.virement">Virement</option>
         </select>
       </div>
       <div id="reg-ref-wrap" style="display:none">
@@ -1634,14 +1634,14 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
         <input class="form-inp" id="reg-reference" type="text" placeholder="ex: 0012345">
       </div>
       <div>
-        <label class="form-label">Notes</label>
+        <label class="form-label" data-i18n="th.notes">Notes</label>
         <textarea class="form-inp" id="reg-notes" rows="2" placeholder="Remarques éventuelles…" style="resize:vertical"></textarea>
       </div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border)">
       <button class="btn" id="reg-cancel-btn" onclick="closeReglementModal()">Annuler</button>
-      <button class="btn" id="reg-print-btn" onclick="printReglement(regEditId)" style="display:none">🖨 Imprimer</button>
-      <button class="btn btn-primary" id="reg-save-btn" onclick="saveReglement()">💾 Enregistrer</button>
+      <button class="btn" id="reg-print-btn" onclick="printReglement(regEditId)" style="display:none" data-i18n="reg.imprimer">🖨 Imprimer</button>
+      <button class="btn btn-primary" id="reg-save-btn" onclick="saveReglement()" data-i18n="btn.enregistrer_icon">💾 Enregistrer</button>
     </div>
   </div>
 </div>
@@ -3214,6 +3214,8 @@ const I18N = {
     'four.titre_singulier':'Fournisseur', 'four.local':'Local', 'four.import':'Import', 'four.les_deux':'Les deux',
     'fact.titre_singulier':'Facture', 'dep.titre_singulier':'Dépense',
     'br.selectionner_fournisseur':'— Sélectionner un fournisseur —', 'br.imprimer_br':'🖨 Imprimer BR',
+    'reg.date_req':'Date *', 'reg.montant_dzd_req':'Montant (DZD) *', 'reg.type_paiement_req':'Type de paiement *',
+    'reg.imprimer':'🖨 Imprimer', 'regf.service_echange':'Service (marchandise échangée)',
     'bl.kpi.total':'Total BL', 'bl.kpi.bons_emis':'bons émis',
     'bl.kpi.montant_total':'Montant Total', 'bl.kpi.avant_remise':'avant remise',
     'bl.kpi.total_accorde':'total accordé',
@@ -3410,6 +3412,8 @@ const I18N = {
     'four.titre_singulier':'مورد', 'four.local':'محلي', 'four.import':'استيراد', 'four.les_deux':'كلاهما',
     'fact.titre_singulier':'فاتورة', 'dep.titre_singulier':'مصروف',
     'br.selectionner_fournisseur':'— اختر مورداً —', 'br.imprimer_br':'🖨 طباعة سند الاستلام',
+    'reg.date_req':'التاريخ *', 'reg.montant_dzd_req':'المبلغ (دج) *', 'reg.type_paiement_req':'نوع الدفع *',
+    'reg.imprimer':'🖨 طباعة', 'regf.service_echange':'خدمة (بضائع متبادلة)',
     'bl.kpi.total':'إجمالي السندات', 'bl.kpi.bons_emis':'سندات صادرة',
     'bl.kpi.montant_total':'المبلغ الإجمالي', 'bl.kpi.avant_remise':'قبل الخصم',
     'bl.kpi.total_accorde':'إجمالي الممنوح',
@@ -3605,6 +3609,8 @@ const I18N = {
     'four.titre_singulier':'Supplier', 'four.local':'Local', 'four.import':'Import', 'four.les_deux':'Both',
     'fact.titre_singulier':'Invoice', 'dep.titre_singulier':'Expense',
     'br.selectionner_fournisseur':'— Select a supplier —', 'br.imprimer_br':'🖨 Print Receiving Note',
+    'reg.date_req':'Date *', 'reg.montant_dzd_req':'Amount (DZD) *', 'reg.type_paiement_req':'Payment type *',
+    'reg.imprimer':'🖨 Print', 'regf.service_echange':'Service (goods exchanged)',
     'bl.kpi.total':'Total Notes', 'bl.kpi.bons_emis':'notes issued',
     'bl.kpi.montant_total':'Total Amount', 'bl.kpi.avant_remise':'before discount',
     'bl.kpi.total_accorde':'total granted',
