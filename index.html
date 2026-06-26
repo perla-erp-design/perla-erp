@@ -863,51 +863,51 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
     <div style="padding:1.25rem">
       <!-- Formulaire ajout ligne -->
       <div id="bl-ligne-form-ajout" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r8);padding:1rem;margin-bottom:1rem">
-        <div style="font-size:.75rem;font-weight:600;color:var(--gold-l);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.08em">+ Ajouter une ligne</div>
+        <div style="font-size:.75rem;font-weight:600;color:var(--gold-l);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.08em" data-i18n="ligne.ajouter">+ Ajouter une ligne</div>
         <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:.6rem;margin-bottom:.6rem">
           <div>
-            <label class="form-label">Produit *</label>
+            <label class="form-label" data-i18n="ligne.produit">Produit *</label>
             <select class="form-inp" id="ligne-produit">
-              <option value="">— Produit —</option>
+              <option value="" data-i18n="ligne.produit_placeholder">— Produit —</option>
             </select>
           </div>
           <div>
-            <label class="form-label">Long. (m)</label>
+            <label class="form-label" data-i18n="ligne.long">Long. (m)</label>
             <input class="form-inp" id="ligne-long" type="number" step="0.01" min="0" placeholder="0.00" oninput="calcLigneMontant()">
           </div>
           <div>
-            <label class="form-label">Larg. (m)</label>
+            <label class="form-label" data-i18n="ligne.larg">Larg. (m)</label>
             <input class="form-inp" id="ligne-larg" type="number" step="0.01" min="0" placeholder="0.00" oninput="calcLigneMontant()">
           </div>
           <div>
-            <label class="form-label">Ép. (m)</label>
+            <label class="form-label" data-i18n="ligne.ep">Ép. (m)</label>
             <input class="form-inp" id="ligne-ep" type="number" step="0.001" min="0" placeholder="0.000">
           </div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:.6rem;align-items:end">
           <div>
-            <label class="form-label">Unité calc.</label>
+            <label class="form-label" data-i18n="ligne.unite_calc">Unité calc.</label>
             <select class="form-inp" id="ligne-unite">
               <option value="M²">M²</option>
               <option value="M³">M³</option>
               <option value="ML">ML</option>
-              <option value="U">Unité</option>
+              <option value="U" data-i18n="ligne.unite_u">Unité</option>
             </select>
           </div>
           <div>
-            <label class="form-label">Quantité *</label>
+            <label class="form-label" data-i18n="ligne.quantite">Quantité *</label>
             <input class="form-inp" id="ligne-qte" type="number" step="0.01" min="0" placeholder="0.00" oninput="calcLigneMontant()">
           </div>
           <div>
-            <label class="form-label">Prix Unit. (DZD)</label>
+            <label class="form-label" data-i18n="ligne.pu_dzd">Prix Unit. (DZD)</label>
             <input class="form-inp" id="ligne-pu" type="number" step="0.01" min="0" placeholder="0.00" oninput="calcLigneMontant()">
           </div>
           <div>
-            <label class="form-label">Montant</label>
+            <label class="form-label" data-i18n="th.montant">Montant</label>
             <input class="form-inp" id="ligne-montant" type="number" step="0.01" min="0" placeholder="0.00" readonly style="background:var(--bg4);color:var(--gold)">
           </div>
           <div>
-            <button class="btn btn-primary" data-perm-module="commandes" data-perm-action="creer" onclick="addLigneBL()" style="white-space:nowrap">+ Ajouter</button>
+            <button class="btn btn-primary" data-perm-module="commandes" data-perm-action="creer" onclick="addLigneBL()" style="white-space:nowrap" data-i18n="btn.ajouter_simple">+ Ajouter</button>
           </div>
         </div>
       </div>
@@ -915,10 +915,10 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>Produit</th><th>Long.</th><th>Larg.</th><th>Ép.</th>
-            <th>Unité</th><th>Qté</th>
-            <th style="text-align:right">P.U (DZD)</th>
-            <th style="text-align:right">Montant</th>
+            <th data-i18n="th.produit">Produit</th><th data-i18n="ligne.long_short">Long.</th><th data-i18n="ligne.larg_short">Larg.</th><th data-i18n="th.epaisseur_short">Ép.</th>
+            <th data-i18n="th.unite">Unité</th><th data-i18n="ligne.qte_short">Qté</th>
+            <th style="text-align:right" data-i18n="ligne.pu_short">P.U (DZD)</th>
+            <th style="text-align:right" data-i18n="th.montant">Montant</th>
             <th></th>
           </tr></thead>
           <tbody id="tbl-lignes-bl"></tbody>
@@ -928,19 +928,19 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
       <div style="display:flex;justify-content:flex-end;margin-top:1rem">
         <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r8);padding:.75rem 1.25rem;min-width:280px">
           <div style="display:flex;justify-content:space-between;margin-bottom:.35rem">
-            <span style="font-size:.78rem;color:var(--text3)">Sous-total lignes</span>
+            <span style="font-size:.78rem;color:var(--text3)" data-i18n="ligne.sous_total">Sous-total lignes</span>
             <span id="lignes-subtotal" style="font-weight:600">0 DZD</span>
           </div>
           <div style="display:flex;justify-content:space-between;padding-top:.35rem;border-top:1px solid var(--border)">
-            <span style="font-size:.85rem;font-weight:600;color:var(--gold-l)">Total</span>
+            <span style="font-size:.85rem;font-weight:600;color:var(--gold-l)" data-i18n="ligne.total">Total</span>
             <span id="lignes-total" style="font-size:1rem;font-weight:700;color:var(--gold)">0 DZD</span>
           </div>
         </div>
       </div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border)">
-      <button class="btn" onclick="closeBLLignesModal()">Fermer</button>
-      <button class="btn btn-primary" id="bl-lignes-save-btn" data-perm-module="commandes" data-perm-action="creer" onclick="saveLignesBL()">💾 Enregistrer les lignes</button>
+      <button class="btn" onclick="closeBLLignesModal()" data-i18n="btn.fermer">Fermer</button>
+      <button class="btn btn-primary" id="bl-lignes-save-btn" data-perm-module="commandes" data-perm-action="creer" onclick="saveLignesBL()" data-i18n="ligne.enregistrer_lignes">💾 Enregistrer les lignes</button>
     </div>
   </div>
 </div>
@@ -3188,6 +3188,15 @@ const I18N = {
     'bl.remise_dzd':'Remise (DZD)', 'bl.detail_lignes':'📄 Détail Lignes',
     'bl.imprimer_bl':'🖨 Imprimer BL', 'bl.bon_route':'🚚 Bon de Route',
     'th.notes':'Notes',
+    // Lignes (réutilisé dans BL/BR/OP)
+    'ligne.ajouter':'+ Ajouter une ligne', 'ligne.produit':'Produit *', 'ligne.produit_placeholder':'— Produit —',
+    'ligne.long':'Long. (m)', 'ligne.larg':'Larg. (m)', 'ligne.ep':'Ép. (m)',
+    'ligne.unite_calc':'Unité calc.', 'ligne.unite_u':'Unité', 'ligne.quantite':'Quantité *',
+    'ligne.pu_dzd':'Prix Unit. (DZD)', 'btn.ajouter_simple':'+ Ajouter',
+    'ligne.long_short':'Long.', 'ligne.larg_short':'Larg.', 'th.epaisseur_short':'Ép.',
+    'ligne.qte_short':'Qté', 'ligne.pu_short':'P.U (DZD)',
+    'ligne.sous_total':'Sous-total lignes', 'ligne.total':'Total',
+    'ligne.enregistrer_lignes':'💾 Enregistrer les lignes',
     'bl.kpi.total':'Total BL', 'bl.kpi.bons_emis':'bons émis',
     'bl.kpi.montant_total':'Montant Total', 'bl.kpi.avant_remise':'avant remise',
     'bl.kpi.total_accorde':'total accordé',
@@ -3358,6 +3367,15 @@ const I18N = {
     'bl.remise_dzd':'الخصم (دج)', 'bl.detail_lignes':'📄 تفاصيل البنود',
     'bl.imprimer_bl':'🖨 طباعة السند', 'bl.bon_route':'🚚 ورقة الطريق',
     'th.notes':'ملاحظات',
+    // البنود (مستخدمة في BL/BR/OP)
+    'ligne.ajouter':'+ إضافة بند', 'ligne.produit':'المنتج *', 'ligne.produit_placeholder':'— المنتج —',
+    'ligne.long':'الطول (م)', 'ligne.larg':'العرض (م)', 'ligne.ep':'السماكة (م)',
+    'ligne.unite_calc':'وحدة الحساب', 'ligne.unite_u':'وحدة', 'ligne.quantite':'الكمية *',
+    'ligne.pu_dzd':'سعر الوحدة (دج)', 'btn.ajouter_simple':'+ إضافة',
+    'ligne.long_short':'الطول', 'ligne.larg_short':'العرض', 'th.epaisseur_short':'السماكة',
+    'ligne.qte_short':'الكمية', 'ligne.pu_short':'سعر الوحدة (دج)',
+    'ligne.sous_total':'إجمالي البنود', 'ligne.total':'الإجمالي',
+    'ligne.enregistrer_lignes':'💾 حفظ البنود',
     'bl.kpi.total':'إجمالي السندات', 'bl.kpi.bons_emis':'سندات صادرة',
     'bl.kpi.montant_total':'المبلغ الإجمالي', 'bl.kpi.avant_remise':'قبل الخصم',
     'bl.kpi.total_accorde':'إجمالي الممنوح',
@@ -3527,6 +3545,15 @@ const I18N = {
     'bl.remise_dzd':'Discount (DZD)', 'bl.detail_lignes':'📄 Line Details',
     'bl.imprimer_bl':'🖨 Print Note', 'bl.bon_route':'🚚 Road Manifest',
     'th.notes':'Notes',
+    // Lines (reused in BL/BR/OP)
+    'ligne.ajouter':'+ Add a line', 'ligne.produit':'Product *', 'ligne.produit_placeholder':'— Product —',
+    'ligne.long':'Length (m)', 'ligne.larg':'Width (m)', 'ligne.ep':'Thickness (m)',
+    'ligne.unite_calc':'Calc. unit', 'ligne.unite_u':'Unit', 'ligne.quantite':'Quantity *',
+    'ligne.pu_dzd':'Unit Price (DZD)', 'btn.ajouter_simple':'+ Add',
+    'ligne.long_short':'Length', 'ligne.larg_short':'Width', 'th.epaisseur_short':'Thick.',
+    'ligne.qte_short':'Qty', 'ligne.pu_short':'Unit Price (DZD)',
+    'ligne.sous_total':'Lines subtotal', 'ligne.total':'Total',
+    'ligne.enregistrer_lignes':'💾 Save lines',
     'bl.kpi.total':'Total Notes', 'bl.kpi.bons_emis':'notes issued',
     'bl.kpi.montant_total':'Total Amount', 'bl.kpi.avant_remise':'before discount',
     'bl.kpi.total_accorde':'total granted',
@@ -4710,7 +4737,7 @@ async function openBRLignesModal(brId){
   const saveLignesBtn=document.getElementById('br-lignes-save-btn');
   if(saveLignesBtn) saveLignesBtn.style.display = lignesLocked ? 'none' : '';
   const selP=document.getElementById('br-ligne-produit');
-  selP.innerHTML='<option value="">— Produit —</option>'+
+  selP.innerHTML=`<option value="" data-i18n="ligne.produit_placeholder">${t('ligne.produit_placeholder')}</option>`+
     (DB.produits||[]).map(p=>`<option value="${p.id}">${p.nom||p.designation||p.reference||'Produit '+p.id}</option>`).join('');
   ['br-ligne-long','br-ligne-larg','br-ligne-ep','br-ligne-qte','br-ligne-pu','br-ligne-montant'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('br-ligne-unite').value='M²';
@@ -5502,8 +5529,8 @@ function openOPModal(data=null){
 
   // Remplir les listes produits pour matières et produits finis
   const optsHtml = (DB.produits||[]).map(p=>`<option value="${p.id}">${p.nom||p.designation||p.reference||'Produit '+p.id}</option>`).join('');
-  document.getElementById('opm-produit').innerHTML = '<option value="">— Produit —</option>'+optsHtml;
-  document.getElementById('opp-produit').innerHTML = '<option value="">— Produit —</option>'+optsHtml;
+  document.getElementById('opm-produit').innerHTML = `<option value="" data-i18n="ligne.produit_placeholder">${t('ligne.produit_placeholder')}</option>`+optsHtml;
+  document.getElementById('opp-produit').innerHTML = `<option value="" data-i18n="ligne.produit_placeholder">${t('ligne.produit_placeholder')}</option>`+optsHtml;
 
   ['opm-long','opm-larg','opm-ep','opm-qte'].forEach(id=>{const el=document.getElementById(id); if(el) el.value='';});
   ['opp-long','opp-larg','opp-ep','opp-qte'].forEach(id=>{const el=document.getElementById(id); if(el) el.value='';});
@@ -6809,7 +6836,7 @@ async function openBLLignesModal(blId){
   const saveLignesBtn = document.getElementById('bl-lignes-save-btn');
   if(saveLignesBtn) saveLignesBtn.style.display = lignesLocked ? 'none' : '';
   const selP=document.getElementById('ligne-produit');
-  selP.innerHTML='<option value="">— Produit —</option>'+
+  selP.innerHTML=`<option value="" data-i18n="ligne.produit_placeholder">${t('ligne.produit_placeholder')}</option>`+
     (DB.produits||[]).map(p=>`<option value="${p.id}">${p.nom||p.designation||p.reference||'Produit '+p.id}</option>`).join('');
   ['ligne-long','ligne-larg','ligne-ep','ligne-qte','ligne-pu','ligne-montant'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('ligne-unite').value='M²';
