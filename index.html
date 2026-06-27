@@ -599,75 +599,75 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
     <div style="display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.25rem;border-bottom:1px solid var(--border)">
       <div>
         <div id="ct-modal-title" style="font-size:.95rem;font-weight:600;color:var(--gold-l)">+ Nouveau Contrat</div>
-        <div style="font-size:.75rem;color:var(--text3);margin-top:.2rem">Génère automatiquement le document Word</div>
+        <div style="font-size:.75rem;color:var(--text3);margin-top:.2rem" data-i18n="ct.genere_word">Génère automatiquement le document Word</div>
       </div>
       <button onclick="closeContratModal()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:1.2rem;padding:.2rem .4rem;border-radius:4px">✕</button>
     </div>
     <div style="padding:1.25rem;display:grid;gap:.9rem">
       <div>
-        <label class="form-label">Employé *</label>
+        <label class="form-label" data-i18n="th.employe">Employé *</label>
         <select class="form-inp" id="ct-employe-select" onchange="onCtEmployeChange()">
-          <option value="">— Sélectionner un employé —</option>
+          <option value="" data-i18n="ct.selectionner_employe">— Sélectionner un employé —</option>
         </select>
       </div>
       <div>
-        <label class="form-label">Type de contrat *</label>
+        <label class="form-label" data-i18n="ct.type_contrat">Type de contrat *</label>
         <select class="form-inp" id="ct-type" onchange="onCtTypeChange()">
-          <option value="CDI">CDI — Durée indéterminée</option>
-          <option value="CDD">CDD — Durée déterminée</option>
+          <option value="CDI" data-i18n="ct.cdi_long">CDI — Durée indéterminée</option>
+          <option value="CDD" data-i18n="ct.cdd_long">CDD — Durée déterminée</option>
         </select>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
         <div>
-          <label class="form-label">Date de naissance</label>
+          <label class="form-label" data-i18n="form.date_naissance">Date de naissance</label>
           <input class="form-inp" id="ct-date-naissance" type="date">
         </div>
         <div>
-          <label class="form-label">Lieu de naissance</label>
+          <label class="form-label" data-i18n="form.lieu_naissance">Lieu de naissance</label>
           <input class="form-inp" id="ct-lieu-naissance" type="text" placeholder="ex: Alger">
         </div>
       </div>
       <div>
-        <label class="form-label">Adresse de l'employé</label>
-        <input class="form-inp" id="ct-adresse-employe" type="text" placeholder="Adresse complète">
+        <label class="form-label" data-i18n="ct.adresse_employe">Adresse de l'employé</label>
+        <input class="form-inp" id="ct-adresse-employe" type="text" data-i18n-placeholder="cl.adresse_complete" placeholder="Adresse complète">
       </div>
       <div>
-        <label class="form-label">Poste *</label>
+        <label class="form-label" data-i18n="ct.poste_req">Poste *</label>
         <input class="form-inp" id="ct-poste" type="text" placeholder="ex: Technicien de maintenance">
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
         <div>
-          <label class="form-label">Période d'essai</label>
+          <label class="form-label" data-i18n="ct.periode_essai">Période d'essai</label>
           <input class="form-inp" id="ct-periode-essai" type="text" placeholder="ex: 01 mois">
         </div>
         <div>
-          <label class="form-label">Date début contrat *</label>
+          <label class="form-label" data-i18n="ct.date_debut_req">Date début contrat *</label>
           <input class="form-inp" id="ct-date-debut" type="date">
         </div>
       </div>
       <div id="ct-duree-cdd-wrap" style="display:none">
-        <label class="form-label">Durée du CDD *</label>
+        <label class="form-label" data-i18n="ct.duree_cdd_req">Durée du CDD *</label>
         <input class="form-inp" id="ct-duree-cdd" type="text" placeholder="ex: 03 mois">
-        <div style="font-size:.72rem;color:var(--text3);margin-top:.3rem">Date de fin calculée : <span id="ct-date-fin-calc">—</span></div>
+        <div style="font-size:.72rem;color:var(--text3);margin-top:.3rem"><span data-i18n="ct.date_fin_calculee">Date de fin calculée :</span> <span id="ct-date-fin-calc">—</span></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
         <div>
-          <label class="form-label">Salaire net mensuel (DZD) *</label>
+          <label class="form-label" data-i18n="ct.salaire_net_req">Salaire net mensuel (DZD) *</label>
           <input class="form-inp" id="ct-salaire" type="text" inputmode="numeric" placeholder="0" oninput="formatMontantInput(this)">
         </div>
         <div>
-          <label class="form-label">Date de signature</label>
+          <label class="form-label" data-i18n="ct.date_signature">Date de signature</label>
           <input class="form-inp" id="ct-date-signature" type="date">
         </div>
       </div>
       <div>
-        <label class="form-label">Wilaya (signature)</label>
-        <input class="form-inp" id="ct-wilaya" type="text" placeholder="Reprend la wilaya de l'entreprise par défaut">
+        <label class="form-label" data-i18n="ct.wilaya_signature">Wilaya (signature)</label>
+        <input class="form-inp" id="ct-wilaya" type="text" data-i18n-placeholder="ct.wilaya_default" placeholder="Reprend la wilaya de l'entreprise par défaut">
       </div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border);flex-wrap:wrap">
-      <button class="btn" onclick="closeContratModal()">Annuler</button>
-      <button class="btn btn-primary" id="ct-save-btn" onclick="saveContrat()">💾 Enregistrer & Générer le contrat</button>
+      <button class="btn" onclick="closeContratModal()" data-i18n="btn.annuler">Annuler</button>
+      <button class="btn btn-primary" id="ct-save-btn" onclick="saveContrat()" data-i18n="ct.enregistrer_generer">💾 Enregistrer & Générer le contrat</button>
     </div>
   </div>
 </div>
@@ -719,42 +719,42 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
     <div style="display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.25rem;border-bottom:1px solid var(--border)">
       <div>
         <div id="pa-modal-title" style="font-size:.95rem;font-weight:600;color:var(--gold-l)">+ Nouvelle Fiche de Paie</div>
-        <div style="font-size:.75rem;color:var(--text3);margin-top:.2rem">Salaire de base + primes/heures sup</div>
+        <div style="font-size:.75rem;color:var(--text3);margin-top:.2rem" data-i18n="pa.salaire_primes">Salaire de base + primes/heures sup</div>
       </div>
       <button onclick="closePaieModal()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:1.2rem;padding:.2rem .4rem;border-radius:4px">✕</button>
     </div>
     <div style="padding:1.25rem;display:grid;gap:.9rem">
       <div>
-        <label class="form-label">Employé *</label>
+        <label class="form-label" data-i18n="th.employe">Employé *</label>
         <select class="form-inp" id="pa-employe-select" onchange="onPaEmployeChange()">
-          <option value="">— Sélectionner un employé —</option>
+          <option value="" data-i18n="ct.selectionner_employe">— Sélectionner un employé —</option>
         </select>
       </div>
       <div>
-        <label class="form-label">Mois *</label>
+        <label class="form-label" data-i18n="th.mois_req">Mois *</label>
         <input class="form-inp" id="pa-mois" type="month">
       </div>
       <div>
-        <label class="form-label">Salaire de base (DZD) *</label>
+        <label class="form-label" data-i18n="pa.salaire_base_req">Salaire de base (DZD) *</label>
         <input class="form-inp" id="pa-salaire-base" type="text" inputmode="numeric" placeholder="0" oninput="formatMontantInput(this);calcPaieNet()">
       </div>
       <div>
-        <label class="form-label">Primes / Heures supplémentaires (DZD)</label>
+        <label class="form-label" data-i18n="pa.primes_hsup_dzd">Primes / Heures supplémentaires (DZD)</label>
         <input class="form-inp" id="pa-primes" type="text" inputmode="numeric" placeholder="0" oninput="formatMontantInput(this);calcPaieNet()">
       </div>
       <div>
-        <label class="form-label">Retenues (DZD)</label>
+        <label class="form-label" data-i18n="pa.retenues_dzd">Retenues (DZD)</label>
         <input class="form-inp" id="pa-retenues" type="text" inputmode="numeric" placeholder="0" oninput="formatMontantInput(this);calcPaieNet()">
       </div>
       <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r8);padding:.75rem 1rem;display:flex;justify-content:space-between;align-items:center">
-        <span style="font-size:.8rem;color:var(--text3)">Net à payer</span>
+        <span style="font-size:.8rem;color:var(--text3)" data-i18n="pa.net_a_payer">Net à payer</span>
         <span id="pa-net-display" style="font-size:1.1rem;font-weight:700;color:var(--gold)">0 DZD</span>
       </div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border)">
-      <button class="btn" onclick="closePaieModal()">Annuler</button>
-      <button class="btn" id="pa-print-btn" onclick="printPaie(paEditId)" style="display:none">🖨 Fiche de paie</button>
-      <button class="btn btn-primary" id="pa-save-btn" onclick="savePaie()">💾 Enregistrer</button>
+      <button class="btn" onclick="closePaieModal()" data-i18n="btn.annuler">Annuler</button>
+      <button class="btn" id="pa-print-btn" onclick="printPaie(paEditId)" style="display:none" data-i18n="pa.fiche_paie">🖨 Fiche de paie</button>
+      <button class="btn btn-primary" id="pa-save-btn" onclick="savePaie()" data-i18n="btn.enregistrer_icon">💾 Enregistrer</button>
     </div>
   </div>
 </div>
@@ -3227,6 +3227,21 @@ const I18N = {
     'op.total_matiere_consommee':'Total matière consommée', 'op.total_produit_obtenu':'Total produit obtenu',
     'op.perte_matiere':'Perte de matière', 'op.imprimer_bon':'🖨 Imprimer bon de production',
     'op.cloturer':"💾 Clôturer l'ordre",
+    // Modal Contrats
+    'ct.genere_word':'Génère automatiquement le document Word', 'ct.selectionner_employe':'— Sélectionner un employé —',
+    'ct.type_contrat':'Type de contrat *', 'ct.cdi_long':'CDI — Durée indéterminée', 'ct.cdd_long':'CDD — Durée déterminée',
+    'ct.adresse_employe':"Adresse de l'employé", 'ct.poste_req':'Poste *',
+    'ct.periode_essai':"Période d'essai", 'ct.date_debut_req':'Date début contrat *',
+    'ct.duree_cdd_req':'Durée du CDD *', 'ct.date_fin_calculee':'Date de fin calculée :',
+    'ct.salaire_net_req':'Salaire net mensuel (DZD) *', 'ct.date_signature':'Date de signature',
+    'ct.wilaya_signature':'Wilaya (signature)', 'ct.wilaya_default':"Reprend la wilaya de l'entreprise par défaut",
+    'ct.enregistrer_generer':'💾 Enregistrer & Générer le contrat',
+    // Modal Paye
+    'pa.salaire_primes':'Salaire de base + primes/heures sup', 'th.mois_req':'Mois *',
+    'pa.salaire_base_req':'Salaire de base (DZD) *', 'pa.primes_hsup_dzd':'Primes / Heures supplémentaires (DZD)',
+    'pa.retenues_dzd':'Retenues (DZD)', 'pa.net_a_payer':'Net à payer', 'pa.fiche_paie':'🖨 Fiche de paie',
+    'ct.modifier_contrat':'Modifier le Contrat', 'ct.nouveau_contrat':'+ Nouveau Contrat',
+    'pa.modifier_fiche':'Modifier la Fiche de Paie',
     'bl.kpi.total':'Total BL', 'bl.kpi.bons_emis':'bons émis',
     'bl.kpi.montant_total':'Montant Total', 'bl.kpi.avant_remise':'avant remise',
     'bl.kpi.total_accorde':'total accordé',
@@ -3436,6 +3451,21 @@ const I18N = {
     'op.total_matiere_consommee':'إجمالي المادة المستهلكة', 'op.total_produit_obtenu':'إجمالي المنتج المتحصل عليه',
     'op.perte_matiere':'فقد المادة', 'op.imprimer_bon':'🖨 طباعة أمر الإنتاج',
     'op.cloturer':'💾 إغلاق الأمر',
+    // نافذة العقد
+    'ct.genere_word':'يُنشئ مستند وورد تلقائياً', 'ct.selectionner_employe':'— اختر موظفاً —',
+    'ct.type_contrat':'نوع العقد *', 'ct.cdi_long':'عقد غير محدد المدة', 'ct.cdd_long':'عقد محدد المدة',
+    'ct.adresse_employe':'عنوان الموظف', 'ct.poste_req':'الوظيفة *',
+    'ct.periode_essai':'فترة التجربة', 'ct.date_debut_req':'تاريخ بدء العقد *',
+    'ct.duree_cdd_req':'مدة العقد المحدد *', 'ct.date_fin_calculee':'تاريخ الانتهاء المحسوب :',
+    'ct.salaire_net_req':'الراتب الصافي الشهري (دج) *', 'ct.date_signature':'تاريخ التوقيع',
+    'ct.wilaya_signature':'الولاية (التوقيع)', 'ct.wilaya_default':'تأخذ ولاية الشركة الافتراضية',
+    'ct.enregistrer_generer':'💾 حفظ وإنشاء العقد',
+    // نافذة الراتب
+    'pa.salaire_primes':'الراتب الأساسي + المكافآت/الساعات الإضافية', 'th.mois_req':'الشهر *',
+    'pa.salaire_base_req':'الراتب الأساسي (دج) *', 'pa.primes_hsup_dzd':'مكافآت / ساعات إضافية (دج)',
+    'pa.retenues_dzd':'الاستقطاعات (دج)', 'pa.net_a_payer':'الصافي المستحق', 'pa.fiche_paie':'🖨 كشف الراتب',
+    'ct.modifier_contrat':'تعديل العقد', 'ct.nouveau_contrat':'+ عقد جديد',
+    'pa.modifier_fiche':'تعديل كشف الراتب',
     'bl.kpi.total':'إجمالي السندات', 'bl.kpi.bons_emis':'سندات صادرة',
     'bl.kpi.montant_total':'المبلغ الإجمالي', 'bl.kpi.avant_remise':'قبل الخصم',
     'bl.kpi.total_accorde':'إجمالي الممنوح',
@@ -3644,6 +3674,21 @@ const I18N = {
     'op.total_matiere_consommee':'Total material consumed', 'op.total_produit_obtenu':'Total product obtained',
     'op.perte_matiere':'Material loss', 'op.imprimer_bon':'🖨 Print production order',
     'op.cloturer':'💾 Close the order',
+    // Contract modal
+    'ct.genere_word':'Automatically generates the Word document', 'ct.selectionner_employe':'— Select an employee —',
+    'ct.type_contrat':'Contract type *', 'ct.cdi_long':'Permanent — Indefinite term', 'ct.cdd_long':'Fixed-term — Definite term',
+    'ct.adresse_employe':"Employee's address", 'ct.poste_req':'Position *',
+    'ct.periode_essai':'Probation period', 'ct.date_debut_req':'Contract start date *',
+    'ct.duree_cdd_req':'Fixed-term duration *', 'ct.date_fin_calculee':'Calculated end date:',
+    'ct.salaire_net_req':'Monthly net salary (DZD) *', 'ct.date_signature':'Signature date',
+    'ct.wilaya_signature':'Province (signature)', 'ct.wilaya_default':"Uses the company's default province",
+    'ct.enregistrer_generer':'💾 Save & Generate contract',
+    // Payroll modal
+    'pa.salaire_primes':'Base salary + bonuses/overtime', 'th.mois_req':'Month *',
+    'pa.salaire_base_req':'Base salary (DZD) *', 'pa.primes_hsup_dzd':'Bonuses / Overtime (DZD)',
+    'pa.retenues_dzd':'Deductions (DZD)', 'pa.net_a_payer':'Net to pay', 'pa.fiche_paie':'🖨 Payslip',
+    'ct.modifier_contrat':'Edit Contract', 'ct.nouveau_contrat':'+ New Contract',
+    'pa.modifier_fiche':'Edit Payslip',
     'bl.kpi.total':'Total Notes', 'bl.kpi.bons_emis':'notes issued',
     'bl.kpi.montant_total':'Total Amount', 'bl.kpi.avant_remise':'before discount',
     'bl.kpi.total_accorde':'total granted',
@@ -4059,10 +4104,10 @@ function updateContratsKPI(data){
 function openContratModal(data=null){
   ctEditId = data ? data.id : null;
   const isEdit = !!data;
-  document.getElementById('ct-modal-title').textContent = isEdit ? '✎ Modifier le Contrat' : '+ Nouveau Contrat';
+  document.getElementById('ct-modal-title').textContent = isEdit ? '✎ '+t('ct.modifier_contrat') : '+ '+t('ct.nouveau_contrat');
 
   const sel = document.getElementById('ct-employe-select');
-  sel.innerHTML = '<option value="">— Sélectionner un employé —</option>'+
+  sel.innerHTML = `<option value="" data-i18n="ct.selectionner_employe">${t('ct.selectionner_employe')}</option>`+
     (DB.employes||[]).map(e=>`<option value="${e.id}" ${data&&data.employe_id===e.id?'selected':''}>${e.nom||'—'}</option>`).join('');
 
   document.getElementById('ct-type').value = data ? (data.type||'CDI') : 'CDI';
@@ -4425,10 +4470,10 @@ function updatePaieKPI(data){
 function openPaieModal(data=null){
   paEditId = data ? data.id : null;
   const isEdit = !!data;
-  document.getElementById('pa-modal-title').textContent = isEdit ? '✎ Modifier la Fiche de Paie' : '+ Nouvelle Fiche de Paie';
+  document.getElementById('pa-modal-title').textContent = isEdit ? '✎ '+t('pa.modifier_fiche') : t('pa.nouvelle_fiche');
 
   const sel = document.getElementById('pa-employe-select');
-  sel.innerHTML = '<option value="">— Sélectionner un employé —</option>'+
+  sel.innerHTML = `<option value="" data-i18n="ct.selectionner_employe">${t('ct.selectionner_employe')}</option>`+
     (DB.employes||[]).map(e=>`<option value="${e.id}" ${data&&data.employe_id===e.id?'selected':''}>${e.nom||'—'}</option>`).join('');
 
   document.getElementById('pa-mois').value = data ? (data.mois||'') : new Date().toISOString().slice(0,7);
