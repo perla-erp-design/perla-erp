@@ -1291,49 +1291,49 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
     </div>
     <div style="padding:1.25rem">
       <div style="margin-bottom:1rem">
-        <label class="form-label">Notes</label>
+        <label class="form-label" data-i18n="th.notes">Notes</label>
         <textarea class="form-inp" id="op-notes" rows="2" placeholder="Description de l'ordre de production…" style="resize:vertical"></textarea>
       </div>
 
       <!-- SECTION MATIÈRES CONSOMMÉES -->
       <div id="op-matieres-form" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r8);padding:1rem;margin-bottom:1rem">
-        <div style="font-size:.78rem;font-weight:600;color:var(--red);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.08em">📥 − Matières Premières Consommées</div>
+        <div style="font-size:.78rem;font-weight:600;color:var(--red);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.08em" data-i18n="op.matieres_consommees">📥 − Matières Premières Consommées</div>
         <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:.6rem;margin-bottom:.6rem">
           <div>
-            <label class="form-label">Produit (matière) *</label>
+            <label class="form-label" data-i18n="op.produit_matiere">Produit (matière) *</label>
             <select class="form-inp" id="opm-produit" onchange="onOPMatiereInputChange()">
-              <option value="">— Produit —</option>
+              <option value="" data-i18n="ligne.produit_placeholder">— Produit —</option>
             </select>
           </div>
           <div>
-            <label class="form-label">Long. (m)</label>
+            <label class="form-label" data-i18n="ligne.long">Long. (m)</label>
             <input class="form-inp" id="opm-long" type="number" step="0.01" min="0" placeholder="0.00">
           </div>
           <div>
-            <label class="form-label">Larg. (m)</label>
+            <label class="form-label" data-i18n="ligne.larg">Larg. (m)</label>
             <input class="form-inp" id="opm-larg" type="number" step="0.01" min="0" placeholder="0.00">
           </div>
           <div>
-            <label class="form-label">Ép. (m) *</label>
+            <label class="form-label" data-i18n="ligne.ep">Ép. (m) *</label>
             <input class="form-inp" id="opm-ep" type="number" step="0.001" min="0" placeholder="0.000" oninput="onOPMatiereInputChange()">
           </div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:.6rem;align-items:end">
           <div>
-            <label class="form-label">Quantité *</label>
+            <label class="form-label" data-i18n="ligne.quantite">Quantité *</label>
             <input class="form-inp" id="opm-qte" type="number" step="0.01" min="0" placeholder="0.00">
           </div>
           <div>
-            <label class="form-label">Stock disponible</label>
+            <label class="form-label" data-i18n="op.stock_dispo">Stock disponible</label>
             <div class="form-inp" id="opm-stock-dispo" style="background:var(--bg4);color:var(--text2);display:flex;align-items:center">—</div>
           </div>
           <div>
-            <button class="btn btn-primary" onclick="addOPMatiere()" style="white-space:nowrap">+ Ajouter</button>
+            <button class="btn btn-primary" onclick="addOPMatiere()" style="white-space:nowrap" data-i18n="btn.ajouter_simple">+ Ajouter</button>
           </div>
         </div>
         <div class="table-wrap" style="margin-top:.75rem">
           <table>
-            <thead><tr><th>Produit</th><th>Ép.</th><th>L×l</th><th>Qté</th><th style="text-align:right">Quantité totale</th><th></th></tr></thead>
+            <thead><tr><th data-i18n="th.produit">Produit</th><th data-i18n="th.epaisseur_short">Ép.</th><th data-i18n="op.l_x_l">L×l</th><th data-i18n="ligne.qte_short">Qté</th><th style="text-align:right" data-i18n="op.qte_totale">Quantité totale</th><th></th></tr></thead>
             <tbody id="tbl-op-matieres"></tbody>
           </table>
         </div>
@@ -1341,39 +1341,39 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
 
       <!-- SECTION PRODUITS OBTENUS -->
       <div id="op-produits-form" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r8);padding:1rem;margin-bottom:1rem">
-        <div style="font-size:.78rem;font-weight:600;color:var(--green);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.08em">📤 + Produits Finis Obtenus</div>
+        <div style="font-size:.78rem;font-weight:600;color:var(--green);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.08em" data-i18n="op.produits_obtenus">📤 + Produits Finis Obtenus</div>
         <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:.6rem;margin-bottom:.6rem">
           <div>
-            <label class="form-label">Produit (fini) *</label>
+            <label class="form-label" data-i18n="op.produit_fini">Produit (fini) *</label>
             <select class="form-inp" id="opp-produit">
-              <option value="">— Produit —</option>
+              <option value="" data-i18n="ligne.produit_placeholder">— Produit —</option>
             </select>
           </div>
           <div>
-            <label class="form-label">Long. (m)</label>
+            <label class="form-label" data-i18n="ligne.long">Long. (m)</label>
             <input class="form-inp" id="opp-long" type="number" step="0.01" min="0" placeholder="0.00">
           </div>
           <div>
-            <label class="form-label">Larg. (m)</label>
+            <label class="form-label" data-i18n="ligne.larg">Larg. (m)</label>
             <input class="form-inp" id="opp-larg" type="number" step="0.01" min="0" placeholder="0.00">
           </div>
           <div>
-            <label class="form-label">Ép. (m) *</label>
+            <label class="form-label" data-i18n="ligne.ep">Ép. (m) *</label>
             <input class="form-inp" id="opp-ep" type="number" step="0.001" min="0" placeholder="0.000">
           </div>
         </div>
         <div style="display:grid;grid-template-columns:1fr auto;gap:.6rem;align-items:end">
           <div>
-            <label class="form-label">Quantité *</label>
+            <label class="form-label" data-i18n="ligne.quantite">Quantité *</label>
             <input class="form-inp" id="opp-qte" type="number" step="0.01" min="0" placeholder="0.00">
           </div>
           <div>
-            <button class="btn btn-primary" onclick="addOPProduit()" style="white-space:nowrap">+ Ajouter</button>
+            <button class="btn btn-primary" onclick="addOPProduit()" style="white-space:nowrap" data-i18n="btn.ajouter_simple">+ Ajouter</button>
           </div>
         </div>
         <div class="table-wrap" style="margin-top:.75rem">
           <table>
-            <thead><tr><th>Produit</th><th>Ép.</th><th>L×l</th><th>Qté</th><th style="text-align:right">Quantité totale</th><th></th></tr></thead>
+            <thead><tr><th data-i18n="th.produit">Produit</th><th data-i18n="th.epaisseur_short">Ép.</th><th data-i18n="op.l_x_l">L×l</th><th data-i18n="ligne.qte_short">Qté</th><th style="text-align:right" data-i18n="op.qte_totale">Quantité totale</th><th></th></tr></thead>
             <tbody id="tbl-op-produits"></tbody>
           </table>
         </div>
@@ -1382,23 +1382,23 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
       <!-- BILAN PERTE -->
       <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r8);padding:1rem 1.25rem">
         <div style="display:flex;justify-content:space-between;margin-bottom:.4rem">
-          <span style="font-size:.78rem;color:var(--text3)">Total matière consommée</span>
+          <span style="font-size:.78rem;color:var(--text3)" data-i18n="op.total_matiere_consommee">Total matière consommée</span>
           <span id="op-bilan-consomme" style="font-weight:600;color:var(--red)">0</span>
         </div>
         <div style="display:flex;justify-content:space-between;margin-bottom:.4rem">
-          <span style="font-size:.78rem;color:var(--text3)">Total produit obtenu</span>
+          <span style="font-size:.78rem;color:var(--text3)" data-i18n="op.total_produit_obtenu">Total produit obtenu</span>
           <span id="op-bilan-obtenu" style="font-weight:600;color:var(--green)">0</span>
         </div>
         <div style="display:flex;justify-content:space-between;padding-top:.5rem;border-top:1px solid var(--border)">
-          <span style="font-size:.85rem;font-weight:600;color:var(--gold-l)">Perte de matière</span>
+          <span style="font-size:.85rem;font-weight:600;color:var(--gold-l)" data-i18n="op.perte_matiere">Perte de matière</span>
           <span id="op-bilan-perte" style="font-size:1.05rem;font-weight:700;color:var(--gold)">0 (0%)</span>
         </div>
       </div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border)">
       <button class="btn" id="op-cancel-btn" onclick="closeOPModal()">Annuler</button>
-      <button class="btn" id="op-print-btn" onclick="printOP(opEditId)" style="display:none">🖨 Imprimer bon de production</button>
-      <button class="btn btn-primary" id="op-save-btn" onclick="saveOP()" disabled style="opacity:.45;cursor:not-allowed" title="Ajoutez au moins une matière et un produit fini">💾 Clôturer l'ordre</button>
+      <button class="btn" id="op-print-btn" onclick="printOP(opEditId)" style="display:none" data-i18n="op.imprimer_bon">🖨 Imprimer bon de production</button>
+      <button class="btn btn-primary" id="op-save-btn" onclick="saveOP()" disabled style="opacity:.45;cursor:not-allowed" title="Ajoutez au moins une matière et un produit fini" data-i18n="op.cloturer">💾 Clôturer l'ordre</button>
     </div>
   </div>
 </div>
@@ -3221,6 +3221,12 @@ const I18N = {
     'stkh.total_receptions':'Total Réceptions', 'stkh.total_ventes':'Total Ventes (BL)',
     'stkh.solde_actuel':'Solde Actuel', 'stkh.dimensions':'Dimensions',
     'stk.modifier_stock':'Modifier le stock', 'stk.parametrer_simple':'Paramétrer un stock',
+    'op.matieres_consommees':'📥 − Matières Premières Consommées', 'op.produit_matiere':'Produit (matière) *',
+    'op.stock_dispo':'Stock disponible', 'op.l_x_l':'L×l', 'op.qte_totale':'Quantité totale',
+    'op.produits_obtenus':'📤 + Produits Finis Obtenus', 'op.produit_fini':'Produit (fini) *',
+    'op.total_matiere_consommee':'Total matière consommée', 'op.total_produit_obtenu':'Total produit obtenu',
+    'op.perte_matiere':'Perte de matière', 'op.imprimer_bon':'🖨 Imprimer bon de production',
+    'op.cloturer':"💾 Clôturer l'ordre",
     'bl.kpi.total':'Total BL', 'bl.kpi.bons_emis':'bons émis',
     'bl.kpi.montant_total':'Montant Total', 'bl.kpi.avant_remise':'avant remise',
     'bl.kpi.total_accorde':'total accordé',
@@ -3424,6 +3430,12 @@ const I18N = {
     'stkh.total_receptions':'إجمالي الاستلام', 'stkh.total_ventes':'إجمالي المبيعات (سندات التسليم)',
     'stkh.solde_actuel':'الرصيد الحالي', 'stkh.dimensions':'الأبعاد',
     'stk.modifier_stock':'تعديل المخزون', 'stk.parametrer_simple':'ضبط مخزون',
+    'op.matieres_consommees':'📥 − المواد الخام المستهلكة', 'op.produit_matiere':'المنتج (المادة) *',
+    'op.stock_dispo':'المخزون المتاح', 'op.l_x_l':'الطول×العرض', 'op.qte_totale':'الكمية الإجمالية',
+    'op.produits_obtenus':'📤 + المنتجات النهائية المتحصل عليها', 'op.produit_fini':'المنتج (النهائي) *',
+    'op.total_matiere_consommee':'إجمالي المادة المستهلكة', 'op.total_produit_obtenu':'إجمالي المنتج المتحصل عليه',
+    'op.perte_matiere':'فقد المادة', 'op.imprimer_bon':'🖨 طباعة أمر الإنتاج',
+    'op.cloturer':'💾 إغلاق الأمر',
     'bl.kpi.total':'إجمالي السندات', 'bl.kpi.bons_emis':'سندات صادرة',
     'bl.kpi.montant_total':'المبلغ الإجمالي', 'bl.kpi.avant_remise':'قبل الخصم',
     'bl.kpi.total_accorde':'إجمالي الممنوح',
@@ -3626,6 +3638,12 @@ const I18N = {
     'stkh.total_receptions':'Total Receipts', 'stkh.total_ventes':'Total Sales (Delivery)',
     'stkh.solde_actuel':'Current Balance', 'stkh.dimensions':'Dimensions',
     'stk.modifier_stock':'Edit stock', 'stk.parametrer_simple':'Set up a stock',
+    'op.matieres_consommees':'📥 − Raw Materials Consumed', 'op.produit_matiere':'Product (material) *',
+    'op.stock_dispo':'Available stock', 'op.l_x_l':'L×W', 'op.qte_totale':'Total quantity',
+    'op.produits_obtenus':'📤 + Finished Products Obtained', 'op.produit_fini':'Product (finished) *',
+    'op.total_matiere_consommee':'Total material consumed', 'op.total_produit_obtenu':'Total product obtained',
+    'op.perte_matiere':'Material loss', 'op.imprimer_bon':'🖨 Print production order',
+    'op.cloturer':'💾 Close the order',
     'bl.kpi.total':'Total Notes', 'bl.kpi.bons_emis':'notes issued',
     'bl.kpi.montant_total':'Total Amount', 'bl.kpi.avant_remise':'before discount',
     'bl.kpi.total_accorde':'total granted',
