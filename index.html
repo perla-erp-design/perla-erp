@@ -1153,38 +1153,38 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
     </div>
     <div style="padding:1.25rem;display:grid;gap:.9rem">
       <div>
-        <label class="form-label">Produit *</label>
+        <label class="form-label" data-i18n="ligne.produit">Produit *</label>
         <select class="form-inp" id="stk-produit-select">
-          <option value="">— Sélectionner un produit —</option>
+          <option value="" data-i18n="hist.selectionner_produit">— Sélectionner un produit —</option>
         </select>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
         <div>
-          <label class="form-label">Épaisseur (m) *</label>
+          <label class="form-label" data-i18n="stk.epaisseur_req">Épaisseur (m) *</label>
           <input class="form-inp" id="stk-ep" type="number" step="0.001" min="0" placeholder="0.000">
         </div>
         <div>
-          <label class="form-label">Unité</label>
+          <label class="form-label" data-i18n="th.unite">Unité</label>
           <select class="form-inp" id="stk-unite">
             <option value="M²">M²</option>
             <option value="M³">M³</option>
             <option value="ML">ML</option>
-            <option value="U">Unité</option>
+            <option value="U" data-i18n="ligne.unite_u">Unité</option>
           </select>
         </div>
       </div>
       <div>
-        <label class="form-label">Seuil d'alerte</label>
+        <label class="form-label" data-i18n="stk.seuil_alerte">Seuil d'alerte</label>
         <input class="form-inp" id="stk-seuil" type="number" step="0.01" min="0" placeholder="10">
       </div>
       <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r8);padding:.75rem 1rem;display:flex;justify-content:space-between;align-items:center">
-        <span style="font-size:.8rem;color:var(--text3)">Quantité actuelle (calculée)</span>
+        <span style="font-size:.8rem;color:var(--text3)" data-i18n="stk.qte_calculee">Quantité actuelle (calculée)</span>
         <span id="stk-qte-display" style="font-size:1.1rem;font-weight:700;color:var(--gold)">0</span>
       </div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border)">
-      <button class="btn" onclick="closeStockModal()">Annuler</button>
-      <button class="btn btn-primary" id="stk-save-btn" onclick="saveStock()">💾 Enregistrer</button>
+      <button class="btn" onclick="closeStockModal()" data-i18n="btn.annuler">Annuler</button>
+      <button class="btn btn-primary" id="stk-save-btn" onclick="saveStock()" data-i18n="btn.enregistrer_icon">💾 Enregistrer</button>
     </div>
   </div>
 </div>
@@ -1201,25 +1201,25 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
     </div>
     <div style="padding:1.25rem">
       <div class="kpi-grid" id="kpi-stk-histo-grid" style="margin-bottom:1rem">
-        <div class="kpi"><div class="kpi-label">Total Réceptions</div><div class="kpi-val" id="kpi-stkh-recu" style="font-size:1.05rem;color:var(--green)">0</div></div>
-        <div class="kpi"><div class="kpi-label">Total Ventes (BL)</div><div class="kpi-val" id="kpi-stkh-vendu" style="font-size:1.05rem;color:var(--red)">0</div></div>
-        <div class="kpi"><div class="kpi-label">Solde Actuel</div><div class="kpi-val" id="kpi-stkh-solde" style="font-size:1.05rem;color:var(--gold)">0</div></div>
+        <div class="kpi"><div class="kpi-label" data-i18n="stkh.total_receptions">Total Réceptions</div><div class="kpi-val" id="kpi-stkh-recu" style="font-size:1.05rem;color:var(--green)">0</div></div>
+        <div class="kpi"><div class="kpi-label" data-i18n="stkh.total_ventes">Total Ventes (BL)</div><div class="kpi-val" id="kpi-stkh-vendu" style="font-size:1.05rem;color:var(--red)">0</div></div>
+        <div class="kpi"><div class="kpi-label" data-i18n="stkh.solde_actuel">Solde Actuel</div><div class="kpi-val" id="kpi-stkh-solde" style="font-size:1.05rem;color:var(--gold)">0</div></div>
       </div>
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>Date</th><th>Type</th><th>Référence</th>
-            <th style="text-align:right">Dimensions</th>
-            <th style="text-align:right">Mouvement</th>
-            <th style="text-align:right">Solde Cumulé</th>
+            <th data-i18n="th.date">Date</th><th data-i18n="th.type">Type</th><th data-i18n="th.reference">Référence</th>
+            <th style="text-align:right" data-i18n="stkh.dimensions">Dimensions</th>
+            <th style="text-align:right" data-i18n="caisse.operation">Mouvement</th>
+            <th style="text-align:right" data-i18n="caisse.solde_cumule">Solde Cumulé</th>
           </tr></thead>
           <tbody id="tbl-stk-histo"></tbody>
         </table>
       </div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border)">
-      <button class="btn" onclick="closeStockHistoModal()">Fermer</button>
-      <button class="btn btn-primary" onclick="printStockHisto()">🖨 Imprimer</button>
+      <button class="btn" onclick="closeStockHistoModal()" data-i18n="btn.fermer">Fermer</button>
+      <button class="btn btn-primary" onclick="printStockHisto()" data-i18n="reg.imprimer">🖨 Imprimer</button>
     </div>
   </div>
 </div>
@@ -3216,6 +3216,11 @@ const I18N = {
     'br.selectionner_fournisseur':'— Sélectionner un fournisseur —', 'br.imprimer_br':'🖨 Imprimer BR',
     'reg.date_req':'Date *', 'reg.montant_dzd_req':'Montant (DZD) *', 'reg.type_paiement_req':'Type de paiement *',
     'reg.imprimer':'🖨 Imprimer', 'regf.service_echange':'Service (marchandise échangée)',
+    'hist.selectionner_produit':'— Sélectionner un produit —', 'stk.epaisseur_req':'Épaisseur (m) *',
+    'stk.seuil_alerte':"Seuil d'alerte", 'stk.qte_calculee':'Quantité actuelle (calculée)',
+    'stkh.total_receptions':'Total Réceptions', 'stkh.total_ventes':'Total Ventes (BL)',
+    'stkh.solde_actuel':'Solde Actuel', 'stkh.dimensions':'Dimensions',
+    'stk.modifier_stock':'Modifier le stock', 'stk.parametrer_simple':'Paramétrer un stock',
     'bl.kpi.total':'Total BL', 'bl.kpi.bons_emis':'bons émis',
     'bl.kpi.montant_total':'Montant Total', 'bl.kpi.avant_remise':'avant remise',
     'bl.kpi.total_accorde':'total accordé',
@@ -3414,6 +3419,11 @@ const I18N = {
     'br.selectionner_fournisseur':'— اختر مورداً —', 'br.imprimer_br':'🖨 طباعة سند الاستلام',
     'reg.date_req':'التاريخ *', 'reg.montant_dzd_req':'المبلغ (دج) *', 'reg.type_paiement_req':'نوع الدفع *',
     'reg.imprimer':'🖨 طباعة', 'regf.service_echange':'خدمة (بضائع متبادلة)',
+    'hist.selectionner_produit':'— اختر منتجاً —', 'stk.epaisseur_req':'السماكة (م) *',
+    'stk.seuil_alerte':'عتبة التنبيه', 'stk.qte_calculee':'الكمية الحالية (محسوبة)',
+    'stkh.total_receptions':'إجمالي الاستلام', 'stkh.total_ventes':'إجمالي المبيعات (سندات التسليم)',
+    'stkh.solde_actuel':'الرصيد الحالي', 'stkh.dimensions':'الأبعاد',
+    'stk.modifier_stock':'تعديل المخزون', 'stk.parametrer_simple':'ضبط مخزون',
     'bl.kpi.total':'إجمالي السندات', 'bl.kpi.bons_emis':'سندات صادرة',
     'bl.kpi.montant_total':'المبلغ الإجمالي', 'bl.kpi.avant_remise':'قبل الخصم',
     'bl.kpi.total_accorde':'إجمالي الممنوح',
@@ -3611,6 +3621,11 @@ const I18N = {
     'br.selectionner_fournisseur':'— Select a supplier —', 'br.imprimer_br':'🖨 Print Receiving Note',
     'reg.date_req':'Date *', 'reg.montant_dzd_req':'Amount (DZD) *', 'reg.type_paiement_req':'Payment type *',
     'reg.imprimer':'🖨 Print', 'regf.service_echange':'Service (goods exchanged)',
+    'hist.selectionner_produit':'— Select a product —', 'stk.epaisseur_req':'Thickness (m) *',
+    'stk.seuil_alerte':'Alert threshold', 'stk.qte_calculee':'Current quantity (calculated)',
+    'stkh.total_receptions':'Total Receipts', 'stkh.total_ventes':'Total Sales (Delivery)',
+    'stkh.solde_actuel':'Current Balance', 'stkh.dimensions':'Dimensions',
+    'stk.modifier_stock':'Edit stock', 'stk.parametrer_simple':'Set up a stock',
     'bl.kpi.total':'Total Notes', 'bl.kpi.bons_emis':'notes issued',
     'bl.kpi.montant_total':'Total Amount', 'bl.kpi.avant_remise':'before discount',
     'bl.kpi.total_accorde':'total granted',
@@ -7742,9 +7757,9 @@ function printStockHisto(){
 
 function openStockModal(data=null){
   const isEdit = !!data;
-  document.getElementById('stk-modal-title').textContent = isEdit ? '✎ Modifier le stock' : '+ Paramétrer un stock';
+  document.getElementById('stk-modal-title').textContent = isEdit ? '✎ '+t('stk.modifier_stock') : '+ '+t('stk.parametrer_simple');
   const sel=document.getElementById('stk-produit-select');
-  sel.innerHTML='<option value="">— Sélectionner un produit —</option>'+
+  sel.innerHTML=`<option value="" data-i18n="hist.selectionner_produit">${t('hist.selectionner_produit')}</option>`+
     (DB.produits||[]).map(p=>`<option value="${p.id}" ${data&&String(data.produit)===String(p.id)?'selected':''}>${p.nom||p.designation||p.reference||'Produit '+p.id}</option>`).join('');
   document.getElementById('stk-ep').value = data ? data.ep : '';
   document.getElementById('stk-ep').dataset.original = data ? data.ep : '';
