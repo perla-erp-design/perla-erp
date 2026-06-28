@@ -389,33 +389,33 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
     </div>
     <div style="padding:1.25rem">
       <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r8);padding:1rem;margin-bottom:1rem">
-        <div style="font-size:.75rem;font-weight:600;color:var(--gold-l);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.08em">+ Ajouter une affectation</div>
+        <div style="font-size:.75rem;font-weight:600;color:var(--gold-l);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.08em" data-i18n="aff.ajouter">+ Ajouter une affectation</div>
         <div style="display:grid;grid-template-columns:1fr 1fr 100px;gap:.6rem;align-items:end">
           <div>
-            <label class="form-label">Département</label>
+            <label class="form-label" data-i18n="th.departement">Département</label>
             <input class="form-inp" id="aff-departement" type="text" placeholder="ex: Production">
           </div>
           <div>
-            <label class="form-label">Sous-département</label>
+            <label class="form-label" data-i18n="th.sous_departement">Sous-département</label>
             <input class="form-inp" id="aff-sous-departement" type="text" placeholder="ex: Découpe">
           </div>
           <div>
-            <label class="form-label">% Temps</label>
+            <label class="form-label" data-i18n="aff.pourcentage_temps">% Temps</label>
             <input class="form-inp" id="aff-pourcentage" type="number" min="0" max="100" placeholder="50">
           </div>
         </div>
-        <button class="btn btn-primary" onclick="addAffectation()" style="margin-top:.6rem;width:100%">+ Ajouter</button>
+        <button class="btn btn-primary" onclick="addAffectation()" style="margin-top:.6rem;width:100%" data-i18n="btn.ajouter_simple">+ Ajouter</button>
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Département</th><th>Sous-département</th><th style="text-align:right">% Temps</th><th></th></tr></thead>
+          <thead><tr><th data-i18n="th.departement">Département</th><th data-i18n="th.sous_departement">Sous-département</th><th style="text-align:right" data-i18n="aff.pourcentage_temps">% Temps</th><th></th></tr></thead>
           <tbody id="tbl-affectations"></tbody>
         </table>
       </div>
       <div id="aff-total-warning" style="display:none;margin-top:.75rem;padding:.6rem .9rem;background:var(--red-bg);border:1px solid var(--red);border-radius:var(--r8);font-size:.78rem;color:#e88"></div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border)">
-      <button class="btn" onclick="closeAffectationModal()">Fermer</button>
+      <button class="btn" onclick="closeAffectationModal()" data-i18n="btn.fermer">Fermer</button>
     </div>
   </div>
 </div>
@@ -449,27 +449,27 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
   <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r16);width:100%;max-width:480px;max-height:92vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.6)">
     <div style="display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.25rem;border-bottom:1px solid var(--border)">
       <div>
-        <div style="font-size:.95rem;font-weight:600;color:var(--gold-l)">+ Inviter un utilisateur</div>
-        <div style="font-size:.75rem;color:var(--text3);margin-top:.2rem">La personne créera elle-même son compte</div>
+        <div style="font-size:.95rem;font-weight:600;color:var(--gold-l)" data-i18n="users.inviter">+ Inviter un utilisateur</div>
+        <div style="font-size:.75rem;color:var(--text3);margin-top:.2rem" data-i18n="inv.creera_compte">La personne créera elle-même son compte</div>
       </div>
       <button onclick="closeInviteModal()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:1.2rem;padding:.2rem .4rem;border-radius:4px">✕</button>
     </div>
     <div style="padding:1.25rem;display:grid;gap:.9rem">
       <div>
-        <label class="form-label">Nom complet</label>
+        <label class="form-label" data-i18n="form.nom_complet">Nom complet</label>
         <input class="form-inp" id="invite-nom" type="text" placeholder="ex: Karim Benali">
       </div>
       <div>
-        <label class="form-label">Email *</label>
+        <label class="form-label" data-i18n="inv.email_req">Email *</label>
         <input class="form-inp" id="invite-email" type="email" placeholder="email@exemple.com">
       </div>
-      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r8);padding:.75rem 1rem;font-size:.78rem;color:var(--text3)">
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r8);padding:.75rem 1rem;font-size:.78rem;color:var(--text3)" data-i18n="inv.aide_complete">
         Une fois enregistré, partagez-lui le lien de l'ERP. Il devra créer son compte avec <strong>cet email exact</strong> via "Créer un compte". Ses droits seront vides par défaut — configurez-les ensuite ici.
       </div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border)">
-      <button class="btn" onclick="closeInviteModal()">Annuler</button>
-      <button class="btn btn-primary" id="invite-save-btn" onclick="saveInvitation()">💾 Enregistrer l'invitation</button>
+      <button class="btn" onclick="closeInviteModal()" data-i18n="btn.annuler">Annuler</button>
+      <button class="btn btn-primary" id="invite-save-btn" onclick="saveInvitation()" data-i18n="inv.enregistrer">💾 Enregistrer l'invitation</button>
     </div>
   </div>
 </div>
@@ -480,35 +480,35 @@ code{background:var(--bg4);color:var(--gold);padding:.1rem .4rem;border-radius:4
     <div style="display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.25rem;border-bottom:1px solid var(--border)">
       <div>
         <div id="perm-modal-title" style="font-size:.95rem;font-weight:600;color:var(--gold-l)">🔐 Permissions</div>
-        <div style="font-size:.75rem;color:var(--text3);margin-top:.2rem">Définissez les autorisations par module et par action</div>
+        <div style="font-size:.75rem;color:var(--text3);margin-top:.2rem" data-i18n="perm.definissez">Définissez les autorisations par module et par action</div>
       </div>
       <button onclick="closePermissionsModal()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:1.2rem;padding:.2rem .4rem;border-radius:4px">✕</button>
     </div>
     <div style="padding:1.25rem">
-      <div id="perm-superadmin-box" style="display:none;background:var(--gold-bg);border:1px solid var(--gold-d);border-radius:var(--r8);padding:.75rem 1rem;margin-bottom:1rem;font-size:.82rem;color:var(--gold-l)">
+      <div id="perm-superadmin-box" style="display:none;background:var(--gold-bg);border:1px solid var(--gold-d);border-radius:var(--r8);padding:.75rem 1rem;margin-bottom:1rem;font-size:.82rem;color:var(--gold-l)" data-i18n="perm.est_super_admin">
         ⭐ Cet utilisateur est <strong>Super Admin</strong> — il a accès à tout, sans restriction.
       </div>
       <div style="margin-bottom:1rem;display:flex;gap:.6rem;flex-wrap:wrap">
-        <button class="btn" onclick="togglePermAllActions(true)" style="font-size:.75rem">✓ Tout cocher</button>
-        <button class="btn" onclick="togglePermAllActions(false)" style="font-size:.75rem">✕ Tout décocher</button>
+        <button class="btn" onclick="togglePermAllActions(true)" style="font-size:.75rem" data-i18n="perm.tout_cocher">✓ Tout cocher</button>
+        <button class="btn" onclick="togglePermAllActions(false)" style="font-size:.75rem" data-i18n="perm.tout_decocher">✕ Tout décocher</button>
       </div>
       <div class="table-wrap" id="perm-table-wrap">
         <table>
           <thead><tr>
-            <th>Module</th>
-            <th style="text-align:center">Voir</th>
-            <th style="text-align:center">Créer</th>
-            <th style="text-align:center">Modifier</th>
-            <th style="text-align:center">Supprimer</th>
-            <th style="text-align:center">Imprimer</th>
+            <th data-i18n="perm.module">Module</th>
+            <th style="text-align:center" data-i18n="perm.voir">Voir</th>
+            <th style="text-align:center" data-i18n="perm.creer">Créer</th>
+            <th style="text-align:center" data-i18n="btn.modifier">Modifier</th>
+            <th style="text-align:center" data-i18n="btn.supprimer">Supprimer</th>
+            <th style="text-align:center" data-i18n="btn.imprimer">Imprimer</th>
           </tr></thead>
           <tbody id="tbl-permissions"></tbody>
         </table>
       </div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:.6rem;padding:1rem 1.25rem;border-top:1px solid var(--border)">
-      <button class="btn" onclick="closePermissionsModal()">Annuler</button>
-      <button class="btn btn-primary" id="perm-save-btn" onclick="savePermissions()">💾 Enregistrer les droits</button>
+      <button class="btn" onclick="closePermissionsModal()" data-i18n="btn.annuler">Annuler</button>
+      <button class="btn btn-primary" id="perm-save-btn" onclick="savePermissions()" data-i18n="perm.enregistrer_droits">💾 Enregistrer les droits</button>
     </div>
   </div>
 </div>
@@ -2866,26 +2866,26 @@ function checkPasswordRecoveryLink(){
 
 // Liste des modules de l'ERP (clé technique -> libellé affiché)
 const PERM_MODULES = [
-  {key:'employes', label:'👥 Employés'},
-  {key:'departements', label:'🏢 Départements'},
-  {key:'contrats', label:'📄 Contrats'},
-  {key:'paie', label:'💵 Paye'},
-  {key:'entreprise', label:'🏛 Entreprise'},
-  {key:'commandes', label:'📋 Bons de Livraison'},
-  {key:'clients', label:'🤝 Clients'},
-  {key:'reception', label:'📥 Bons de Réception'},
-  {key:'reglements-four', label:'💳 Règlements Fournisseurs'},
-  {key:'stocks', label:'📦 Stocks'},
-  {key:'fournisseurs', label:'🚚 Fournisseurs'},
-  {key:'production', label:'🏭 Ordres de Production'},
-  {key:'caisse', label:'🏦 Compte Caisse'},
-  {key:'reglements', label:'💰 Règlements'},
-  {key:'factures', label:'🧾 Factures'},
-  {key:'depenses', label:'💸 Dépenses'},
-  {key:'etat-creances', label:'📊 Créances Clients'},
-  {key:'etat-historique', label:'📜 Historique Client'},
-  {key:'etat-dettes', label:'📊 Dettes Fournisseurs'},
-  {key:'etat-historique-four', label:'📜 Historique Fournisseur'},
+  {key:'employes', label:'👥 Employés', labelKey:'nav.employes', icon:'👥'},
+  {key:'departements', label:'🏢 Départements', labelKey:'nav.departements', icon:'🏢'},
+  {key:'contrats', label:'📄 Contrats', labelKey:'nav.contrats', icon:'📄'},
+  {key:'paie', label:'💵 Paye', labelKey:'nav.paie', icon:'💵'},
+  {key:'entreprise', label:'🏛 Entreprise', labelKey:'nav.entreprise', icon:'🏛'},
+  {key:'commandes', label:'📋 Bons de Livraison', labelKey:'nav.commandes', icon:'📋'},
+  {key:'clients', label:'🤝 Clients', labelKey:'nav.clients', icon:'🤝'},
+  {key:'reception', label:'📥 Bons de Réception', labelKey:'nav.reception', icon:'📥'},
+  {key:'reglements-four', label:'💳 Règlements Fournisseurs', labelKey:'nav.reglements-four', icon:'💳'},
+  {key:'stocks', label:'📦 Stocks', labelKey:'nav.stocks', icon:'📦'},
+  {key:'fournisseurs', label:'🚚 Fournisseurs', labelKey:'nav.fournisseurs', icon:'🚚'},
+  {key:'production', label:'🏭 Ordres de Production', labelKey:'nav.production', icon:'🏭'},
+  {key:'caisse', label:'🏦 Compte Caisse', labelKey:'nav.caisse', icon:'🏦'},
+  {key:'reglements', label:'💰 Règlements', labelKey:'nav.reglements', icon:'💰'},
+  {key:'factures', label:'🧾 Factures', labelKey:'nav.factures', icon:'🧾'},
+  {key:'depenses', label:'💸 Dépenses', labelKey:'nav.depenses', icon:'💸'},
+  {key:'etat-creances', label:'📊 Créances Clients', labelKey:'nav.etat-creances', icon:'📊'},
+  {key:'etat-historique', label:'📜 Historique Client', labelKey:'nav.etat-historique', icon:'📜'},
+  {key:'etat-dettes', label:'📊 Dettes Fournisseurs', labelKey:'nav.etat-dettes', icon:'📊'},
+  {key:'etat-historique-four', label:'📜 Historique Fournisseur', labelKey:'nav.etat-historique-four', icon:'📜'},
 ];
 const PERM_ACTIONS = ['voir','creer','modifier','supprimer','imprimer'];
 
@@ -3042,7 +3042,7 @@ function renderPermissionsTable(){
   tbody.innerHTML = PERM_MODULES.map(m=>{
     const perm = permEditData[m.key];
     return `<tr>
-      <td>${m.label}</td>
+      <td>${m.icon} ${t(m.labelKey)}</td>
       ${PERM_ACTIONS.map(a=>`<td style="text-align:center">
         <input type="checkbox" ${perm[a]?'checked':''} onchange="updatePermCheckbox('${m.key}','${a}',this.checked)" style="width:18px;height:18px;cursor:pointer">
       </td>`).join('')}
@@ -3242,6 +3242,18 @@ const I18N = {
     'pa.retenues_dzd':'Retenues (DZD)', 'pa.net_a_payer':'Net à payer', 'pa.fiche_paie':'🖨 Fiche de paie',
     'ct.modifier_contrat':'Modifier le Contrat', 'ct.nouveau_contrat':'+ Nouveau Contrat',
     'pa.modifier_fiche':'Modifier la Fiche de Paie',
+    // Affectations
+    'aff.ajouter':'+ Ajouter une affectation', 'aff.pourcentage_temps':'% Temps',
+    // Invitation
+    'inv.creera_compte':'La personne créera elle-même son compte', 'inv.email_req':'Email *',
+    'inv.aide_complete':"Une fois enregistré, partagez-lui le lien de l'ERP. Il devra créer son compte avec <strong>cet email exact</strong> via \"Créer un compte\". Ses droits seront vides par défaut — configurez-les ensuite ici.",
+    'inv.enregistrer':"💾 Enregistrer l'invitation",
+    // Permissions
+    'perm.definissez':'Définissez les autorisations par module et par action',
+    'perm.est_super_admin':'⭐ Cet utilisateur est <strong>Super Admin</strong> — il a accès à tout, sans restriction.',
+    'perm.tout_cocher':'✓ Tout cocher', 'perm.tout_decocher':'✕ Tout décocher',
+    'perm.module':'Module', 'perm.voir':'Voir', 'perm.creer':'Créer',
+    'perm.enregistrer_droits':'💾 Enregistrer les droits',
     'bl.kpi.total':'Total BL', 'bl.kpi.bons_emis':'bons émis',
     'bl.kpi.montant_total':'Montant Total', 'bl.kpi.avant_remise':'avant remise',
     'bl.kpi.total_accorde':'total accordé',
@@ -3466,6 +3478,18 @@ const I18N = {
     'pa.retenues_dzd':'الاستقطاعات (دج)', 'pa.net_a_payer':'الصافي المستحق', 'pa.fiche_paie':'🖨 كشف الراتب',
     'ct.modifier_contrat':'تعديل العقد', 'ct.nouveau_contrat':'+ عقد جديد',
     'pa.modifier_fiche':'تعديل كشف الراتب',
+    // التعيينات
+    'aff.ajouter':'+ إضافة تعيين', 'aff.pourcentage_temps':'٪ الوقت',
+    // الدعوة
+    'inv.creera_compte':'سيقوم الشخص بإنشاء حسابه الخاص', 'inv.email_req':'البريد الإلكتروني *',
+    'inv.aide_complete':'بعد التسجيل، شارك معه رابط النظام. يجب عليه إنشاء حسابه بنفس البريد الإلكتروني هذا تماماً عبر "إنشاء حساب". صلاحياته ستكون فارغة افتراضياً — قم بضبطها بعد ذلك من هنا.',
+    'inv.enregistrer':'💾 حفظ الدعوة',
+    // الصلاحيات
+    'perm.definissez':'حدد الصلاحيات حسب الوحدة والإجراء',
+    'perm.est_super_admin':'⭐ هذا المستخدم هو <strong>مسؤول رئيسي</strong> — له صلاحية الوصول الكامل دون قيود.',
+    'perm.tout_cocher':'✓ تحديد الكل', 'perm.tout_decocher':'✕ إلغاء تحديد الكل',
+    'perm.module':'الوحدة', 'perm.voir':'عرض', 'perm.creer':'إنشاء',
+    'perm.enregistrer_droits':'💾 حفظ الصلاحيات',
     'bl.kpi.total':'إجمالي السندات', 'bl.kpi.bons_emis':'سندات صادرة',
     'bl.kpi.montant_total':'المبلغ الإجمالي', 'bl.kpi.avant_remise':'قبل الخصم',
     'bl.kpi.total_accorde':'إجمالي الممنوح',
@@ -3689,6 +3713,18 @@ const I18N = {
     'pa.retenues_dzd':'Deductions (DZD)', 'pa.net_a_payer':'Net to pay', 'pa.fiche_paie':'🖨 Payslip',
     'ct.modifier_contrat':'Edit Contract', 'ct.nouveau_contrat':'+ New Contract',
     'pa.modifier_fiche':'Edit Payslip',
+    // Assignments
+    'aff.ajouter':'+ Add an assignment', 'aff.pourcentage_temps':'% Time',
+    // Invitation
+    'inv.creera_compte':'The person will create their own account', 'inv.email_req':'Email *',
+    'inv.aide_complete':'Once saved, share the ERP link with them. They must create their account with <strong>this exact email</strong> via "Create an account". Their permissions will be empty by default — configure them afterwards here.',
+    'inv.enregistrer':'💾 Save invitation',
+    // Permissions
+    'perm.definissez':'Set authorizations by module and action',
+    'perm.est_super_admin':'⭐ This user is a <strong>Super Admin</strong> — they have full access, without restriction.',
+    'perm.tout_cocher':'✓ Check all', 'perm.tout_decocher':'✕ Uncheck all',
+    'perm.module':'Module', 'perm.voir':'View', 'perm.creer':'Create',
+    'perm.enregistrer_droits':'💾 Save permissions',
     'bl.kpi.total':'Total Notes', 'bl.kpi.bons_emis':'notes issued',
     'bl.kpi.montant_total':'Total Amount', 'bl.kpi.avant_remise':'before discount',
     'bl.kpi.total_accorde':'total granted',
@@ -3816,7 +3852,7 @@ function applyTranslations(){
     if(iconSpan){
       el.innerHTML = iconSpan.outerHTML + ' ' + translated;
     } else {
-      el.textContent = translated;
+      el.innerHTML = translated;
     }
   });
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
